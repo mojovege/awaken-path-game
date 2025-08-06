@@ -38,6 +38,9 @@ export default function GamePage() {
 
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0);
 
   // Get user data to determine religion
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
@@ -75,7 +78,7 @@ export default function GamePage() {
 
   // Timer effect
   useEffect(() => {
-    if (gameState.timeLeft > 0 && !showResult) {
+    if (gameState.timeLeft > 0 && !showResult && !isPaused) {
       const timer = setTimeout(() => {
         setGameState(prev => ({ ...prev, timeLeft: prev.timeLeft - 1 }));
       }, 1000);
@@ -83,7 +86,7 @@ export default function GamePage() {
     } else if (gameState.timeLeft === 0) {
       handleTimeUp();
     }
-  }, [gameState.timeLeft, showResult]);
+  }, [gameState.timeLeft, showResult, isPaused]);
 
   const handleTimeUp = () => {
     setGameState(prev => ({ ...prev, lives: prev.lives - 1 }));
@@ -133,6 +136,7 @@ export default function GamePage() {
       timeLeft: 90,
     }));
     setSelectedAnswer(null);
+    setShowHint(false);
     refetchQuestion();
   };
 
@@ -147,6 +151,29 @@ export default function GamePage() {
 
   const exitGame = () => {
     setLocation('/');
+  };
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
+  };
+
+  const useHint = () => {
+    if (hintsUsed < 2 && !showHint) {
+      setShowHint(true);
+      setHintsUsed(prev => prev + 1);
+      toast({
+        title: "提示",
+        description: "排除2個錯誤選項",
+        variant: "default",
+      });
+    }
+  };
+
+  const isOptionEliminated = (index: number) => {
+    if (!showHint) return false;
+    // Eliminate 2 wrong answers but keep the correct one
+    const wrongOptions = question?.options.map((_, i) => i).filter(i => i !== question.correctAnswer) || [];
+    return wrongOptions.includes(index) && wrongOptions.indexOf(index) < 2;
   };
 
   const getGameTitle = (type: string) => {
@@ -220,6 +247,9 @@ export default function GamePage() {
                   totalQuestions: 5,
                 });
                 setSelectedAnswer(null);
+                setShowHint(false);
+                setHintsUsed(0);
+                setIsPaused(false);
                 refetchQuestion();
               }}
               variant="outline"
@@ -248,7 +278,23 @@ export default function GamePage() {
   return (
     <div className="min-h-screen bg-warm-gray-50">
       <div className="max-w-4xl mx-auto p-4">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative">
+          {/* Pause Overlay */}
+          {isPaused && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 rounded-2xl">
+              <div className="bg-white rounded-xl p-8 text-center">
+                <Pause className="w-16 h-16 text-warm-gold mx-auto mb-4" />
+                <h3 className="text-elderly-xl font-semibold text-gray-800 mb-4">遊戲暫停</h3>
+                <p className="text-elderly-base text-warm-gray-600 mb-6">點擊繼續按鈕恢復遊戲</p>
+                <Button 
+                  onClick={togglePause}
+                  className="btn-primary text-elderly-base px-8"
+                >
+                  繼續遊戲
+                </Button>
+              </div>
+            </div>
+          )}
           {/* Game Header */}
           <div className="bg-gradient-to-r from-warm-gold to-yellow-500 p-6">
             <div className="flex items-center justify-between">
@@ -294,10 +340,12 @@ export default function GamePage() {
                 <Button
                   key={index}
                   onClick={() => handleAnswerSelect(index)}
-                  disabled={selectedAnswer !== null}
+                  disabled={selectedAnswer !== null || isOptionEliminated(index)}
                   variant="outline"
                   className={`p-6 text-left h-auto min-h-[80px] text-elderly-base border-2 transition-all duration-300 ${
-                    selectedAnswer === index
+                    isOptionEliminated(index)
+                      ? 'border-gray-300 bg-gray-100 opacity-50 cursor-not-allowed'
+                      : selectedAnswer === index
                       ? selectedAnswer === question.correctAnswer
                         ? 'border-green-500 bg-green-50'
                         : 'border-red-500 bg-red-50'
@@ -307,7 +355,9 @@ export default function GamePage() {
                   }`}
                   data-testid={`button-answer-${index}`}
                 >
-                  <span className="block text-wrap">{option}</span>
+                  <span className={`block text-wrap ${isOptionEliminated(index) ? 'line-through' : ''}`}>
+                    {option}
+                  </span>
                 </Button>
               ))}
             </div>
@@ -336,22 +386,25 @@ export default function GamePage() {
               
               <div className="flex space-x-3">
                 <Button
+                  onClick={togglePause}
                   variant="outline"
                   size="sm"
                   className="text-elderly-base"
                   data-testid="button-pause-game"
                 >
                   <Pause className="w-4 h-4 mr-2" />
-                  暫停
+                  {isPaused ? '繼續' : '暫停'}
                 </Button>
                 <Button
+                  onClick={useHint}
                   variant="outline"
                   size="sm"
                   className="text-elderly-base"
+                  disabled={hintsUsed >= 2 || selectedAnswer !== null}
                   data-testid="button-hint"
                 >
                   <Lightbulb className="w-4 h-4 mr-2" />
-                  提示
+                  提示 ({2 - hintsUsed})
                 </Button>
               </div>
             </div>
