@@ -138,7 +138,7 @@ export async function generateGameQuestion(gameType: string, religion: Religion,
     };
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL_NAME,
       messages: [
         {
           role: "system",
