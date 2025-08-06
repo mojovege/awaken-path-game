@@ -1,10 +1,14 @@
 import OpenAI from "openai";
 import { type Religion } from "@shared/schema";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+// Support both OpenAI and DeepSeek APIs
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
+  apiKey: process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY || "default_key",
+  baseURL: process.env.DEEPSEEK_API_KEY ? "https://api.deepseek.com" : undefined
 });
+
+// Use appropriate model based on API provider
+const MODEL_NAME = process.env.DEEPSEEK_API_KEY ? "deepseek-chat" : "gpt-4o";
 
 export interface AIPersona {
   name: string;
@@ -64,7 +68,7 @@ ${context?.recentProgress ? `用戶最近的遊戲進度：${JSON.stringify(cont
 `;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL_NAME,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message },
@@ -85,7 +89,7 @@ export async function generateHealthTip(religion: Religion): Promise<string> {
     const persona = AI_PERSONAS[religion];
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL_NAME,
       messages: [
         {
           role: "system",

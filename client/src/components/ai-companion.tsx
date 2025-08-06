@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Send, Mic } from "lucide-react";
+import { Send, Mic, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -44,6 +45,7 @@ export default function AICompanion({ userId, religion, userName }: AICompanionP
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const persona = AI_PERSONAS[religion as keyof typeof AI_PERSONAS] || AI_PERSONAS.buddhism;
 
@@ -105,18 +107,30 @@ export default function AICompanion({ userId, religion, userName }: AICompanionP
   return (
     <Card className="shadow-lg overflow-hidden" data-testid="ai-companion">
       <div className={`bg-gradient-to-r ${persona.bgColor} p-6`}>
-        <div className="flex items-center">
-          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-            <span className="text-2xl">{persona.avatar}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+              <span className="text-2xl">{persona.avatar}</span>
+            </div>
+            <div>
+              <h3 className="text-elderly-xl font-semibold text-white mb-1">
+                {persona.name}
+              </h3>
+              <p className="text-white text-opacity-90 text-elderly-base">
+                您的修行夥伴・隨時陪伴
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-elderly-xl font-semibold text-white mb-1">
-              {persona.name}
-            </h3>
-            <p className="text-white text-opacity-90 text-elderly-base">
-              您的修行夥伴・隨時陪伴
-            </p>
-          </div>
+          <Button
+            onClick={() => setLocation("/")}
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-white hover:bg-opacity-20 p-2"
+            data-testid="button-back-home"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="ml-1 text-elderly-base">返回</span>
+          </Button>
         </div>
       </div>
       
