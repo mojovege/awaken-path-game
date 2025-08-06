@@ -72,6 +72,10 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 className="relative p-3 bg-warm-gray-50 rounded-xl hover:bg-warm-gray-100"
+                onClick={() => {
+                  // Show notification modal or navigate to notifications page
+                  alert('通知功能開發中，敬請期待！');
+                }}
                 data-testid="button-notifications"
               >
                 <Bell className="h-5 w-5 text-warm-gray-600" />

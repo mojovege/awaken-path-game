@@ -94,6 +94,27 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
 
   return (
     <div className="fade-in space-y-8" data-testid="dashboard">
+      {/* Back to Religion Selection Button */}
+      <div className="flex justify-between items-center">
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="text-warm-gray-600 hover:text-gray-800 border-warm-gray-300"
+          data-testid="button-back-to-selection"
+        >
+          ← 重新選擇信仰
+        </Button>
+        <div className="text-right">
+          <p className="text-elderly-base text-warm-gray-600">
+            當前選擇：{
+              user?.selectedReligion === 'buddhism' ? '佛教修行' :
+              user?.selectedReligion === 'taoism' ? '道教養生' :
+              user?.selectedReligion === 'mazu' ? '媽祖護佑' : '未選擇'
+            }
+          </p>
+        </div>
+      </div>
+      
       {/* Progress Overview */}
       <Card className="shadow-lg">
         <CardContent className="p-6 md:p-8">

@@ -4,10 +4,10 @@ import { type Religion } from "@shared/schema";
 // Support both OpenAI and DeepSeek APIs
 const openai = new OpenAI({ 
   apiKey: process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY || "default_key",
-  baseURL: process.env.DEEPSEEK_API_KEY ? "https://api.deepseek.com" : undefined
+  baseURL: process.env.DEEPSEEK_API_KEY ? "https://api.deepseek.com/v1" : undefined
 });
 
-// Use appropriate model based on API provider
+// Use appropriate model based on API provider  
 const MODEL_NAME = process.env.DEEPSEEK_API_KEY ? "deepseek-chat" : "gpt-4o";
 
 export interface AIPersona {
