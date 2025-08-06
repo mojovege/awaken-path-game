@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, Heart, Lightbulb, Pause } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import RhythmGame from "@/components/games/rhythm-game";
+import MemoryGame from "@/components/games/memory-game";
+import LogicGame from "@/components/games/logic-game";
+import LightingGame from "@/components/games/lighting-game";
 
 interface GameQuestion {
   question: string;
@@ -41,16 +45,23 @@ export default function GamePage() {
   const [isPaused, setIsPaused] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
+  const [useCustomGame, setUseCustomGame] = useState(false);
 
   // Get user data to determine religion
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
     queryKey: ['/api/user', DEMO_USER_ID],
   });
 
-  // Get game question
+  // Check if this game type should use custom game component
+  useEffect(() => {
+    const customGameTypes = ['reaction-rhythm', 'reaction-lighting', 'memory-scripture', 'memory-temple', 'logic-scripture', 'logic-sequence'];
+    setUseCustomGame(customGameTypes.includes(gameType || ''));
+  }, [gameType]);
+
+  // Get game question (only for traditional Q&A games)
   const { data: question, refetch: refetchQuestion } = useQuery<GameQuestion>({
     queryKey: ['/api/game/question', gameType, user?.selectedReligion],
-    enabled: !!user?.selectedReligion,
+    enabled: !!user?.selectedReligion && !useCustomGame,
     queryFn: async () => {
       const response = await apiRequest('POST', '/api/game/question', {
         gameType,
@@ -176,6 +187,14 @@ export default function GamePage() {
     return wrongOptions.includes(index) && wrongOptions.indexOf(index) < 2;
   };
 
+  const handleCustomGameScore = (points: number) => {
+    setGameState(prev => ({ ...prev, score: prev.score + points }));
+  };
+
+  const handleCustomGameComplete = () => {
+    endGame();
+  };
+
   const getGameTitle = (type: string) => {
     const titles: Record<string, string> = {
       'memory-scripture': '經文記憶配對',
@@ -264,7 +283,7 @@ export default function GamePage() {
     );
   }
 
-  if (!question) {
+  if (!useCustomGame && !question) {
     return (
       <div className="min-h-screen bg-warm-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -313,7 +332,7 @@ export default function GamePage() {
                     {getGameTitle(gameType!)}
                   </h3>
                   <p className="text-white text-opacity-90 text-elderly-sm">
-                    第{gameState.currentQuestion}關・{question.question.slice(0, 20)}...
+                    {useCustomGame ? '互動遊戲進行中...' : `第${gameState.currentQuestion}關・${question?.question?.slice(0, 20) || ''}...`}
                   </p>
                 </div>
               </div>
@@ -328,86 +347,123 @@ export default function GamePage() {
           
           {/* Game Content */}
           <div className="p-8">
-            <div className="text-center mb-8">
-              <h4 className="text-elderly-xl font-semibold text-gray-800 mb-6">
-                {question.question}
-              </h4>
-            </div>
-            
-            {/* Answer Options */}
-            <div className="grid md:grid-cols-2 gap-4 mb-8">
-              {question.options.map((option, index) => (
-                <Button
-                  key={index}
-                  onClick={() => handleAnswerSelect(index)}
-                  disabled={selectedAnswer !== null || isOptionEliminated(index)}
-                  variant="outline"
-                  className={`p-6 text-left h-auto min-h-[80px] text-elderly-base border-2 transition-all duration-300 ${
-                    isOptionEliminated(index)
-                      ? 'border-gray-300 bg-gray-100 opacity-50 cursor-not-allowed'
-                      : selectedAnswer === index
-                      ? selectedAnswer === question.correctAnswer
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-red-500 bg-red-50'
-                      : selectedAnswer === question.correctAnswer && index === question.correctAnswer
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-warm-gray-100 hover:border-warm-gold hover:bg-warm-gold hover:bg-opacity-10'
-                  }`}
-                  data-testid={`button-answer-${index}`}
-                >
-                  <span className={`block text-wrap ${isOptionEliminated(index) ? 'line-through' : ''}`}>
-                    {option}
-                  </span>
-                </Button>
-              ))}
-            </div>
-            
-            {/* Game Controls */}
-            <div className="flex items-center justify-between bg-warm-gray-50 rounded-xl p-4">
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center text-warm-gray-600" data-testid="game-timer">
-                  <Clock className="w-5 h-5 mr-2" />
-                  <span className="text-elderly-base font-medium">
-                    {Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}
-                  </span>
-                </div>
-                <div className="flex items-center text-warm-gray-600" data-testid="game-lives">
-                  <Heart className="w-5 h-5 mr-2" />
-                  <span className="text-elderly-base font-medium">
-                    {gameState.lives}/3
-                  </span>
-                </div>
-                <div className="text-warm-gray-600" data-testid="game-progress">
-                  <span className="text-elderly-base font-medium">
-                    {gameState.currentQuestion}/{gameState.totalQuestions}
-                  </span>
-                </div>
+            {useCustomGame ? (
+              <div>
+                {gameType === 'reaction-rhythm' && (
+                  <RhythmGame 
+                    onScore={handleCustomGameScore} 
+                    onComplete={handleCustomGameComplete}
+                    religion={user?.selectedReligion || 'buddhism'}
+                  />
+                )}
+                {(gameType === 'memory-scripture' || gameType === 'memory-temple') && (
+                  <MemoryGame 
+                    onScore={handleCustomGameScore} 
+                    onComplete={handleCustomGameComplete}
+                    religion={user?.selectedReligion || 'buddhism'}
+                    gameType={gameType}
+                  />
+                )}
+                {(gameType === 'logic-scripture' || gameType === 'logic-sequence') && (
+                  <LogicGame 
+                    onScore={handleCustomGameScore} 
+                    onComplete={handleCustomGameComplete}
+                    religion={user?.selectedReligion || 'buddhism'}
+                    gameType={gameType}
+                  />
+                )}
+                {gameType === 'reaction-lighting' && (
+                  <LightingGame 
+                    onScore={handleCustomGameScore} 
+                    onComplete={handleCustomGameComplete}
+                    religion={user?.selectedReligion || 'buddhism'}
+                  />
+                )}
               </div>
-              
-              <div className="flex space-x-3">
-                <Button
-                  onClick={togglePause}
-                  variant="outline"
-                  size="sm"
-                  className="text-elderly-base"
-                  data-testid="button-pause-game"
-                >
-                  <Pause className="w-4 h-4 mr-2" />
-                  {isPaused ? '繼續' : '暫停'}
-                </Button>
-                <Button
-                  onClick={useHint}
-                  variant="outline"
-                  size="sm"
-                  className="text-elderly-base"
-                  disabled={hintsUsed >= 2 || selectedAnswer !== null}
-                  data-testid="button-hint"
-                >
-                  <Lightbulb className="w-4 h-4 mr-2" />
-                  提示 ({2 - hintsUsed})
-                </Button>
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="text-center mb-8">
+                  <h4 className="text-elderly-xl font-semibold text-gray-800 mb-6">
+                    {question?.question}
+                  </h4>
+                </div>
+            
+                {/* Answer Options */}
+                <div className="grid md:grid-cols-2 gap-4 mb-8">
+                  {question?.options.map((option, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleAnswerSelect(index)}
+                      disabled={selectedAnswer !== null || isOptionEliminated(index)}
+                      variant="outline"
+                      className={`p-6 text-left h-auto min-h-[80px] text-elderly-base border-2 transition-all duration-300 ${
+                        isOptionEliminated(index)
+                          ? 'border-gray-300 bg-gray-100 opacity-50 cursor-not-allowed'
+                          : selectedAnswer === index
+                          ? selectedAnswer === question.correctAnswer
+                            ? 'border-green-500 bg-green-50'
+                            : 'border-red-500 bg-red-50'
+                          : selectedAnswer === question.correctAnswer && index === question.correctAnswer
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-warm-gray-100 hover:border-warm-gold hover:bg-warm-gold hover:bg-opacity-10'
+                      }`}
+                      data-testid={`button-answer-${index}`}
+                    >
+                      <span className={`block text-wrap ${isOptionEliminated(index) ? 'line-through' : ''}`}>
+                        {option}
+                      </span>
+                    </Button>
+                  )) || []}
+                </div>
+            
+                {/* Game Controls */}
+                <div className="flex items-center justify-between bg-warm-gray-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center text-warm-gray-600" data-testid="game-timer">
+                      <Clock className="w-5 h-5 mr-2" />
+                      <span className="text-elderly-base font-medium">
+                        {Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-warm-gray-600" data-testid="game-lives">
+                      <Heart className="w-5 h-5 mr-2" />
+                      <span className="text-elderly-base font-medium">
+                        {gameState.lives}/3
+                      </span>
+                    </div>
+                    <div className="text-warm-gray-600" data-testid="game-progress">
+                      <span className="text-elderly-base font-medium">
+                        {gameState.currentQuestion}/{gameState.totalQuestions}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <Button
+                      onClick={togglePause}
+                      variant="outline"
+                      size="sm"
+                      className="text-elderly-base"
+                      data-testid="button-pause-game"
+                    >
+                      <Pause className="w-4 h-4 mr-2" />
+                      {isPaused ? '繼續' : '暫停'}
+                    </Button>
+                    <Button
+                      onClick={useHint}
+                      variant="outline"
+                      size="sm"
+                      className="text-elderly-base"
+                      disabled={hintsUsed >= 2 || selectedAnswer !== null}
+                      data-testid="button-hint"
+                    >
+                      <Lightbulb className="w-4 h-4 mr-2" />
+                      提示 ({2 - hintsUsed})
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

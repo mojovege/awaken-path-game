@@ -1,0 +1,212 @@
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Music, Volume2 } from 'lucide-react';
+
+interface RhythmGameProps {
+  onScore: (points: number) => void;
+  onComplete: () => void;
+  religion: string;
+}
+
+interface Beat {
+  id: number;
+  timing: number;
+  hit: boolean;
+}
+
+const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }) => {
+  const [beats, setBeats] = useState<Beat[]>([]);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [score, setScore] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameLength] = useState(15000); // 15 seconds
+  const [combo, setCombo] = useState(0);
+
+  // Generate rhythm pattern
+  useEffect(() => {
+    if (!gameStarted) return;
+    
+    const pattern: Beat[] = [];
+    const intervals = [1000, 1500, 2000, 2800, 3500, 4200, 5000, 5800, 6500, 7300, 8000, 8700, 9500, 10200, 11000, 11800, 12500, 13300, 14000];
+    
+    intervals.forEach((timing, index) => {
+      pattern.push({
+        id: index,
+        timing,
+        hit: false
+      });
+    });
+    
+    setBeats(pattern);
+  }, [gameStarted]);
+
+  // Game timer
+  useEffect(() => {
+    if (!gameStarted) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(prev => {
+        const newTime = prev + 100;
+        if (newTime >= gameLength) {
+          endGame();
+          return gameLength;
+        }
+        return newTime;
+      });
+    }, 100);
+
+    return () => clearInterval(timer);
+  }, [gameStarted]);
+
+  const startGame = () => {
+    setGameStarted(true);
+    setCurrentTime(0);
+    setScore(0);
+    setCombo(0);
+  };
+
+  const endGame = () => {
+    setGameStarted(false);
+    onScore(score);
+    setTimeout(onComplete, 1000);
+  };
+
+  const hitBeat = () => {
+    const tolerance = 300; // 300ms tolerance
+    const nearbyBeat = beats.find(beat => 
+      !beat.hit && 
+      Math.abs(beat.timing - currentTime) <= tolerance
+    );
+
+    if (nearbyBeat) {
+      const timing = Math.abs(nearbyBeat.timing - currentTime);
+      const accuracy = 1 - (timing / tolerance);
+      const points = Math.floor(50 * accuracy) + (combo * 5);
+      
+      setScore(prev => prev + points);
+      setCombo(prev => prev + 1);
+      
+      setBeats(prev => prev.map(beat => 
+        beat.id === nearbyBeat.id ? { ...beat, hit: true } : beat
+      ));
+
+      onScore(points);
+    } else {
+      setCombo(0);
+    }
+  };
+
+  const getInstrumentName = () => {
+    switch (religion) {
+      case 'buddhism': return '木魚';
+      case 'taoism': return '鐘聲';
+      case 'mazu': return '鑼聲';
+      default: return '木魚';
+    }
+  };
+
+  const getInstrumentEmoji = () => {
+    switch (religion) {
+      case 'buddhism': return '🪣';
+      case 'taoism': return '🔔';
+      case 'mazu': return '🪘';
+      default: return '🪣';
+    }
+  };
+
+  if (!gameStarted) {
+    return (
+      <div className="text-center space-y-6">
+        <div className="text-8xl mb-4">{getInstrumentEmoji()}</div>
+        <h3 className="text-elderly-xl font-semibold text-gray-800">
+          {getInstrumentName()}節奏訓練
+        </h3>
+        <p className="text-elderly-base text-warm-gray-600">
+          跟隨節拍敲打{getInstrumentName()}，訓練反應速度和節奏感
+        </p>
+        <Button 
+          onClick={startGame}
+          className="btn-primary text-elderly-base px-8 py-3"
+          data-testid="button-start-rhythm"
+        >
+          <Music className="w-5 h-5 mr-2" />
+          開始修行
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Progress bar */}
+      <div className="w-full bg-warm-gray-200 rounded-full h-3">
+        <div 
+          className="bg-warm-gold rounded-full h-3 transition-all duration-100"
+          style={{ width: `${(currentTime / gameLength) * 100}%` }}
+        />
+      </div>
+
+      {/* Score and combo */}
+      <div className="flex justify-between items-center">
+        <div className="text-center">
+          <p className="text-elderly-sm text-warm-gray-600">得分</p>
+          <p className="text-elderly-xl font-bold text-warm-gold">{score}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-elderly-sm text-warm-gray-600">連擊</p>
+          <p className="text-elderly-xl font-bold text-sage-green">{combo}</p>
+        </div>
+      </div>
+
+      {/* Rhythm track */}
+      <div className="relative h-32 bg-warm-gray-50 rounded-xl border-2 border-warm-gray-200 overflow-hidden">
+        <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-warm-gold transform -translate-x-1/2" />
+        
+        {beats.map((beat) => {
+          const position = ((currentTime - beat.timing + 2000) / 4000) * 100;
+          const isVisible = position >= -10 && position <= 110;
+          const isActive = Math.abs(beat.timing - currentTime) <= 300;
+          
+          return isVisible ? (
+            <div
+              key={beat.id}
+              className={`absolute w-8 h-8 rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-100 ${
+                beat.hit 
+                  ? 'bg-green-500 scale-125' 
+                  : isActive 
+                  ? 'bg-warm-gold animate-pulse scale-110 border-2 border-white' 
+                  : 'bg-warm-gold'
+              }`}
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: `translateX(-50%) translateY(-50%) translateX(${(position - 50) * 3}px)`,
+              }}
+            />
+          ) : null;
+        })}
+      </div>
+
+      {/* Hit button */}
+      <div className="text-center">
+        <Button
+          onClick={hitBeat}
+          className="w-32 h-32 rounded-full btn-primary text-elderly-xl shadow-lg transform active:scale-95 transition-transform"
+          data-testid="button-hit-beat"
+        >
+          <div className="text-center">
+            <div className="text-4xl mb-1">{getInstrumentEmoji()}</div>
+            <div className="text-elderly-sm">敲擊</div>
+          </div>
+        </Button>
+      </div>
+
+      {/* Instructions */}
+      <p className="text-center text-elderly-sm text-warm-gray-600">
+        當圓點接近中央線時點擊敲擊按鈕
+      </p>
+    </div>
+  );
+};
+
+export default RhythmGame;
