@@ -30,29 +30,29 @@ export const CHAPTERS: ChapterInfo[] = [
 
 export const DIFFICULTY_LEVELS: Record<number, GameDifficulty> = {
   // 第一章：初心啟蒙 - 短時間，少任務，簡單節拍
-  1: { level: 1, chapter: 1, timeLimit: 30, pointsMultiplier: 1, hintsAvailable: 999, memoryTime: 8, reactionWindow: 1000, gridSize: 3, sequenceLength: 2 },
-  2: { level: 2, chapter: 1, timeLimit: 35, pointsMultiplier: 1.1, hintsAvailable: 999, memoryTime: 7, reactionWindow: 900, gridSize: 4, sequenceLength: 3 },
-  3: { level: 3, chapter: 1, timeLimit: 40, pointsMultiplier: 1.2, hintsAvailable: 999, memoryTime: 6, reactionWindow: 800, gridSize: 6, sequenceLength: 3 },
+  1: { level: 1, chapter: 1, timeLimit: 15, pointsMultiplier: 1, hintsAvailable: 999, memoryTime: 8, reactionWindow: 1000, gridSize: 3, sequenceLength: 2 },
+  2: { level: 2, chapter: 1, timeLimit: 18, pointsMultiplier: 1.1, hintsAvailable: 999, memoryTime: 7, reactionWindow: 900, gridSize: 4, sequenceLength: 3 },
+  3: { level: 3, chapter: 1, timeLimit: 20, pointsMultiplier: 1.2, hintsAvailable: 999, memoryTime: 6, reactionWindow: 800, gridSize: 6, sequenceLength: 3 },
   
   // 第二章：勤修精進 - 中等時間，中等任務
-  4: { level: 4, chapter: 2, timeLimit: 50, pointsMultiplier: 1.3, hintsAvailable: 3, memoryTime: 6, reactionWindow: 750, gridSize: 6, sequenceLength: 4 },
-  5: { level: 5, chapter: 2, timeLimit: 60, pointsMultiplier: 1.4, hintsAvailable: 3, memoryTime: 5, reactionWindow: 700, gridSize: 8, sequenceLength: 5 },
-  6: { level: 6, chapter: 2, timeLimit: 70, pointsMultiplier: 1.5, hintsAvailable: 3, memoryTime: 5, reactionWindow: 650, gridSize: 9, sequenceLength: 6 },
+  4: { level: 4, chapter: 2, timeLimit: 25, pointsMultiplier: 1.3, hintsAvailable: 3, memoryTime: 6, reactionWindow: 750, gridSize: 6, sequenceLength: 4 },
+  5: { level: 5, chapter: 2, timeLimit: 30, pointsMultiplier: 1.4, hintsAvailable: 3, memoryTime: 5, reactionWindow: 700, gridSize: 8, sequenceLength: 5 },
+  6: { level: 6, chapter: 2, timeLimit: 35, pointsMultiplier: 1.5, hintsAvailable: 3, memoryTime: 5, reactionWindow: 650, gridSize: 9, sequenceLength: 6 },
   
   // 第三章：智慧開悟 - 較長時間，更多任務
-  7: { level: 7, chapter: 3, timeLimit: 80, pointsMultiplier: 1.6, hintsAvailable: 2, memoryTime: 4, reactionWindow: 600, gridSize: 9, sequenceLength: 7 },
-  8: { level: 8, chapter: 3, timeLimit: 90, pointsMultiplier: 1.7, hintsAvailable: 2, memoryTime: 4, reactionWindow: 550, gridSize: 12, sequenceLength: 8 },
-  9: { level: 9, chapter: 3, timeLimit: 100, pointsMultiplier: 1.8, hintsAvailable: 2, memoryTime: 3, reactionWindow: 500, gridSize: 12, sequenceLength: 9 },
+  7: { level: 7, chapter: 3, timeLimit: 40, pointsMultiplier: 1.6, hintsAvailable: 2, memoryTime: 4, reactionWindow: 600, gridSize: 9, sequenceLength: 7 },
+  8: { level: 8, chapter: 3, timeLimit: 45, pointsMultiplier: 1.7, hintsAvailable: 2, memoryTime: 4, reactionWindow: 550, gridSize: 12, sequenceLength: 8 },
+  9: { level: 9, chapter: 3, timeLimit: 50, pointsMultiplier: 1.8, hintsAvailable: 2, memoryTime: 3, reactionWindow: 500, gridSize: 12, sequenceLength: 9 },
   
   // 第四章：深度修行 - 長時間，複雜任務
-  10: { level: 10, chapter: 4, timeLimit: 110, pointsMultiplier: 1.9, hintsAvailable: 1, memoryTime: 3, reactionWindow: 450, gridSize: 15, sequenceLength: 10 },
-  11: { level: 11, chapter: 4, timeLimit: 120, pointsMultiplier: 2.0, hintsAvailable: 1, memoryTime: 3, reactionWindow: 400, gridSize: 18, sequenceLength: 12 },
-  12: { level: 12, chapter: 4, timeLimit: 130, pointsMultiplier: 2.1, hintsAvailable: 1, memoryTime: 2, reactionWindow: 350, gridSize: 18, sequenceLength: 14 },
+  10: { level: 10, chapter: 4, timeLimit: 55, pointsMultiplier: 1.9, hintsAvailable: 1, memoryTime: 3, reactionWindow: 450, gridSize: 15, sequenceLength: 10 },
+  11: { level: 11, chapter: 4, timeLimit: 60, pointsMultiplier: 2.0, hintsAvailable: 1, memoryTime: 3, reactionWindow: 400, gridSize: 18, sequenceLength: 12 },
+  12: { level: 12, chapter: 4, timeLimit: 65, pointsMultiplier: 2.1, hintsAvailable: 1, memoryTime: 2, reactionWindow: 350, gridSize: 18, sequenceLength: 14 },
   
   // 第五章：圓滿境界 - 最長時間，最高難度
-  13: { level: 13, chapter: 5, timeLimit: 140, pointsMultiplier: 2.2, hintsAvailable: 0, memoryTime: 2, reactionWindow: 300, gridSize: 20, sequenceLength: 15 },
-  14: { level: 14, chapter: 5, timeLimit: 150, pointsMultiplier: 2.3, hintsAvailable: 0, memoryTime: 2, reactionWindow: 280, gridSize: 24, sequenceLength: 18 },
-  15: { level: 15, chapter: 5, timeLimit: 160, pointsMultiplier: 2.5, hintsAvailable: 0, memoryTime: 2, reactionWindow: 250, gridSize: 24, sequenceLength: 20 },
+  13: { level: 13, chapter: 5, timeLimit: 70, pointsMultiplier: 2.2, hintsAvailable: 0, memoryTime: 2, reactionWindow: 300, gridSize: 20, sequenceLength: 15 },
+  14: { level: 14, chapter: 5, timeLimit: 75, pointsMultiplier: 2.3, hintsAvailable: 0, memoryTime: 2, reactionWindow: 280, gridSize: 24, sequenceLength: 18 },
+  15: { level: 15, chapter: 5, timeLimit: 80, pointsMultiplier: 2.5, hintsAvailable: 0, memoryTime: 2, reactionWindow: 250, gridSize: 24, sequenceLength: 20 },
 };
 
 export function calculateScore(

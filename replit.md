@@ -44,7 +44,7 @@ Preferred communication style: Simple, everyday language.
 - **Game Types**: 6 distinct game types per chapter - memory-scripture, memory-temple, reaction-rhythm, reaction-lighting, logic-scripture, logic-sequence
 - **Level Mapping**: Each game type represents levels 1-6 within current chapter, total 30 games (5 chapters × 6 games)
 - **Inverted Difficulty System**: Correct progression for elderly users - easier levels are shorter and simpler, harder levels are longer and more complex
-  - **Time Limits**: Level 1 (30s) → Level 15 (160s) - increasing game duration
+  - **Time Limits**: Level 1 (15s) → Level 15 (80s) - increasing game duration
   - **Task Complexity**: Level 1 (few beats, fixed rhythm) → Level 15 (many beats, variable rhythm)
   - **Memory Parameters**: Level 1 (8s memory time) → Level 15 (2s memory time)  
   - **Reaction Windows**: Level 1 (1000ms) → Level 15 (250ms) - faster required responses
