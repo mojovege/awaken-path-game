@@ -50,7 +50,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 1,
             title: '初心啟蒙',
-            content: '一位年長者來到寺院，學習靜心觀想和慈悲心。透過記憶佛陀的智慧話語，跟隨木魚聲節奏誦經，在佛前點燈祈願，理解基本的佛理教導，學會排序簡單的修行步驟。每一個動作都是為了培養內心的平靜與慈悲。',
+            content: '一位年長者來到寺院，首先從山門殿進入，參拜天王殿的四大天王，接著來到大雄寶殿禮佛。學習靜心觀想和慈悲心，熟悉寺院各殿堂如觀音殿、藏經樓、禪堂等建築。透過記憶佛陀的智慧話語，跟隨木魚聲節奏誦經，在佛前點燈祈願。',
             games: baseGames.map(g => ({ ...g, title: g.title.replace('木魚', '木魚') })),
             unlocked: true,
             completed: false,
@@ -60,7 +60,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 2,
             title: '勤修精進',
-            content: '修行者開始更深入地學習，記住各種善行與功德，掌握更複雜的誦經節拍，學會點亮代表智慧的燈火序列，理解因果報應的道理，並能安排日常修行的順序。持之以恆是通往智慧的關鍵。',
+            content: '修行者開始更深入地學習，在法堂聽聞佛法，在念佛堂誦經修行。記住各種善行與功德，熟悉鐘樓、鼓樓、齋堂等各處建築功能，掌握更複雜的誦經節拍，學會點亮代表智慧的燈火序列，理解因果報應的道理。',
             games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -70,7 +70,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 3,
             title: '智慧開悟',
-            content: '經過長期修行，修行者開始領悟更深的佛法智慧。能記住各種佛教典故和寺院建築意義，與清晨鐘聲完美同步，點燃象徵覺悟的明燈，深入理解空性和無常的道理，正確安排複雜的修行課程。',
+            content: '經過長期修行，修行者開始領悟更深的佛法智慧。深入了解文殊殿、普賢殿、地藏殿等各殿供奉的菩薩意義，能記住各種佛教典故和寺院建築用途，與清晨鐘聲完美同步，點燃象徵覺悟的明燈，深入理解空性和無常的道理。',
             games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
