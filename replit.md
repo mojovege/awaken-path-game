@@ -17,6 +17,8 @@ Preferred communication style: Simple, everyday language.
 - **Routing**: Wouter for lightweight client-side routing
 - **State Management**: TanStack Query for server state management with local component state for UI interactions
 - **Game State**: Custom hooks for managing game progression, scoring, and user interactions
+- **Chapter System**: 5 chapters with 15 levels, progressive difficulty scaling based on user performance
+- **Game Rules**: Comprehensive rules modal system with detailed instructions for each game type
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express server
@@ -38,10 +40,13 @@ Preferred communication style: Simple, everyday language.
 - Religion-based personalization affecting AI interactions and game content
 
 ### Game Logic System
-- **Difficulty Scaling**: Progressive difficulty based on question number and user performance
-- **Scoring Algorithm**: Time-based scoring with difficulty multipliers and performance bonuses
+- **Chapter Structure**: 5-chapter progression system (初心啟蒙, 勤修精進, 智慧開悟, 深度修行, 圓滿境界)
+- **Difficulty Scaling**: 15 levels with dynamic parameters - memory time (15-5s), reaction window (800-250ms), grid size (3-24), sequence length (2-15)
+- **Scoring Algorithm**: Time-based scoring with difficulty multipliers and star rating system (1-3 stars per level)
 - **Cognitive Categories**: Four main training areas (memory, reaction, logic, focus) with specialized mini-games
-- **Adaptive Gameplay**: Hint system and pause functionality designed for elderly accessibility
+- **Adaptive Gameplay**: Hint system ranging from unlimited (early levels) to none (master levels), pause functionality
+- **Unlock System**: Star-based chapter unlocking (6, 12, 18, 24 stars required)
+- **Game Rules**: Interactive multi-page rules modal with game instructions, tips, and difficulty parameters
 
 ### AI Companion System
 - **Religious Personas**: Three distinct AI characters based on Buddhism, Taoism, and Mazu worship

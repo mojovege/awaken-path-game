@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, Puzzle, CheckCircle } from 'lucide-react';
+import { ArrowUp, ArrowDown, Puzzle, CheckCircle, Lightbulb } from 'lucide-react';
+import GameRulesModal from '../game-rules-modal';
+import { getDifficultyForLevel } from '@/lib/game-logic';
 
 interface LogicGameProps {
   onScore: (points: number) => void;
   onComplete: () => void;
   religion: string;
   gameType: string;
+  level?: number;
 }
 
 interface SequenceItem {
@@ -16,11 +19,14 @@ interface SequenceItem {
   currentPosition: number;
 }
 
-const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, gameType }) => {
+const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, gameType, level = 1 }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [sequences, setSequences] = useState<SequenceItem[]>([]);
   const [completed, setCompleted] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [showRules, setShowRules] = useState(false);
+  
+  const difficulty = getDifficultyForLevel(level);
 
   const getGameContent = () => {
     if (gameType === 'logic-scripture') {

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Flame, Zap } from 'lucide-react';
+import { Flame, Zap, Lightbulb } from 'lucide-react';
+import GameRulesModal from '../game-rules-modal';
+import { getDifficultyForLevel } from '@/lib/game-logic';
 
 interface LightingGameProps {
   onScore: (points: number) => void;
   onComplete: () => void;
   religion: string;
+  level?: number;
 }
 
 interface Lamp {
@@ -17,7 +20,7 @@ interface Lamp {
   delay: number;
 }
 
-const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religion }) => {
+const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religion, level = 1 }) => {
   const [lamps, setLamps] = useState<Lamp[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [gamePhase, setGamePhase] = useState<'watch' | 'play' | 'complete'>('watch');
@@ -26,6 +29,9 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const [currentRound, setCurrentRound] = useState(1);
   const [score, setScore] = useState(0);
   const [showingSequence, setShowingSequence] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  
+  const difficulty = getDifficultyForLevel(level);
 
   // Initialize lamps in a 3x3 grid
   useEffect(() => {
@@ -50,7 +56,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   const generateSequence = () => {
     const newSequence: number[] = [];
-    const sequenceLength = Math.min(2 + currentRound, 5); // 從3個開始，最多6個
+    const sequenceLength = Math.min(difficulty.sequenceLength, 8); // 根據等級調整序列長度
     
     for (let i = 0; i < sequenceLength; i++) {
       newSequence.push(Math.floor(Math.random() * 9));

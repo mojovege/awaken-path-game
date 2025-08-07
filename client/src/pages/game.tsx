@@ -2,13 +2,15 @@ import { useParams, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, Heart, Lightbulb, Pause } from "lucide-react";
+import { ArrowLeft, Clock, Heart, Lightbulb, Pause, Star, BookOpen } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import RhythmGame from "@/components/games/rhythm-game";
 import MemoryGame from "@/components/games/memory-game";
 import LogicGame from "@/components/games/logic-game";
 import LightingGame from "@/components/games/lighting-game";
+import ChapterSelector from "@/components/chapter-selector";
+import { getDifficultyForLevel, getChapterForLevel } from "@/lib/game-logic";
 
 interface GameQuestion {
   question: string;
@@ -46,6 +48,9 @@ export default function GamePage() {
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [useCustomGame, setUseCustomGame] = useState(false);
+  const [showChapterSelector, setShowChapterSelector] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [userStars, setUserStars] = useState(0);
 
   // Get user data to determine religion
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
@@ -332,14 +337,26 @@ export default function GamePage() {
                     {getGameTitle(gameType!)}
                   </h3>
                   <p className="text-white text-opacity-90 text-elderly-sm">
-                    {useCustomGame ? '互動遊戲進行中...' : `第${gameState.currentQuestion}關・${question?.question?.slice(0, 20) || ''}...`}
+                    {useCustomGame ? `第 ${currentLevel} 關 - ${getChapterForLevel(currentLevel).name}` : `第${gameState.currentQuestion}關・${question?.question?.slice(0, 20) || ''}...`}
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-white text-opacity-90 text-elderly-sm mb-1">得分</div>
-                <div className="text-elderly-2xl font-bold text-white" data-testid="text-current-score">
-                  {gameState.score}
+              <div className="flex items-center space-x-4">
+                <Button
+                  onClick={() => setShowChapterSelector(true)}
+                  variant="ghost"
+                  size="sm"
+                  className="bg-white bg-opacity-20 rounded-lg px-3 py-2 hover:bg-opacity-30 text-white"
+                  data-testid="button-chapter-select"
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  選關
+                </Button>
+                <div className="text-right">
+                  <div className="text-white text-opacity-90 text-elderly-sm mb-1">得分</div>
+                  <div className="text-elderly-2xl font-bold text-white" data-testid="text-current-score">
+                    {gameState.score}
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,6 +371,7 @@ export default function GamePage() {
                     onScore={handleCustomGameScore} 
                     onComplete={handleCustomGameComplete}
                     religion={user?.selectedReligion || 'buddhism'}
+                    level={currentLevel}
                   />
                 )}
                 {(gameType === 'memory-scripture' || gameType === 'memory-temple') && (
@@ -362,6 +380,7 @@ export default function GamePage() {
                     onComplete={handleCustomGameComplete}
                     religion={user?.selectedReligion || 'buddhism'}
                     gameType={gameType}
+                    level={currentLevel}
                   />
                 )}
                 {(gameType === 'logic-scripture' || gameType === 'logic-sequence') && (
@@ -370,6 +389,7 @@ export default function GamePage() {
                     onComplete={handleCustomGameComplete}
                     religion={user?.selectedReligion || 'buddhism'}
                     gameType={gameType}
+                    level={currentLevel}
                   />
                 )}
                 {gameType === 'reaction-lighting' && (
@@ -377,6 +397,7 @@ export default function GamePage() {
                     onScore={handleCustomGameScore} 
                     onComplete={handleCustomGameComplete}
                     religion={user?.selectedReligion || 'buddhism'}
+                    level={currentLevel}
                   />
                 )}
               </div>
@@ -467,6 +488,27 @@ export default function GamePage() {
           </div>
         </div>
       </div>
+
+      {/* Chapter Selector Modal */}
+      {showChapterSelector && (
+        <ChapterSelector
+          userStars={userStars}
+          currentLevel={currentLevel}
+          onLevelSelect={(level) => {
+            setCurrentLevel(level);
+            setShowChapterSelector(false);
+            // Reset game state for new level
+            setGameState({
+              score: 0,
+              lives: 3,
+              timeLeft: 90,
+              currentQuestion: 1,
+              totalQuestions: 5,
+            });
+          }}
+          onClose={() => setShowChapterSelector(false)}
+        />
+      )}
     </div>
   );
 }

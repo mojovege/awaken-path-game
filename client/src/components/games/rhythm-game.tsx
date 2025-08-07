@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Lightbulb } from 'lucide-react';
+import GameRulesModal from '../game-rules-modal';
+import { getDifficultyForLevel } from '@/lib/game-logic';
 import { Music, Volume2 } from 'lucide-react';
 
 interface RhythmGameProps {
   onScore: (points: number) => void;
   onComplete: () => void;
   religion: string;
+  level?: number;
 }
 
 interface Beat {
@@ -14,13 +18,16 @@ interface Beat {
   hit: boolean;
 }
 
-const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }) => {
+const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, level = 1 }) => {
   const [beats, setBeats] = useState<Beat[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameLength] = useState(20000); // 20 seconds，給用戶更多時間
+  const [gameLength] = useState(difficulty.timeLimit * 1000); // 根據等級調整遊戲時間
   const [combo, setCombo] = useState(0);
+  const [showRules, setShowRules] = useState(false);
+  
+  const difficulty = getDifficultyForLevel(level);
 
   // Generate rhythm pattern
   useEffect(() => {
@@ -73,7 +80,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
   };
 
   const hitBeat = () => {
-    const tolerance = 500; // 500ms tolerance，讓中老年用戶更容易成功
+    const tolerance = difficulty.reactionWindow; // 根據等級調整容錯時間
     const nearbyBeat = beats.find(beat => 
       !beat.hit && 
       Math.abs(beat.timing - currentTime) <= tolerance
@@ -117,23 +124,56 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
 
   if (!gameStarted) {
     return (
-      <div className="text-center space-y-6">
-        <div className="text-8xl mb-4">{getInstrumentEmoji()}</div>
-        <h3 className="text-elderly-xl font-semibold text-gray-800">
-          {getInstrumentName()}節奏訓練
-        </h3>
-        <p className="text-elderly-base text-warm-gray-600">
-          跟隨節拍敲打{getInstrumentName()}，訓練反應速度和節奏感
-        </p>
-        <Button 
-          onClick={startGame}
-          className="btn-primary text-elderly-base px-8 py-3"
-          data-testid="button-start-rhythm"
-        >
-          <Music className="w-5 h-5 mr-2" />
-          開始修行
-        </Button>
-      </div>
+      <>
+        <div className="text-center space-y-6">
+          <div className="text-8xl mb-4">{getInstrumentEmoji()}</div>
+          <h3 className="text-elderly-xl font-semibold text-gray-800">
+            {getInstrumentName()}節奏訓練
+          </h3>
+          <p className="text-elderly-base text-warm-gray-600">
+            跟隨節拍敲打{getInstrumentName()}，訓練反應速度和節奏感
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              onClick={() => setShowRules(true)}
+              variant="outline"
+              className="text-elderly-base px-8 py-3"
+              data-testid="button-show-rules"
+            >
+              <Lightbulb className="w-5 h-5 mr-2" />
+              遊戲說明
+            </Button>
+            <Button 
+              onClick={startGame}
+              className="btn-primary text-elderly-base px-8 py-3"
+              data-testid="button-start-rhythm"
+            >
+              <Music className="w-5 h-5 mr-2" />
+              開始修行
+            </Button>
+          </div>
+        </div>
+
+        {showRules && (
+          <GameRulesModal
+            gameType="reaction-rhythm"
+            level={level}
+            religion={religion}
+            difficulty={{
+              memoryTime: difficulty.memoryTime,
+              reactionWindow: difficulty.reactionWindow,
+              gridSize: difficulty.gridSize,
+              sequenceLength: difficulty.sequenceLength,
+              hintsAvailable: difficulty.hintsAvailable,
+            }}
+            onStart={() => {
+              setShowRules(false);
+              startGame();
+            }}
+            onClose={() => setShowRules(false)}
+          />
+        )}
+      </>
     );
   }
 
