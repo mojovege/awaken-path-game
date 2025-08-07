@@ -37,35 +37,7 @@ interface DashboardProps {
   userId: string;
 }
 
-const gameTypes = [
-  {
-    category: "記憶訓練",
-    categoryColor: "warm-gold",
-    icon: "🧠",
-    games: [
-      { id: "memory-scripture", name: "經文記憶配對", difficulty: 3 },
-      { id: "memory-temple", name: "寺廟導覽記憶", difficulty: 2 },
-    ],
-  },
-  {
-    category: "反應訓練", 
-    categoryColor: "soft-red",
-    icon: "⏱️",
-    games: [
-      { id: "reaction-rhythm", name: "敲木魚節奏", difficulty: 3 },
-      { id: "reaction-lighting", name: "祈福點燈", difficulty: 2 },
-    ],
-  },
-  {
-    category: "邏輯思考",
-    categoryColor: "sage-green", 
-    icon: "🧩",
-    games: [
-      { id: "logic-scripture", name: "佛偈解讀", difficulty: 4 },
-      { id: "logic-sequence", name: "智慧排序", difficulty: 3 },
-    ],
-  },
-];
+
 
 export default function Dashboard({ user, userStats, userId }: DashboardProps) {
   const [, setLocation] = useLocation();
@@ -80,17 +52,7 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
     enabled: !!user?.selectedReligion,
   });
 
-  const startGame = (gameType: string) => {
-    setLocation(`/game/${gameType}`);
-  };
 
-  const renderStarRating = (difficulty: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < difficulty ? "text-yellow-400" : "text-gray-300"}>
-        ★
-      </span>
-    ));
-  };
 
   return (
     <div className="fade-in space-y-8" data-testid="dashboard">
@@ -134,52 +96,7 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
         </CardContent>
       </Card>
 
-      {/* Game Selection Grid */}
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6" data-testid="game-selection">
-        {gameTypes.map((category) => (
-          <Card key={category.category} className="shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className={`w-12 h-12 bg-${category.categoryColor} bg-opacity-20 rounded-xl flex items-center justify-center mr-4`}>
-                  <span className="text-xl">{category.icon}</span>
-                </div>
-                <div>
-                  <h3 className="text-elderly-lg font-semibold text-gray-800">{category.category}</h3>
-                  <p className="text-elderly-sm text-warm-gray-600">強化記憶・活化大腦</p>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                {category.games.map((game) => (
-                  <div key={game.id} className="flex items-center justify-between p-3 bg-warm-gray-50 rounded-xl">
-                    <div className="flex-1">
-                      <p className="text-elderly-base font-medium text-gray-800 mb-1">{game.name}</p>
-                      <div className="flex items-center">
-                        {renderStarRating(game.difficulty)}
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => startGame(game.id)}
-                      size="sm"
-                      className={`btn-primary text-elderly-sm`}
-                      data-testid={`button-start-${game.id}`}
-                    >
-                      開始
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="border-t border-warm-gray-100 pt-4">
-                <div className="flex justify-between text-elderly-sm text-warm-gray-600">
-                  <span>本週最佳：95分</span>
-                  <span>平均分數：{userStats?.averageScore || 0}分</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+
 
       {/* AI Companion and Quick Actions */}
       <div className="grid lg:grid-cols-3 gap-6">

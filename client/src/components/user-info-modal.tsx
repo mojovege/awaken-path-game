@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { X, User, Flame, Trophy, Star, Lock, BookOpen } from "lucide-react";
+import { X, User, Flame, Trophy, Star, Lock, BookOpen, Play } from "lucide-react";
 import ProgressRing from "./progress-ring";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 
 interface UserStats {
   memoryProgress: number;
@@ -36,10 +37,17 @@ export default function UserInfoModal({
   userId = "demo-user-1",
   onClose 
 }: UserInfoModalProps) {
+  const [, setLocation] = useLocation();
+  
   const { data: storyProgress } = useQuery<StoryProgress>({
     queryKey: ['/api/user', userId, 'story'],
     enabled: !!userId,
   });
+
+  const startGame = (gameType: string) => {
+    onClose(); // 關閉 modal
+    setLocation(`/game/${gameType}`);
+  };
 
   const getReligionName = () => {
     switch (selectedReligion) {
@@ -48,6 +56,44 @@ export default function UserInfoModal({
       case 'mazu': return '媽祖護佑';
       default: return '未選擇';
     }
+  };
+
+  const gameTypes = [
+    {
+      category: "記憶訓練",
+      categoryColor: "warm-gold",
+      icon: "🧠",
+      games: [
+        { id: "memory-scripture", name: "經文記憶配對", difficulty: 3 },
+        { id: "memory-temple", name: "寺廟導覽記憶", difficulty: 2 },
+      ],
+    },
+    {
+      category: "反應訓練", 
+      categoryColor: "soft-red",
+      icon: "⏱️",
+      games: [
+        { id: "reaction-rhythm", name: "敲木魚節奏", difficulty: 3 },
+        { id: "reaction-lighting", name: "祈福點燈", difficulty: 2 },
+      ],
+    },
+    {
+      category: "邏輯思考",
+      categoryColor: "sage-green", 
+      icon: "🧩",
+      games: [
+        { id: "logic-scripture", name: "佛偈解讀", difficulty: 4 },
+        { id: "logic-sequence", name: "智慧排序", difficulty: 3 },
+      ],
+    },
+  ];
+
+  const renderStarRating = (difficulty: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <span key={i} className={i < difficulty ? "text-yellow-400" : "text-gray-300"}>
+        ★
+      </span>
+    ));
   };
 
   return (
@@ -234,6 +280,50 @@ export default function UserInfoModal({
                     </p>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Game Selection Section */}
+          <Card className="shadow-lg mt-6">
+            <CardContent className="p-6">
+              <h4 className="text-elderly-lg font-semibold text-gray-800 mb-4">開始認知訓練</h4>
+              <div className="space-y-4">
+                {gameTypes.map((category) => (
+                  <div key={category.category} className="border border-warm-gray-200 rounded-xl p-4">
+                    <div className="flex items-center mb-3">
+                      <div className="w-10 h-10 bg-warm-gold bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">{category.icon}</span>
+                      </div>
+                      <div>
+                        <h5 className="text-elderly-base font-semibold text-gray-800">{category.category}</h5>
+                        <p className="text-elderly-sm text-warm-gray-600">強化認知・活化大腦</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {category.games.map((game) => (
+                        <div key={game.id} className="flex items-center justify-between p-3 bg-warm-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-elderly-sm font-medium text-gray-800 mb-1">{game.name}</p>
+                            <div className="flex items-center">
+                              {renderStarRating(game.difficulty)}
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => startGame(game.id)}
+                            size="sm"
+                            className="bg-warm-gold text-white hover:bg-warm-gold hover:bg-opacity-90 text-elderly-sm px-4 py-2"
+                            data-testid={`button-start-${game.id}`}
+                          >
+                            <Play className="w-4 h-4 mr-1" />
+                            開始
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
