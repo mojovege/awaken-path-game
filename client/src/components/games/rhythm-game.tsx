@@ -63,7 +63,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     }, 100);
 
     return () => clearInterval(timer);
-  }, [gameStarted, gameLength]);
+  }, [gameStarted]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -86,7 +86,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     if (gameStarted && currentTime >= gameLength) {
       endGame();
     }
-  }, [currentTime, gameLength, gameStarted]);
+  }, [currentTime, gameLength]);
 
   const hitBeat = () => {
     const tolerance = difficulty.reactionWindow; // 根據等級調整容錯時間
