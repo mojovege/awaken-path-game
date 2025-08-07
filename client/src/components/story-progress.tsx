@@ -80,7 +80,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 4,
             title: '深度修行',
-            content: '修行者進入更高的修行層次，能夠記住深奧的佛學概念，在快速變化的節拍中保持專注，以正確順序點亮代表菩提道的燈火，理解中觀哲學和唯識學說，安排精密的禪修次第。',
+            content: '修行者進入更高的修行層次，在韋陀殿、伽藍殿學習護法知識，在羅漢堂參拜五百羅漢。能夠記住深奧的佛學概念，在快速變化的節拍中保持專注，以正確順序點亮代表菩提道的燈火，理解中觀哲學和唯識學說，安排精密的禪修次第。',
             games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -90,7 +90,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 5,
             title: '圓滿境界',
-            content: '達到了修行的最高境界，成為能夠指導他人的智者。完全掌握各種佛法要義，在任何節拍下都能保持內心平靜，點亮最複雜的智慧燈陣，完全理解緣起性空的深義，能夠完美安排利益眾生的各種方法。',
+            content: '達到了修行的最高境界，成為能夠指導他人的智者。從舍利塔、萬佛塔感悟佛法精髓，在蓮花池旁菩提樹下禪定。完全掌握各種佛法要義，在任何節拍下都能保持內心平靜，點亮最複雜的智慧燈陣，完全理解緣起性空的深義。',
             games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -112,7 +112,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 1,
             title: '初心啟蒙',
-            content: '一位尋道者來到山中道觀，開始學習道法自然的智慧。記住基本的道德經句子，跟隨古鐘的悠揚聲響，點燃心燈照亮前路，理解陰陽平衡的基礎概念，學會安排簡單的修煉步驟。',
+            content: '一位尋道者來到山中道觀，首先進入三清殿參拜三清道祖，在太上老君殿學習道德經，到玉皇殿敬拜玉皇大帝。學習道法自然的智慧，熟悉道觀各殿堂如文昌殿、財神殿、藥王殿等建築布局。記住基本的道德經句子，跟隨古鐘的悠揚聲響。',
             games: taoGames.map(g => ({ ...g })),
             unlocked: true,
             completed: false,
@@ -122,7 +122,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 2,
             title: '勤修精進',
-            content: '修道者深入學習五行相生相剋的道理，記住各種天地自然的規律，掌握更複雜的鐘鼓節拍，點亮代表五行的燈火，理解太極圖的變化，安排更精密的煉氣方法。',
+            content: '修道者深入學習五行相生相剋的道理，在呂祖殿學習劍法，在雷祖殿了解天地變化，在斗姆殿觀星象。記住各種天地自然的規律，熟悉鐘樓、鼓樓、丹房、齋堂等各處功能，掌握更複雜的鐘鼓節拍，點亮代表五行的燈火。',
             games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -132,7 +132,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 3,
             title: '智慧開悟',
-            content: '通過持續修煉，修道者開始與天地同頻共振。能記住複雜的道家典籍，在變化的節拍中找到不變的道，點燃象徵天人合一的燈陣，深度理解無為而治的智慧，正確安排內丹修煉的次序。',
+            content: '通過持續修煉，修道者開始與天地同頻共振。深入了解慈航殿、斗姥殿、老君殿等各殿神祇意義，能記住複雜的道家典籍，在變化的節拍中找到不變的道，點燃象徵天人合一的燈陣，深度理解無為而治的智慧。',
             games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -142,7 +142,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 4,
             title: '深度修行',
-            content: '修道者達到更高的境界，開始理解宇宙運行的深層規律。掌握高深的道學理論，在快速節拍中保持如水般的柔韌，以精確順序點亮北斗七星燈陣，理解返璞歸真的真義，安排復雜的修真方法。',
+            content: '修道者達到更高的境界，在元始殿、通天殿學習上清道法，在紫微殿、北極殿觀天象占卜。開始理解宇宙運行的深層規律，掌握高深的道學理論，在快速節拍中保持如水般的柔韌，以精確順序點亮北斗七星燈陣。',
             games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -152,7 +152,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 5,
             title: '圓滿境界',
-            content: '成為得道高人，具備了濟世救人的能力。完全融會貫通道家思想，任何節拍都不能動搖其內心的寧靜，點亮最高層次的仙家燈陣，完全理解道的本質，能夠安排幫助眾生的各種方便法門。',
+            content: '成為得道高人，具備了濟世救人的能力。在丹房煉製仙丹，在藥圃種植靈草，在道經樓研讀經典，在修真洞參悟大道。完全融會貫通道家思想，任何節拍都不能動搖其內心的寧靜，點亮最高層次的仙家燈陣。',
             games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -174,7 +174,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 1,
             title: '初心啟蒙',
-            content: '一位漁村子弟開始學習媽祖的慈悲精神。記住媽祖救苦救難的故事，跟隨廟會鑣鼓的熱鬧節拍，點燃祈求平安的明燈，理解助人為樂的道理，學會安排簡單的行善步驟。',
+            content: '一位漁村子弟來到媽祖廟，首先在天后宮參拜媽祖聖母，到千里眼殿、順風耳殿拜見媽祖的護法神將，在觀音殿祈求平安。學習媽祖的慈悲精神，熟悉廟宇各殿堂如福德殿、註生娘娘殿、文昌帝君殿等建築布局。記住媽祖救苦救難的故事。',
             games: mazuGames.map(g => ({ ...g })),
             unlocked: true,
             completed: false,
@@ -184,7 +184,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 2,
             title: '勤修精進',
-            content: '信徒更深入理解媽祖的大愛精神，記住各種行善積德的方法，掌握更複雜的廟會節慶節拍，點亮代表家庭和睦的燈火，理解守護家園的重要，安排更多的善行計畫。',
+            content: '信徒更深入理解媽祖的大愛精神，在關聖帝君殿學習忠義，在月老殿祈求姻緣，在城隍殿了解善惡報應。記住各種行善積德的方法，熟悉鐘樓、香客大廳、祈願牆等各處功能，掌握更複雜的廟會節慶節拍。',
             games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -194,7 +194,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 3,
             title: '智慧開悟',
-            content: '通過不斷的善行，信徒開始體會媽祖無私奉獻的精神。能記住複雜的媽祖靈驗故事，在變化的鑣鼓聲中找到內心的安定，點燃象徵社區和諧的燈陣，深入理解海納百川的胸懷，正確安排社區服務的順序。',
+            content: '通過不斷的善行，信徒開始體會媽祖無私奉獻的精神。深入了解開台聖王殿、保生大帝殿、三山國王殿等各殿神祇意義，能記住複雜的媽祖靈驗故事，在變化的鑣鼓聲中找到內心的安定，點燃象徵社區和諧的燈陣。',
             games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -204,7 +204,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 4,
             title: '深度修行',
-            content: '信徒成長為能夠幫助他人的善心人士。掌握各種助人技巧和智慧，在激昂的節拍中保持慈悲的心境，以精準順序點亮代表眾生平安的燈火，理解犧牲奉獻的真諦，安排複雜的公益活動。',
+            content: '信徒成長為能夠幫助他人的善心人士，在虎爺廟求平安，在土地公廟祈豐收，在水仙王殿、海龍王殿學習海洋智慧。掌握各種助人技巧和智慧，在激昂的節拍中保持慈悲的心境，以精準順序點亮代表眾生平安的燈火。',
             games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -214,7 +214,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           {
             id: 5,
             title: '圓滿境界',
-            content: '成為如媽祖一般的慈悲使者，時刻守護著需要幫助的人。完全體現媽祖的慈悲智慧，任何困難都不能阻擋其助人的決心，點亮最神聖的護佑眾生燈陣，完全理解無條件大愛的意義，能夠安排各種濟世救人的方法。',
+            content: '成為如媽祖一般的慈悲使者，時刻守護著需要幫助的人。在航海祈福廳為船員祈福，在漁民會館分享經驗，走過平安橋獲得庇佑。完全體現媽祖的慈悲智慧，任何困難都不能阻擋其助人的決心，點亮最神聖的護佑眾生燈陣。',
             games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
@@ -242,7 +242,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
   const currentGameType = gameTypes[gameTypeIndex];
   
   const getGameTitle = (gameType: string) => {
-    const gameTitles = {
+    const gameTitles: Record<string, string> = {
       'memory-scripture': '經文記憶配對',
       'memory-temple': '寺廟導覽記憶', 
       'reaction-rhythm': '木魚節奏訓練',
