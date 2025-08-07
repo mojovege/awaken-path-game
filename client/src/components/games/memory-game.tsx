@@ -33,7 +33,8 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   const difficulty = getDifficultyForLevel(level);
 
   const getGameContent = () => {
-    const pairsNeeded = Math.floor(difficulty.gridSize / 2);
+    // 將邏輯乘以2來讓故事內容更豐富
+    const pairsNeeded = Math.floor(difficulty.gridSize / 2) * 2;
     const allContent = getFullGameContent();
     return allContent.slice(0, pairsNeeded);
   };
