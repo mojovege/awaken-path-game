@@ -41,7 +41,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(user);
     } catch (error) {
       console.error("Error updating user:", error);
-      res.status(400).json({ message: "Failed to update user", error: error?.message || "Unknown error" });
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(400).json({ message: "Failed to update user", error: errorMessage });
     }
   });
 
