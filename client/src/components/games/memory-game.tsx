@@ -99,13 +99,22 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   useEffect(() => {
     if (gameStarted && !studyPhase && cards.length === 0) {
       const content = getGameContent();
-      const gameCards = content.map((item, index) => ({
-        id: index,
-        content: item.content,
-        emoji: item.emoji,
-        isFlipped: false,
-        isMatched: false,
-      }));
+      const gameCards = content.flatMap((item, index) => [
+        {
+          id: index * 2,
+          content: item.content,
+          emoji: item.emoji,
+          isFlipped: false,
+          isMatched: false,
+        },
+        {
+          id: index * 2 + 1,
+          content: item.content,
+          emoji: item.emoji,
+          isFlipped: false,
+          isMatched: false,
+        }
+      ]);
       
       // Shuffle cards
       const shuffled = [...gameCards].sort(() => Math.random() - 0.5);
@@ -181,8 +190,8 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   const flipCard = (cardId: number) => {
     if (studyPhase || flippedCards.length >= 2) return;
     
-    const card = cards[cardId];
-    if (card.isFlipped || card.isMatched) return;
+    const card = cards.find(c => c.id === cardId);
+    if (!card || card.isFlipped || card.isMatched) return;
     
     setCards(prev => prev.map(c => 
       c.id === cardId ? { ...c, isFlipped: true } : c
