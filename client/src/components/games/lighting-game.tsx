@@ -87,14 +87,15 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   const generateSequence = () => {
     const newSequence: number[] = [];
-    const baseLength = Math.min(2 + currentRound, 6); // 基礎長度
-    const levelBonus = Math.floor(level / 3); // 每3關增加1
-    const sequenceLength = Math.min(baseLength + levelBonus, difficulty.sequenceLength);
+    // 根據等級和回合動態調整序列長度，但要考慮時間限制
+    const baseLength = Math.min(currentRound + 1, Math.floor(level / 3) + 2);
+    const sequenceLength = Math.min(baseLength, 4); // 限制最大長度避免時間不夠
     
     for (let i = 0; i < sequenceLength; i++) {
       newSequence.push(Math.floor(Math.random() * 9));
     }
     
+    console.log('Generated sequence:', { currentRound, level, sequenceLength, sequence: newSequence });
     setSequence(newSequence);
     setPlayerSequence([]);
     setGamePhase('watch');
@@ -104,26 +105,33 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const showSequence = async (seq: number[]) => {
     setShowingSequence(true);
     
+    // 計算可用的顯示時間，保留足夠時間給用戶操作
+    const totalGameTime = gameLength;
+    const reservedPlayTime = Math.max(5000, totalGameTime * 0.4); // 至少5秒給用戶操作
+    const availableShowTime = totalGameTime - reservedPlayTime;
+    const timePerLamp = Math.min(difficulty.memoryTime * 1000, availableShowTime / seq.length);
+    
+    console.log('Sequence timing:', { totalGameTime, reservedPlayTime, availableShowTime, timePerLamp, sequenceLength: seq.length });
+    
     for (let i = 0; i < seq.length; i++) {
       const lampId = seq[i];
       
       // 等待時間讓用戶準備
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       // Light up the lamp
       setLamps(prev => prev.map(lamp => 
-        lamp.id === lampId ? { ...lamp, lit: true, target: true } : lamp
+        lamp.id === lampId ? { ...lamp, lit: true } : lamp
       ));
       
-      const displayTime = difficulty.memoryTime * 1000; // 直接使用memoryTime參數
-      await new Promise(resolve => setTimeout(resolve, displayTime));
+      await new Promise(resolve => setTimeout(resolve, timePerLamp));
       
       // Turn off the lamp
       setLamps(prev => prev.map(lamp => 
-        lamp.id === lampId ? { ...lamp, lit: false, target: false } : lamp
+        lamp.id === lampId ? { ...lamp, lit: false } : lamp
       ));
       
-      await new Promise(resolve => setTimeout(resolve, 400)); // 增加間隔時間
+      await new Promise(resolve => setTimeout(resolve, 200)); // 短間隔時間
     }
     
     setShowingSequence(false);
