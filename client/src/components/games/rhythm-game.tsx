@@ -19,6 +19,8 @@ interface Beat {
 }
 
 const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, level = 1 }) => {
+  const difficulty = getDifficultyForLevel(level);
+  
   const [beats, setBeats] = useState<Beat[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
   const [score, setScore] = useState(0);
@@ -26,8 +28,6 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   const [gameLength] = useState(difficulty.timeLimit * 1000); // 根據等級調整遊戲時間
   const [combo, setCombo] = useState(0);
   const [showRules, setShowRules] = useState(false);
-  
-  const difficulty = getDifficultyForLevel(level);
 
   // Generate rhythm pattern
   useEffect(() => {

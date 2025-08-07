@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import ReligionSelection from "../components/religion-selection";
 import Dashboard from "../components/dashboard";
 import UserInfoModal from "../components/user-info-modal";
+import StoryProgress from "../components/story-progress";
 import { Button } from "@/components/ui/button";
 import { Bell, User } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface User {
   id: string;
@@ -27,6 +29,8 @@ const DEMO_USER_ID = "demo-user-1";
 export default function Home() {
   const [showReligionSelection, setShowReligionSelection] = useState(true);
   const [showUserInfo, setShowUserInfo] = useState(false);
+  const [showStoryProgress, setShowStoryProgress] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data: user, refetch: refetchUser } = useQuery<User>({
     queryKey: ['/api/user', DEMO_USER_ID],
@@ -39,12 +43,22 @@ export default function Home() {
   useEffect(() => {
     if (user?.selectedReligion) {
       setShowReligionSelection(false);
+      setShowStoryProgress(true);
     }
   }, [user]);
 
   const handleReligionSelected = async () => {
     await refetchUser();
     setShowReligionSelection(false);
+    setShowStoryProgress(true);
+  };
+
+  const handleGameStart = (gameType: string) => {
+    setLocation(`/game/${gameType}`);
+  };
+
+  const handleChatStart = () => {
+    setShowStoryProgress(false);
   };
 
   return (
@@ -111,6 +125,12 @@ export default function Home() {
             userId={DEMO_USER_ID}
             onReligionSelected={handleReligionSelected}
           />
+        ) : showStoryProgress ? (
+          <StoryProgress
+            religion={user?.selectedReligion || 'buddhism'}
+            onChatClick={handleChatStart}
+            onGameClick={handleGameStart}
+          />
         ) : (
           <Dashboard
             user={user}
@@ -120,23 +140,41 @@ export default function Home() {
         )}
       </main>
 
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <Button
-          className="w-16 h-16 bg-warm-gold text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
-          onClick={() => {
-            const aiSection = document.querySelector('[data-testid="ai-companion"]');
-            if (aiSection) {
-              aiSection.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}
-          data-testid="button-ai-assistant"
-        >
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.9 1 3 1.9 3 3V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V9H21Z"/>
-          </svg>
-        </Button>
-      </div>
+      {/* Navigation Buttons */}
+      {!showReligionSelection && (
+        <div className="fixed bottom-6 right-6 z-40 flex flex-col space-y-3">
+          {showStoryProgress && (
+            <Button
+              onClick={() => setShowStoryProgress(false)}
+              className="w-16 h-16 bg-sage-green text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+              data-testid="button-dashboard"
+            >
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+              </svg>
+            </Button>
+          )}
+          
+          <Button
+            className="w-16 h-16 bg-warm-gold text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+            onClick={() => {
+              if (showStoryProgress) {
+                handleChatStart();
+              } else {
+                const aiSection = document.querySelector('[data-testid="ai-companion"]');
+                if (aiSection) {
+                  aiSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }}
+            data-testid="button-ai-assistant"
+          >
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.9 1 3 1.9 3 3V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V9H21Z"/>
+            </svg>
+          </Button>
+        </div>
+      )}
 
       {/* User Info Modal */}
       {showUserInfo && (

@@ -20,13 +20,13 @@ interface SequenceItem {
 }
 
 const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, gameType, level = 1 }) => {
+  const difficulty = getDifficultyForLevel(level);
+  
   const [gameStarted, setGameStarted] = useState(false);
   const [sequences, setSequences] = useState<SequenceItem[]>([]);
   const [completed, setCompleted] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [showRules, setShowRules] = useState(false);
-  
-  const difficulty = getDifficultyForLevel(level);
 
   const getGameContent = () => {
     if (gameType === 'logic-scripture') {

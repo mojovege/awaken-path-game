@@ -21,6 +21,8 @@ interface Lamp {
 }
 
 const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religion, level = 1 }) => {
+  const difficulty = getDifficultyForLevel(level);
+  
   const [lamps, setLamps] = useState<Lamp[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [gamePhase, setGamePhase] = useState<'watch' | 'play' | 'complete'>('watch');
@@ -30,8 +32,6 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const [score, setScore] = useState(0);
   const [showingSequence, setShowingSequence] = useState(false);
   const [showRules, setShowRules] = useState(false);
-  
-  const difficulty = getDifficultyForLevel(level);
 
   // Initialize lamps in a 3x3 grid
   useEffect(() => {
@@ -56,7 +56,9 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   const generateSequence = () => {
     const newSequence: number[] = [];
-    const sequenceLength = Math.min(difficulty.sequenceLength, 8); // 根據等級調整序列長度
+    const baseLength = Math.min(2 + currentRound, 6); // 基礎長度
+    const levelBonus = Math.floor(level / 3); // 每3關增加1
+    const sequenceLength = Math.min(baseLength + levelBonus, difficulty.sequenceLength);
     
     for (let i = 0; i < sequenceLength; i++) {
       newSequence.push(Math.floor(Math.random() * 9));
@@ -82,7 +84,8 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
         lamp.id === lampId ? { ...lamp, lit: true, target: true } : lamp
       ));
       
-      await new Promise(resolve => setTimeout(resolve, 1200)); // 增加顯示時間
+      const displayTime = Math.max(800, difficulty.memoryTime * 1000 * 0.8); // 根據等級調整顯示時間
+      await new Promise(resolve => setTimeout(resolve, displayTime));
       
       // Turn off the lamp
       setLamps(prev => prev.map(lamp => 
@@ -141,7 +144,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
       setScore(prev => prev + points);
       onScore(points);
       
-      if (currentRound >= 5) {
+      if (currentRound >= Math.min(3 + Math.floor(level / 2), 8)) { // 根據等級調整回合數
         // Game complete
         setGamePhase('complete');
         setTimeout(onComplete, 2000); // 給更多時間看結果
@@ -200,23 +203,56 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   if (!gameStarted) {
     return (
-      <div className="text-center space-y-6">
-        <div className="text-8xl mb-4">{getLampEmoji()}</div>
-        <h3 className="text-elderly-xl font-semibold text-gray-800">
-          {getGameTitle()}
-        </h3>
-        <p className="text-elderly-base text-warm-gray-600">
-          記住點燈順序，訓練記憶力和反應速度
-        </p>
-        <Button 
-          onClick={startGame}
-          className="btn-primary text-elderly-base px-8 py-3"
-          data-testid="button-start-lighting"
-        >
-          <Flame className="w-5 h-5 mr-2" />
-          開始點燈
-        </Button>
-      </div>
+      <>
+        <div className="text-center space-y-6">
+          <div className="text-8xl mb-4">{getLampEmoji()}</div>
+          <h3 className="text-elderly-xl font-semibold text-gray-800">
+            {getGameTitle()}
+          </h3>
+          <p className="text-elderly-base text-warm-gray-600">
+            記住點燈順序，訓練記憶力和反應速度
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              onClick={() => setShowRules(true)}
+              variant="outline"
+              className="text-elderly-base px-8 py-3"
+              data-testid="button-show-rules"
+            >
+              <Lightbulb className="w-5 h-5 mr-2" />
+              遊戲說明
+            </Button>
+            <Button 
+              onClick={startGame}
+              className="btn-primary text-elderly-base px-8 py-3"
+              data-testid="button-start-lighting"
+            >
+              <Flame className="w-5 h-5 mr-2" />
+              開始點燈
+            </Button>
+          </div>
+        </div>
+
+        {showRules && (
+          <GameRulesModal
+            gameType="memory-lighting"
+            level={level}
+            religion={religion}
+            difficulty={{
+              memoryTime: difficulty.memoryTime,
+              reactionWindow: difficulty.reactionWindow,
+              gridSize: difficulty.gridSize,
+              sequenceLength: difficulty.sequenceLength,
+              hintsAvailable: difficulty.hintsAvailable,
+            }}
+            onStart={() => {
+              setShowRules(false);
+              startGame();
+            }}
+            onClose={() => setShowRules(false)}
+          />
+        )}
+      </>
     );
   }
 

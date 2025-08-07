@@ -193,7 +193,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       
       setAttempts(prev => prev + 1);
       
-      if (firstCard.emoji === secondCard.emoji) {
+      if (firstCard.content === secondCard.content && firstCard.emoji === secondCard.emoji) {
         // Match found
         setCards(prev => prev.map(card => 
           card.id === firstCard.id || card.id === secondCard.id
@@ -223,7 +223,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
         }, 2500); // 增加到2.5秒讓用戶看清楚
       }
     }
-  }, [flippedCards]); // 修正依賴項
+  }, [flippedCards, cards, matches, attempts, onScore, onComplete]);
 
   const startGame = () => {
     setCards([]); // 重置卡片
