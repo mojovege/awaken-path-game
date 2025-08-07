@@ -9,7 +9,17 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, Smile } from "lucide-react";
 
-const DEMO_USER_ID = "demo-user-1";
+// 從localStorage獲取用戶ID，與home.tsx保持一致
+const getUserId = () => {
+  let userId = localStorage.getItem('awaken_path_user_id');
+  if (!userId) {
+    userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('awaken_path_user_id', userId);
+  }
+  return userId;
+};
+
+const CURRENT_USER_ID = getUserId();
 
 export default function UserSetup() {
   const [, setLocation] = useLocation();
@@ -20,12 +30,12 @@ export default function UserSetup() {
 
   const updateUserMutation = useMutation({
     mutationFn: async (userData: { displayName: string; age: number }) => {
-      const response = await apiRequest('PUT', `/api/user/${DEMO_USER_ID}`, userData);
+      const response = await apiRequest('PUT', `/api/user/${CURRENT_USER_ID}`, userData);
       return response.json();
     },
     onSuccess: (updatedUser) => {
       // 直接更新緩存而不是失效化，避免重新載入
-      queryClient.setQueryData(['/api/user', DEMO_USER_ID], updatedUser);
+      queryClient.setQueryData(['/api/user', CURRENT_USER_ID], updatedUser);
       
       toast({
         title: "歡迎您！", 

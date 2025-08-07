@@ -9,9 +9,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
   app.get("/api/user/:id", async (req, res) => {
     try {
-      const user = await storage.getUser(req.params.id);
+      let user = await storage.getUser(req.params.id);
+      // 如果用戶不存在，自動創建一個新用戶
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        const newUser = {
+          username: req.params.id,
+          displayName: "新用戶", // 會在用戶設定頁面更新
+          selectedReligion: null,
+        };
+        user = await storage.createUser(newUser);
       }
       res.json(user);
     } catch (error) {

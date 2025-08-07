@@ -34,7 +34,7 @@ export default function UserInfoModal({
   userName, 
   selectedReligion, 
   userStats, 
-  userId = "demo-user-1",
+  userId,
   onClose 
 }: UserInfoModalProps) {
   const [, setLocation] = useLocation();

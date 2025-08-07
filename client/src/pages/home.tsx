@@ -24,7 +24,17 @@ interface UserStats {
   averageScore: number;
 }
 
-const DEMO_USER_ID = "demo-user-1";
+// 從localStorage獲取用戶ID，如果沒有則生成新的
+const getUserId = () => {
+  let userId = localStorage.getItem('awaken_path_user_id');
+  if (!userId) {
+    userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('awaken_path_user_id', userId);
+  }
+  return userId;
+};
+
+const CURRENT_USER_ID = getUserId();
 
 export default function Home() {
   const [showReligionSelection, setShowReligionSelection] = useState(true);
@@ -33,12 +43,12 @@ export default function Home() {
   const [, setLocation] = useLocation();
 
   const { data: user, refetch: refetchUser } = useQuery<User>({
-    queryKey: ['/api/user', DEMO_USER_ID],
+    queryKey: ['/api/user', CURRENT_USER_ID],
     staleTime: 5 * 60 * 1000, // 5分鐘緩存，減少不必要的請求
   });
 
   const { data: userStats } = useQuery<UserStats>({
-    queryKey: ['/api/user', DEMO_USER_ID, 'stats'],
+    queryKey: ['/api/user', CURRENT_USER_ID, 'stats'],
     staleTime: 5 * 60 * 1000,
   });
 
@@ -46,8 +56,8 @@ export default function Home() {
     // 只在首次載入時檢查用戶設定
     if (user === undefined) return; // 還在載入中
     
-    // 檢查用戶是否需要完成設定（但避免無限循環）
-    if (user && user.displayName === "王阿嬤" && window.location.pathname !== "/setup") {
+    // 檢查用戶是否需要完成設定（新用戶或未設定用戶）
+    if (user && (user.displayName === "新用戶" || user.displayName === "王阿嬤") && window.location.pathname !== "/setup") {
       setLocation("/setup");
       return;
     }
@@ -134,7 +144,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {showReligionSelection ? (
           <ReligionSelection
-            userId={DEMO_USER_ID}
+            userId={CURRENT_USER_ID}
             onReligionSelected={handleReligionSelected}
           />
         ) : showStoryProgress ? (
@@ -147,7 +157,7 @@ export default function Home() {
           <Dashboard
             user={user}
             userStats={userStats}
-            userId={DEMO_USER_ID}
+            userId={CURRENT_USER_ID}
           />
         )}
       </main>
@@ -194,7 +204,7 @@ export default function Home() {
           userName={user?.displayName}
           selectedReligion={user?.selectedReligion || undefined}
           userStats={userStats}
-          userId={DEMO_USER_ID}
+          userId={CURRENT_USER_ID}
           onClose={() => setShowUserInfo(false)}
         />
       )}
