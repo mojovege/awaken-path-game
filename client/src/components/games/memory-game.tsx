@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Brain, Lightbulb } from 'lucide-react';
 import GameRulesModal from '../game-rules-modal';
@@ -33,8 +33,16 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   const difficulty = getDifficultyForLevel(level);
 
   const getGameContent = () => {
-    // 將邏輯乘以2來讓故事內容更豐富
-    const pairsNeeded = Math.floor(difficulty.gridSize / 2) * 2;
+    // 根據章節調整配對數量，初心啟蒙保持簡單，後期章節更豐富
+    let pairsNeeded;
+    if (difficulty.chapter === 1) {
+      // 初心啟蒙：保持簡單，最多2-3對
+      pairsNeeded = Math.max(2, Math.floor(difficulty.gridSize / 3));
+    } else {
+      // 後期章節：內容更豐富
+      pairsNeeded = Math.floor(difficulty.gridSize / 2) * Math.min(2, difficulty.chapter * 0.5);
+    }
+    
     const allContent = getFullGameContent();
     return allContent.slice(0, pairsNeeded);
   };
@@ -45,9 +53,16 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       switch (religion) {
         case 'buddhism':
           return [
+            // 初心啟蒙：基礎簡單概念
+            { content: '念佛', emoji: '🙏' },
+            { content: '慈悲', emoji: '❤️' },
+            { content: '善心', emoji: '💝' },
+            { content: '平安', emoji: '🕊️' },
+            { content: '感恩', emoji: '🤲' },
+            { content: '健康', emoji: '💪' },
+            // 進階內容
             { content: '色即是空', emoji: '🌸' },
             { content: '諸行無常', emoji: '🍃' },
-            { content: '慈悲為懷', emoji: '❤️' },
             { content: '因果循環', emoji: '🔄' },
             { content: '四聖諦理', emoji: '🧘' },
             { content: '八正道行', emoji: '🛤️' },
@@ -64,14 +79,17 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '正法眼藏', emoji: '👁️' },
             { content: '禪定解脫', emoji: '🕯️' },
             { content: '功德圓滿', emoji: '✨' },
-            { content: '慧眼明心', emoji: '👀' },
-            { content: '法輪常轉', emoji: '☸️' },
-            { content: '慈航普度', emoji: '⛵' },
-            { content: '萬法歸一', emoji: '🎯' },
-            { content: '佛性本然', emoji: '🪬' },
           ];
         case 'taoism':
           return [
+            // 初心啟蒙：基礎簡單概念
+            { content: '養生', emoji: '💪' },
+            { content: '自然', emoji: '🌿' },
+            { content: '和諧', emoji: '☯️' },
+            { content: '平衡', emoji: '⚖️' },
+            { content: '清心', emoji: '💙' },
+            { content: '長壽', emoji: '🏔️' },
+            // 進階內容
             { content: '道法自然', emoji: '🌿' },
             { content: '上善若水', emoji: '💧' },
             { content: '清靜無為', emoji: '🌙' },
@@ -90,15 +108,17 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '外丹長生', emoji: '⚗️' },
             { content: '玄元妙道', emoji: '🔮' },
             { content: '三花聚頂', emoji: '🌸' },
-            { content: '五氣朝元', emoji: '🌬️' },
-            { content: '周天運化', emoji: '🌀' },
-            { content: '虛無大道', emoji: '⭕' },
-            { content: '混元一氣', emoji: '🌌' },
-            { content: '太上忘情', emoji: '🤍' },
-            { content: '真人境界', emoji: '👤' },
           ];
         case 'mazu':
           return [
+            // 初心啟蒙：基礎簡單概念
+            { content: '平安', emoji: '🏠' },
+            { content: '健康', emoji: '💪' },
+            { content: '順利', emoji: '🏆' },
+            { content: '保佑', emoji: '🙏' },
+            { content: '幸福', emoji: '💝' },
+            { content: '安全', emoji: '🚗' },
+            // 進階內容
             { content: '救苦救難', emoji: '🌊' },
             { content: '慈悲濟世', emoji: '⭐' },
             { content: '海上守護', emoji: '🚢' },
@@ -117,12 +137,6 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '媽祖顯靈', emoji: '✨' },
             { content: '海神庇護', emoji: '🔱' },
             { content: '漁民守護', emoji: '🎣' },
-            { content: '航海平安', emoji: '⚓' },
-            { content: '港口安寧', emoji: '🏘️' },
-            { content: '信眾虔誠', emoji: '🙏' },
-            { content: '香火鼎盛', emoji: '🕯️' },
-            { content: '神恩浩蕩', emoji: '🌅' },
-            { content: '福澤綿延', emoji: '🌸' },
           ];
         default:
           return [];
@@ -217,33 +231,49 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
     }
   };
 
+  // 將getGameContent移到useEffect外部，避免依賴問題
+  const generateCards = useCallback(() => {
+    // 根據章節調整配對數量，初心啟蒙保持簡單，後期章節更豐富
+    let pairsNeeded;
+    if (difficulty.chapter === 1) {
+      // 初心啟蒙：保持簡單，最多2-3對
+      pairsNeeded = Math.max(2, Math.floor(difficulty.gridSize / 3));
+    } else {
+      // 後期章節：內容更豐富
+      pairsNeeded = Math.floor(difficulty.gridSize / 2) * Math.min(2, difficulty.chapter * 0.5);
+    }
+    
+    const allContent = getFullGameContent();
+    const content = allContent.slice(0, pairsNeeded);
+    console.log(`Level ${level}: Generated ${content.length} pairs for memory game`, content.map(c => c.content));
+    
+    const gameCards = content.flatMap((item, index) => [
+      {
+        id: index * 2,
+        content: item.content,
+        emoji: item.emoji,
+        isFlipped: false,
+        isMatched: false,
+      },
+      {
+        id: index * 2 + 1,
+        content: item.content,
+        emoji: item.emoji,
+        isFlipped: false,
+        isMatched: false,
+      }
+    ]);
+    
+    // Shuffle cards
+    return [...gameCards].sort(() => Math.random() - 0.5);
+  }, [level, gameType, religion, difficulty.chapter, difficulty.gridSize]);
+
   useEffect(() => {
     if (gameStarted && !studyPhase && cards.length === 0) {
-      const content = getGameContent();
-      console.log(`Level ${level}: Generated ${content.length} pairs for memory game`, content.map(c => c.content));
-      
-      const gameCards = content.flatMap((item, index) => [
-        {
-          id: index * 2,
-          content: item.content,
-          emoji: item.emoji,
-          isFlipped: false,
-          isMatched: false,
-        },
-        {
-          id: index * 2 + 1,
-          content: item.content,
-          emoji: item.emoji,
-          isFlipped: false,
-          isMatched: false,
-        }
-      ]);
-      
-      // Shuffle cards
-      const shuffled = [...gameCards].sort(() => Math.random() - 0.5);
-      setCards(shuffled);
+      const shuffledCards = generateCards();
+      setCards(shuffledCards);
     }
-  }, [gameStarted, studyPhase, level, gameType, religion]);
+  }, [gameStarted, studyPhase, cards.length, generateCards]);
 
   // Study phase timer
   useEffect(() => {
@@ -278,7 +308,9 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
         
         const newMatches = matches + 1;
         setMatches(newMatches);
-        onScore(100 - (attempts * 5)); // Higher score for fewer attempts
+        // 確保分數為正數，每次配對成功給予固定分數
+        const matchScore = Math.max(10, 50 - (attempts * 2));
+        onScore(matchScore);
         
         setFlippedCards([]);
         
