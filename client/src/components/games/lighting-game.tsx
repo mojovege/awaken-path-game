@@ -35,6 +35,9 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const [currentTime, setCurrentTime] = useState(0);
   const [gameLength] = useState(difficulty.timeLimit * 1000);
   const [maxRounds, setMaxRounds] = useState(1);
+  const [playTime, setPlayTime] = useState(0);
+  const [playTimeLimit, setPlayTimeLimit] = useState(0);
+  const [isPlayPhaseActive, setIsPlayPhaseActive] = useState(false);
 
   // Initialize lamps and game parameters
   useEffect(() => {
@@ -61,29 +64,29 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     }
   }, [gameStarted, level]);
 
-  // Game timer - 標準計時器模式
+  // Play phase timer - 只在用戶可以操作時計時
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!isPlayPhaseActive || gamePhase !== 'play') return;
     
     const timer = setInterval(() => {
-      setCurrentTime(prev => {
-        if (prev >= gameLength - 100) {
-          return gameLength;
+      setPlayTime(prev => {
+        if (prev >= playTimeLimit - 100) {
+          return playTimeLimit;
         }
         return prev + 100;
       });
     }, 100);
 
     return () => clearInterval(timer);
-  }, [gameStarted]);
+  }, [isPlayPhaseActive, gamePhase]);
 
-  // Game end check - 分離時間檢查邏輯，只在時間到時結束
+  // Play phase end check - 只檢查用戶操作時間
   useEffect(() => {
-    if (gameStarted && currentTime >= gameLength && gamePhase !== 'complete') {
-      console.log('Time up! Ending game...');
+    if (isPlayPhaseActive && gamePhase === 'play' && playTime >= playTimeLimit) {
+      console.log('Play time up! Ending game...');
       setTimeout(() => endGame(), 100);
     }
-  }, [gameStarted, currentTime, gamePhase]);
+  }, [isPlayPhaseActive, gamePhase, playTime, playTimeLimit]);
 
   const generateSequence = () => {
     const newSequence: number[] = [];
@@ -104,14 +107,12 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   const showSequence = async (seq: number[]) => {
     setShowingSequence(true);
+    setIsPlayPhaseActive(false);
     
-    // 計算可用的顯示時間，保留足夠時間給用戶操作
-    const totalGameTime = gameLength;
-    const reservedPlayTime = Math.max(5000, totalGameTime * 0.4); // 至少5秒給用戶操作
-    const availableShowTime = totalGameTime - reservedPlayTime;
-    const timePerLamp = Math.min(difficulty.memoryTime * 1000, availableShowTime / seq.length);
+    // 固定顯示時間：每個燈顯示memoryTime，不受總遊戲時間限制
+    const timePerLamp = difficulty.memoryTime * 1000;
     
-    console.log('Sequence timing:', { totalGameTime, reservedPlayTime, availableShowTime, timePerLamp, sequenceLength: seq.length });
+    console.log('Showing sequence:', { sequenceLength: seq.length, timePerLamp, totalShowTime: seq.length * (timePerLamp + 500) });
     
     for (let i = 0; i < seq.length; i++) {
       const lampId = seq[i];
@@ -136,6 +137,12 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     
     setShowingSequence(false);
     setGamePhase('play');
+    
+    // 設定用戶操作時間限制並開始計時
+    setPlayTimeLimit(gameLength);
+    setPlayTime(0);
+    setIsPlayPhaseActive(true);
+    console.log('Starting play phase with time limit:', gameLength);
   };
 
   const lightLamp = (lampId: number) => {
@@ -202,7 +209,8 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     setCurrentRound(1);
     setScore(0);
     setPlayerSequence([]);
-    setCurrentTime(0);
+    setPlayTime(0);
+    setIsPlayPhaseActive(false);
   };
 
   const endGame = () => {
@@ -329,28 +337,48 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     );
   }
 
-  const timeRemaining = Math.max(0, gameLength - currentTime);
-  const seconds = Math.ceil(timeRemaining / 1000);
-  const progressPercent = (currentTime / gameLength) * 100;
+  // 根據遊戲階段顯示不同的時間資訊
+  const getTimeInfo = () => {
+    if (gamePhase === 'play' && isPlayPhaseActive) {
+      const timeRemaining = Math.max(0, playTimeLimit - playTime);
+      const seconds = Math.ceil(timeRemaining / 1000);
+      const progressPercent = (playTime / playTimeLimit) * 100;
+      return { seconds, progressPercent, isActive: true, label: '回答時間' };
+    } else if (gamePhase === 'watch') {
+      return { seconds: '觀看中', progressPercent: 0, isActive: false, label: '記憶階段' };
+    }
+    return { seconds: 0, progressPercent: 0, isActive: false, label: '準備中' };
+  };
+
+  const timeInfo = getTimeInfo();
 
   return (
     <div className="space-y-6">
       {/* 計時器顯示 */}
       <div className="text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
+        <div className="flex items-center justify-center gap-2 mb-1">
           <Clock className="w-5 h-5 text-warm-gold" />
-          <span className={`text-elderly-lg font-bold ${seconds <= 10 ? 'text-red-500 animate-pulse' : 'text-warm-gray-700'}`}>
-            {seconds} 秒
+          <span className="text-elderly-sm text-warm-gray-600">{timeInfo.label}</span>
+        </div>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className={`text-elderly-lg font-bold ${
+            timeInfo.isActive && typeof timeInfo.seconds === 'number' && timeInfo.seconds <= 10 
+              ? 'text-red-500 animate-pulse' 
+              : 'text-warm-gray-700'
+          }`}>
+            {typeof timeInfo.seconds === 'number' ? `${timeInfo.seconds} 秒` : timeInfo.seconds}
           </span>
         </div>
-        <div className="w-full bg-warm-gray-200 rounded-full h-4">
-          <div 
-            className={`rounded-full h-4 transition-all duration-100 ${
-              seconds <= 10 ? 'bg-red-500' : 'bg-warm-gold'
-            }`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+        {timeInfo.isActive && (
+          <div className="w-full bg-warm-gray-200 rounded-full h-4">
+            <div 
+              className={`rounded-full h-4 transition-all duration-100 ${
+                typeof timeInfo.seconds === 'number' && timeInfo.seconds <= 10 ? 'bg-red-500' : 'bg-warm-gold'
+              }`}
+              style={{ width: `${timeInfo.progressPercent}%` }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Game status */}
