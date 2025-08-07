@@ -87,29 +87,59 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
           return [];
       }
     } else {
-      // Wisdom sequence
+      // Wisdom sequence - 與記憶配對遊戲內容統一
       switch (religion) {
         case 'buddhism':
-          return [
-            { content: '聞', order: 1 },
-            { content: '思', order: 2 },
-            { content: '修', order: 3 },
-            { content: '證', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '感恩', order: 1 },
+              { content: '健康', order: 2 },
+              { content: '念佛', order: 3 },
+              { content: '慈悲', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '聞', order: 1 },
+              { content: '思', order: 2 },
+              { content: '修', order: 3 },
+              { content: '證', order: 4 },
+            ];
+          }
         case 'taoism':
-          return [
-            { content: '立志', order: 1 },
-            { content: '修心', order: 2 },
-            { content: '煉神', order: 3 },
-            { content: '得道', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '清心', order: 1 },
+              { content: '長壽', order: 2 },
+              { content: '養生', order: 3 },
+              { content: '自然', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '立志', order: 1 },
+              { content: '修心', order: 2 },
+              { content: '煉神', order: 3 },
+              { content: '得道', order: 4 },
+            ];
+          }
         case 'mazu':
-          return [
-            { content: '出海', order: 1 },
-            { content: '祈福', order: 2 },
-            { content: '航行', order: 3 },
-            { content: '歸港', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '幸福', order: 1 },
+              { content: '安全', order: 2 },
+              { content: '平安', order: 3 },
+              { content: '健康', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '出海', order: 1 },
+              { content: '祈福', order: 2 },
+              { content: '航行', order: 3 },
+              { content: '歸港', order: 4 },
+            ];
+          }
         default:
           return [];
       }
