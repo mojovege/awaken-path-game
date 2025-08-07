@@ -40,98 +40,54 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       switch (religion) {
         case 'buddhism':
           return [
-            // 初心啟蒙：基礎簡單概念
             { content: '念佛', emoji: '🙏' },
             { content: '慈悲', emoji: '❤️' },
-            { content: '善心', emoji: '💝' },
-            { content: '平安', emoji: '🕊️' },
-            { content: '感恩', emoji: '🤲' },
-            { content: '健康', emoji: '💪' },
-            // 進階內容 - 與邏輯遊戲統一
-            { content: '苦', emoji: '😔' },
-            { content: '集', emoji: '🔗' },
-            { content: '滅', emoji: '🌅' },
-            { content: '道', emoji: '🛤️' },
-            { content: '聞', emoji: '👂' },
-            { content: '思', emoji: '🤔' },
-            { content: '修', emoji: '🧘' },
-            { content: '證', emoji: '✨' },
-            { content: '色即是空', emoji: '🌸' },
-            { content: '諸行無常', emoji: '🍃' },
-            { content: '因果循環', emoji: '🔄' },
-            { content: '三寶皈依', emoji: '🙏' },
-            { content: '六波羅蜜', emoji: '⭐' },
-            { content: '十二因緣', emoji: '🔗' },
-            { content: '涅槃寂靜', emoji: '🌙' },
-            { content: '般若智慧', emoji: '💎' },
-            { content: '慈悲喜捨', emoji: '🤲' },
-            { content: '戒定慧學', emoji: '📿' },
+            { content: '智慧', emoji: '🧠' },
+            { content: '禪定', emoji: '🧘' },
+            { content: '功德', emoji: '✨' },
+            { content: '因果', emoji: '🔄' },
+            { content: '般若', emoji: '💎' },
+            { content: '菩提', emoji: '🌳' },
+            { content: '涅槃', emoji: '🕯️' },
+            { content: '輪回', emoji: '♻️' },
+            { content: '業力', emoji: '⚖️' },
+            { content: '解脫', emoji: '🦋' },
           ];
         case 'taoism':
           return [
-            // 初心啟蒙：基礎簡單概念
-            { content: '養生', emoji: '💪' },
+            { content: '無為', emoji: '🌊' },
+            { content: '道', emoji: '☯️' },
+            { content: '德', emoji: '🌟' },
             { content: '自然', emoji: '🌿' },
-            { content: '和諧', emoji: '☯️' },
-            { content: '平衡', emoji: '⚖️' },
-            { content: '清心', emoji: '💙' },
-            { content: '長壽', emoji: '🏔️' },
-            // 進階內容
-            { content: '道法自然', emoji: '🌿' },
-            { content: '上善若水', emoji: '💧' },
-            { content: '清靜無為', emoji: '🌙' },
-            { content: '陰陽調和', emoji: '☯️' },
-            { content: '五行相生', emoji: '🌟' },
-            { content: '太極生兩儀', emoji: '🎭' },
-            { content: '無為而治', emoji: '🌊' },
-            { content: '返璞歸真', emoji: '🌱' },
-            { content: '天人合一', emoji: '🌈' },
-            { content: '長生久視', emoji: '🏔️' },
-            { content: '逍遙遊世', emoji: '🦋' },
-            { content: '至虛極守', emoji: '⚪' },
-            { content: '得道昇仙', emoji: '🕊️' },
-            { content: '煉氣化神', emoji: '🌪️' },
-            { content: '內丹修真', emoji: '💊' },
-            { content: '外丹長生', emoji: '⚗️' },
-            { content: '玄元妙道', emoji: '🔮' },
-            { content: '三花聚頂', emoji: '🌸' },
+            { content: '玄妙', emoji: '🔮' },
+            { content: '清淨', emoji: '💧' },
+            { content: '虛無', emoji: '🌌' },
+            { content: '陰陽', emoji: '☯️' },
+            { content: '五行', emoji: '🎭' },
+            { content: '八卦', emoji: '🔮' },
+            { content: '太極', emoji: '🌀' },
+            { content: '煉丹', emoji: '⚗️' },
           ];
         case 'mazu':
           return [
-            // 初心啟蒙：基礎簡單概念
-            { content: '平安', emoji: '🏠' },
-            { content: '健康', emoji: '💪' },
-            { content: '順利', emoji: '🏆' },
-            { content: '保佑', emoji: '🙏' },
-            { content: '幸福', emoji: '💝' },
-            { content: '安全', emoji: '🚗' },
-            // 進階內容
-            { content: '救苦救難', emoji: '🌊' },
-            { content: '慈悲濟世', emoji: '⭐' },
-            { content: '海上守護', emoji: '🚢' },
-            { content: '風調雨順', emoji: '🌤️' },
-            { content: '國泰民安', emoji: '🏮' },
-            { content: '漁獲豐收', emoji: '🐟' },
-            { content: '闔家平安', emoji: '🏠' },
-            { content: '身體健康', emoji: '💪' },
-            { content: '學業進步', emoji: '📚' },
-            { content: '事業順利', emoji: '🏆' },
-            { content: '姻緣美滿', emoji: '💝' },
-            { content: '出入平安', emoji: '🚗' },
-            { content: '千里眼護', emoji: '👁️' },
-            { content: '順風耳佑', emoji: '👂' },
-            { content: '天后慈航', emoji: '⛵' },
-            { content: '媽祖顯靈', emoji: '✨' },
-            { content: '海神庇護', emoji: '🔱' },
-            { content: '漁民守護', emoji: '🎣' },
+            { content: '護航', emoji: '⚓' },
+            { content: '平安', emoji: '🕊️' },
+            { content: '祈福', emoji: '🙏' },
+            { content: '靈驗', emoji: '✨' },
+            { content: '慈悲', emoji: '❤️' },
+            { content: '救世', emoji: '🆘' },
+            { content: '庇佑', emoji: '🛡️' },
+            { content: '順風', emoji: '🌬️' },
+            { content: '千里眼', emoji: '👁️' },
+            { content: '順風耳', emoji: '👂' },
+            { content: '海神', emoji: '🌊' },
+            { content: '天后', emoji: '👑' },
           ];
         default:
           return [];
       }
-    } else {
-      // Temple/location memory
+    } else if (gameType === 'memory-temple') {
       console.log(`🏛️ Temple Memory: About to switch on religion="${religion}"`);
-      
       switch (religion) {
         case 'buddhism':
           return [
@@ -147,18 +103,6 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '方丈室', emoji: '🏡' },
             { content: '法堂', emoji: '⚖️' },
             { content: '念佛堂', emoji: '🙏' },
-            { content: '地藏殿', emoji: '🌍' },
-            { content: '文殊殿', emoji: '📖' },
-            { content: '普賢殿', emoji: '🐘' },
-            { content: '韋陀殿', emoji: '⚔️' },
-            { content: '伽藍殿', emoji: '👮' },
-            { content: '羅漢堂', emoji: '👨‍🦳' },
-            { content: '舍利塔', emoji: '🗼' },
-            { content: '萬佛塔', emoji: '🏯' },
-            { content: '蓮花池', emoji: '🪷' },
-            { content: '菩提樹', emoji: '🌳' },
-            { content: '山門殿', emoji: '🚪' },
-            { content: '香客寮', emoji: '🏨' },
           ];
         case 'taoism':
           console.log(`✅ Returning Taoism temple content`);
@@ -174,21 +118,10 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '鬥姆殿', emoji: '✨' },
             { content: '雷祖殿', emoji: '⚡' },
             { content: '慈航殿', emoji: '🛶' },
-            { content: '斗姥殿', emoji: '🌌' },
             { content: '老君殿', emoji: '👴' },
-            { content: '元始殿', emoji: '🌅' },
-            { content: '通天殿', emoji: '🌠' },
-            { content: '紫微殿', emoji: '🔮' },
-            { content: '北極殿', emoji: '🧭' },
-            { content: '南斗殿', emoji: '⭐' },
-            { content: '丹房', emoji: '⚗️' },
-            { content: '藥圃', emoji: '🌿' },
-            { content: '道經樓', emoji: '📜' },
-            { content: '修真洞', emoji: '🕳️' },
-            { content: '八卦亭', emoji: '☯️' },
-            { content: '五行台', emoji: '🎭' },
           ];
         case 'mazu':
+          console.log(`✅ Returning Mazu temple content`);
           return [
             { content: '媽祖殿', emoji: '🛶' },
             { content: '觀音殿', emoji: '🙏' },
@@ -202,23 +135,12 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '關聖帝君殿', emoji: '⚔️' },
             { content: '月老殿', emoji: '💕' },
             { content: '城隍殿', emoji: '🏰' },
-            { content: '開台聖王殿', emoji: '🏛️' },
-            { content: '保生大帝殿', emoji: '💊' },
-            { content: '三山國王殿', emoji: '🏔️' },
-            { content: '虎爺廟', emoji: '🐅' },
-            { content: '土地公廟', emoji: '🌾' },
-            { content: '水仙王殿', emoji: '🌊' },
-            { content: '海龍王殿', emoji: '🐲' },
-            { content: '航海祈福廳', emoji: '⚓' },
-            { content: '漁民會館', emoji: '🎣' },
-            { content: '香客大廳', emoji: '🏢' },
-            { content: '祈願牆', emoji: '🧱' },
-            { content: '平安橋', emoji: '🌉' },
           ];
         default:
           return [];
       }
     }
+    return [];
   };
 
   // Generate cards for the game
@@ -410,7 +332,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
         </div>
         
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          {content.map((item: any, index: number) => (
+          {content.map((item, index) => (
             <div 
               key={index}
               className="bg-warm-gray-50 rounded-xl p-4 border-2 border-warm-gray-200"

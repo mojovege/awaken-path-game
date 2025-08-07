@@ -456,18 +456,15 @@ export default function GamePage() {
                     level={currentLevel}
                   />
                 )}
-                {(gameType === 'memory-scripture' || gameType === 'memory-temple') && (() => {
-                  console.log(`🎯 Passing to MemoryGame: religion="${user?.selectedReligion || 'buddhism'}", user:`, user);
-                  return (
-                    <MemoryGame 
-                      onScore={handleCustomGameScore} 
-                      onComplete={handleCustomGameComplete}
-                      religion={user?.selectedReligion || 'buddhism'}
-                      gameType={gameType}
-                      level={currentLevel}
-                    />
-                  );
-                })()}
+                {(gameType === 'memory-scripture' || gameType === 'memory-temple') && (
+                  <MemoryGame 
+                    onScore={handleCustomGameScore} 
+                    onComplete={handleCustomGameComplete}
+                    religion={user?.selectedReligion || 'buddhism'}
+                    gameType={gameType}
+                    level={currentLevel}
+                  />
+                )}
                 {(gameType === 'logic-scripture' || gameType === 'logic-sequence') && (
                   <LogicGame 
                     onScore={handleCustomGameScore} 
