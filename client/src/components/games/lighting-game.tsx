@@ -77,12 +77,13 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     return () => clearInterval(timer);
   }, [gameStarted]);
 
-  // Game end check - 分離時間檢查邏輯
+  // Game end check - 分離時間檢查邏輯，只在時間到時結束
   useEffect(() => {
-    if (gameStarted && currentTime >= gameLength) {
+    if (gameStarted && currentTime >= gameLength && gamePhase !== 'complete') {
+      console.log('Time up! Ending game...');
       setTimeout(() => endGame(), 100);
     }
-  }, [gameStarted, currentTime]);
+  }, [gameStarted, currentTime, gamePhase]);
 
   const generateSequence = () => {
     const newSequence: number[] = [];
@@ -199,9 +200,10 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const endGame = () => {
     if (gamePhase === 'complete') return; // 防止重複調用
     
+    console.log('Game ending...', { gamePhase, currentRound, maxRounds });
     setGamePhase('complete');
     setGameStarted(false);
-    setTimeout(onComplete, 1000);
+    setTimeout(onComplete, 2000); // 給用戶更多時間看結果
   };
 
   const getLampEmoji = () => {
@@ -309,7 +311,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
           {lamps.map((lamp) => (
             <div
               key={lamp.id}
-              className="aspect-square bg-warm-gold rounded-full flex items-center justify-center text-2xl animate-pulse"
+              className="aspect-square bg-warm-gold rounded-full flex items-center justify-center text-2xl"
             >
               {getLampEmoji()}
             </div>
@@ -376,15 +378,15 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
               className={`
                 aspect-square rounded-full border-2 transition-all duration-300 text-3xl
                 transform active:scale-95 
-                ${lamp.lit || lamp.target
-                  ? 'bg-warm-gold border-yellow-400 shadow-lg scale-110 animate-pulse' 
+                ${lamp.lit
+                  ? 'bg-warm-gold border-yellow-400 shadow-lg scale-110' 
                   : 'bg-warm-gray-100 border-warm-gray-300 hover:border-warm-gold hover:bg-warm-gray-200'
                 }
                 ${gamePhase !== 'play' ? 'cursor-not-allowed' : 'cursor-pointer'}
               `}
               data-testid={`lamp-${lamp.id}`}
             >
-              <span className={lamp.lit || lamp.target ? 'animate-bounce' : ''}>
+              <span>
                 {getLampEmoji()}
               </span>
             </button>
