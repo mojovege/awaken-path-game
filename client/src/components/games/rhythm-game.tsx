@@ -28,24 +28,28 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   const [combo, setCombo] = useState(0);
   const [showRules, setShowRules] = useState(false);
 
-  // Generate rhythm pattern
+  // Generate rhythm pattern - 根據遊戲時間動態生成
   useEffect(() => {
     if (!gameStarted) return;
     
     const pattern: Beat[] = [];
-    // 更慢的節奏，適合中老年用戶
-    const intervals = [2000, 3000, 4500, 6000, 7500, 9000, 10500, 12000, 13500];
+    // 根據遊戲時間長度生成節拍，節拍間隔根據等級調整
+    const beatInterval = Math.max(1500, 3000 - (level * 100)); // 等級越高節拍越快
+    const totalBeats = Math.floor(gameLength / beatInterval);
     
-    intervals.forEach((timing, index) => {
-      pattern.push({
-        id: index,
-        timing,
-        hit: false
-      });
-    });
+    for (let i = 0; i < totalBeats; i++) {
+      const timing = (i + 1) * beatInterval + 1000; // 開始前1秒準備時間
+      if (timing < gameLength - 1000) { // 結束前1秒停止生成
+        pattern.push({
+          id: i,
+          timing,
+          hit: false
+        });
+      }
+    }
     
     setBeats(pattern);
-  }, [gameStarted]);
+  }, [gameStarted, gameLength, level]);
 
   // Game timer - 標準計時器模式
   useEffect(() => {
