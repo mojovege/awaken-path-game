@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Star, Play, Lock } from 'lucide-react';
+import { BookOpen, Star, Play, Lock, ChevronDown } from 'lucide-react';
 import { useLocation } from 'wouter';
+import ChapterSelector from './chapter-selector';
 
 interface StoryProgressProps {
   religion: string;
@@ -30,6 +31,8 @@ interface StoryChapter {
 
 export default function StoryProgress({ religion, onChatClick, onGameClick }: StoryProgressProps) {
   const [, setLocation] = useLocation();
+  const [showChapterSelector, setShowChapterSelector] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState(1); // 當前選擇的關卡
 
   const getStoryContent = (): StoryChapter[] => {
     const baseGames: GameInChapter[] = [
@@ -225,7 +228,9 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
   };
 
   const stories = getStoryContent();
-  const currentStory = stories.find(s => s.unlocked && !s.completed) || stories[0];
+  // 根據選擇的關卡計算當前章節 (每章3關)
+  const currentChapter = Math.ceil(selectedLevel / 3);
+  const currentStory = stories[currentChapter - 1] || stories[0];
 
   const getReligionTitle = () => {
     switch (religion) {
@@ -264,6 +269,18 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
         <p className="text-elderly-base text-warm-gray-600">
           跟隨故事進度，完成相應的認知訓練遊戲
         </p>
+        
+        {/* Chapter Selector Button */}
+        <div className="flex justify-center">
+          <Button
+            onClick={() => setShowChapterSelector(true)}
+            variant="outline"
+            className="text-elderly-base px-6 py-3 border-2 border-warm-gold text-warm-gold hover:bg-warm-gold hover:text-white"
+          >
+            <ChevronDown className="w-5 h-5 mr-2" />
+            選擇章節 (第{currentChapter}章)
+          </Button>
+        </div>
       </div>
 
       {/* Current Story */}
@@ -396,6 +413,20 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
           ))}
         </div>
       </div>
+      
+      {/* Chapter Selector Modal */}
+      {showChapterSelector && (
+        <ChapterSelector
+          userStars={0} // 這裡可以從 API 獲取真實的星數
+          currentLevel={selectedLevel}
+          onLevelSelect={(level) => {
+            setSelectedLevel(level);
+            setShowChapterSelector(false);
+          }}
+          onClose={() => setShowChapterSelector(false)}
+          religion={religion}
+        />
+      )}
     </div>
   );
 }
