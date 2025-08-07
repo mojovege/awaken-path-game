@@ -78,9 +78,13 @@ export default function GamePage() {
 
   // Get user data to determine religion
   const [currentUserId] = useState(() => getCurrentUserId());
+  console.log(`Game Page: Using userId=${currentUserId}`);
+  
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
     queryKey: ['/api/user', currentUserId],
   });
+  
+  console.log(`Game Page: User data loaded:`, user);
 
   // Load user stats to get current stars
   const { data: userStats } = useQuery({
