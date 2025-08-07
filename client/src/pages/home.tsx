@@ -34,15 +34,20 @@ export default function Home() {
 
   const { data: user, refetch: refetchUser } = useQuery<User>({
     queryKey: ['/api/user', DEMO_USER_ID],
+    staleTime: 0, // 立即重新獲取最新資料
   });
 
   const { data: userStats } = useQuery<UserStats>({
     queryKey: ['/api/user', DEMO_USER_ID, 'stats'],
+    staleTime: 0,
   });
 
   useEffect(() => {
-    // Check if user needs to complete setup first
-    if (user && (!user.displayName || user.displayName === "王阿嬤")) {
+    // 只在首次載入時檢查用戶設定
+    if (user === undefined) return; // 還在載入中
+    
+    // 檢查用戶是否需要完成設定（但避免無限循環）
+    if (user && user.displayName === "王阿嬤" && window.location.pathname !== "/setup") {
       setLocation("/setup");
       return;
     }

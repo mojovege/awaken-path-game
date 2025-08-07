@@ -24,11 +24,16 @@ export default function UserSetup() {
       return response.json();
     },
     onSuccess: () => {
+      // 立即更新緩存並導向主頁面
       queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID, 'stats'] });
+      
       toast({
         title: "歡迎您！",
         description: "讓我們開始這段美好的修行之旅",
       });
+      
+      // 立即導向主頁面
       setLocation("/");
     },
     onError: () => {
@@ -147,7 +152,7 @@ export default function UserSetup() {
                   {updateUserMutation.isPending ? (
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                      正在設定中...
+                      正在準備中...
                     </div>
                   ) : (
                     <div className="flex items-center justify-center">
