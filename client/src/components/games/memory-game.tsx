@@ -176,6 +176,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '香客寮', emoji: '🏨' },
           ];
         case 'taoism':
+          console.log(`✅ Returning Taoism temple content`);
           return [
             { content: '三清殿', emoji: '⛩️' },
             { content: '玉皇殿', emoji: '👑' },
