@@ -43,7 +43,12 @@ Preferred communication style: Simple, everyday language.
 - **Chapter Structure**: 5-chapter progression system with 6 games each (初心啟蒙, 勤修精進, 智慧開悟, 深度修行, 圓滿境界)
 - **Game Types**: 6 distinct game types per chapter - memory-scripture, memory-temple, reaction-rhythm, reaction-lighting, logic-scripture, logic-sequence
 - **Level Mapping**: Each game type represents levels 1-6 within current chapter, total 30 games (5 chapters × 6 games)
-- **Difficulty Scaling**: 15 base levels with dynamic parameters - memory time (15-5s), reaction window (800-250ms), grid size (3-24), sequence length (2-15)
+- **Inverted Difficulty System**: Correct progression for elderly users - easier levels are shorter and simpler, harder levels are longer and more complex
+  - **Time Limits**: Level 1 (30s) → Level 15 (160s) - increasing game duration
+  - **Task Complexity**: Level 1 (few beats, fixed rhythm) → Level 15 (many beats, variable rhythm)
+  - **Memory Parameters**: Level 1 (8s memory time) → Level 15 (2s memory time)  
+  - **Reaction Windows**: Level 1 (1000ms) → Level 15 (250ms) - faster required responses
+  - **Beat Patterns**: Simple fixed intervals → Complex variable rhythms with random variations
 - **Scoring Algorithm**: Time-based scoring with difficulty multipliers and star rating system (1-3 stars per level)
 - **Chapter Unlocking**: Star-based progression (6, 12, 18, 24 stars required for chapters 2-5)
 - **Story Integration**: Each chapter contains thematic story content that connects with all 6 game types

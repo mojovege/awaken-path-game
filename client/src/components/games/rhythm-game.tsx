@@ -28,23 +28,74 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   const [combo, setCombo] = useState(0);
   const [showRules, setShowRules] = useState(false);
 
-  // Generate rhythm pattern - 根據遊戲時間動態生成
+  // Generate rhythm pattern - 根據等級調整難度
   useEffect(() => {
     if (!gameStarted) return;
     
     const pattern: Beat[] = [];
-    // 根據遊戲時間長度生成節拍，節拍間隔根據等級調整
-    const beatInterval = Math.max(1500, 3000 - (level * 100)); // 等級越高節拍越快
-    const totalBeats = Math.floor(gameLength / beatInterval);
     
-    for (let i = 0; i < totalBeats; i++) {
-      const timing = (i + 1) * beatInterval + 1000; // 開始前1秒準備時間
-      if (timing < gameLength - 1000) { // 結束前1秒停止生成
+    // 簡單關卡：固定節拍，較少數量
+    // 困難關卡：變化節拍，較多數量
+    if (level <= 3) {
+      // 初級：固定2秒間隔，少量節拍
+      const fixedInterval = 2000;
+      const beatCount = Math.floor((gameLength - 2000) / fixedInterval);
+      for (let i = 0; i < beatCount; i++) {
         pattern.push({
           id: i,
-          timing,
+          timing: 1000 + (i + 1) * fixedInterval,
           hit: false
         });
+      }
+    } else if (level <= 6) {
+      // 中級：1.5秒間隔，中等數量
+      const fixedInterval = 1500;
+      const beatCount = Math.floor((gameLength - 2000) / fixedInterval);
+      for (let i = 0; i < beatCount; i++) {
+        pattern.push({
+          id: i,
+          timing: 1000 + (i + 1) * fixedInterval,
+          hit: false
+        });
+      }
+    } else if (level <= 9) {
+      // 高級：1.2秒間隔，加入一些變化
+      const baseInterval = 1200;
+      let currentTiming = 1000;
+      let beatId = 0;
+      
+      while (currentTiming < gameLength - 1000) {
+        const variation = Math.random() * 400 - 200; // ±200ms變化
+        const interval = baseInterval + variation;
+        currentTiming += interval;
+        
+        if (currentTiming < gameLength - 1000) {
+          pattern.push({
+            id: beatId++,
+            timing: currentTiming,
+            hit: false
+          });
+        }
+      }
+    } else {
+      // 最高級：複雜變化節拍
+      const intervals = [800, 1000, 1200, 1500, 600, 1100, 900, 1300];
+      let currentTiming = 1000;
+      let beatId = 0;
+      let intervalIndex = 0;
+      
+      while (currentTiming < gameLength - 1000) {
+        const interval = intervals[intervalIndex % intervals.length];
+        currentTiming += interval;
+        intervalIndex++;
+        
+        if (currentTiming < gameLength - 1000) {
+          pattern.push({
+            id: beatId++,
+            timing: currentTiming,
+            hit: false
+          });
+        }
       }
     }
     
