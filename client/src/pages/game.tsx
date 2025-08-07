@@ -83,8 +83,8 @@ export default function GamePage() {
   });
   
   useEffect(() => {
-    if (userStats) {
-      setUserStars(userStats.totalStars || 0);
+    if (userStats && typeof userStats === 'object' && 'totalStars' in userStats) {
+      setUserStars((userStats as any).totalStars || 0);
     }
   }, [userStats]);
 
@@ -371,10 +371,24 @@ export default function GamePage() {
                 >
                   <ArrowLeft className="w-5 h-5 text-white" />
                 </Button>
-                <div>
-                  <h3 className="text-elderly-xl font-semibold text-white mb-1">
+                <div 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={exitGame}
+                  data-testid="header-title-clickable"
+                >
+                  <div className="flex items-center mb-2">
+                    <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                      </svg>
+                    </div>
+                    <h3 className="text-elderly-lg font-semibold text-white">
+                      覺悟之路
+                    </h3>
+                  </div>
+                  <h4 className="text-elderly-xl font-semibold text-white mb-1">
                     {getGameTitle(gameType!)}
-                  </h3>
+                  </h4>
                   <p className="text-white text-opacity-90 text-elderly-sm">
                     {useCustomGame ? `第 ${currentLevel} 關 - ${getChapterForLevel(currentLevel).name}` : `第${gameState.currentQuestion}關・${question?.question?.slice(0, 20) || ''}...`}
                   </p>
@@ -531,6 +545,7 @@ export default function GamePage() {
       {/* Chapter Selector Modal */}
       {showChapterSelector && (
         <ChapterSelector
+          religion={user?.selectedReligion || 'buddhism'}
           userStars={userStars}
           currentLevel={currentLevel}
           onLevelSelect={(level) => {
