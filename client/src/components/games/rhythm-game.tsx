@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Music, Clock, Volume2 } from 'lucide-react';
 import GameRulesModal from '../game-rules-modal';
 import { getDifficultyForLevel } from '@/lib/game-logic';
-import { Music, Volume2 } from 'lucide-react';
 
 interface RhythmGameProps {
   onScore: (points: number) => void;
@@ -53,7 +52,12 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     if (!gameStarted) return;
     
     const timer = setInterval(() => {
-      setCurrentTime(prev => prev + 100);
+      setCurrentTime(prev => {
+        if (prev >= gameLength - 100) {
+          return gameLength;
+        }
+        return prev + 100;
+      });
     }, 100);
 
     return () => clearInterval(timer);
@@ -62,9 +66,9 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   // Game end check - 分離時間檢查邏輯
   useEffect(() => {
     if (gameStarted && currentTime >= gameLength) {
-      endGame();
+      setTimeout(() => endGame(), 100);
     }
-  }, [gameStarted, currentTime, gameLength]);
+  }, [gameStarted, currentTime]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -180,14 +184,28 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     );
   }
 
+  const timeRemaining = Math.max(0, gameLength - currentTime);
+  const seconds = Math.ceil(timeRemaining / 1000);
+  const progressPercent = (currentTime / gameLength) * 100;
+
   return (
     <div className="space-y-6">
-      {/* Progress bar */}
-      <div className="w-full bg-warm-gray-200 rounded-full h-3">
-        <div 
-          className="bg-warm-gold rounded-full h-3 transition-all duration-100"
-          style={{ width: `${(currentTime / gameLength) * 100}%` }}
-        />
+      {/* 計時器顯示 */}
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Clock className="w-5 h-5 text-warm-gold" />
+          <span className={`text-elderly-lg font-bold ${seconds <= 10 ? 'text-red-500 animate-pulse' : 'text-warm-gray-700'}`}>
+            {seconds} 秒
+          </span>
+        </div>
+        <div className="w-full bg-warm-gray-200 rounded-full h-4">
+          <div 
+            className={`rounded-full h-4 transition-all duration-100 ${
+              seconds <= 10 ? 'bg-red-500' : 'bg-warm-gold'
+            }`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
 
       {/* Score and combo */}
