@@ -224,6 +224,7 @@ export default function GamePage() {
 
   const endGame = () => {
     setShowResult(true);
+    console.log(`🎯 Saving game progress for userId: ${currentUserId}`);
     saveProgressMutation.mutate({
       gameType: gameType!,
       score: gameState.score,
@@ -263,6 +264,7 @@ export default function GamePage() {
   };
 
   const handleCustomGameComplete = () => {
+    console.log(`🏁 Custom game complete for userId: ${currentUserId}`);
     endGame();
   };
 
