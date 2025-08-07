@@ -115,63 +115,84 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
         </div>
       </div>
       
-      {/* Progress Overview */}
+      {/* Story Progress Section - moved from bottom */}
       <Card className="shadow-lg">
         <CardContent className="p-6 md:p-8">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-elderly-xl md:text-elderly-2xl font-semibold text-gray-800 mb-2">
-                今日修行進度
-              </h2>
-              <p className="text-elderly-base text-warm-gray-600">持續練習，智慧成長</p>
+              <h3 className="text-elderly-xl md:text-elderly-2xl font-semibold text-gray-800 mb-2">修行故事進度</h3>
+              <p className="text-elderly-base text-warm-gray-600">跟隨智慧導師的腳步，展開心靈之旅</p>
             </div>
-            <div className="mt-4 lg:mt-0">
-              <div className="inline-flex items-center px-4 py-2 bg-warm-gold bg-opacity-20 text-warm-gold text-elderly-base font-medium rounded-xl">
-                <Flame className="w-5 h-5 mr-2" />
-                連續修行 {userStats?.consecutiveDays || 0} 天
-              </div>
+            <div className="text-right">
+              <p className="text-elderly-2xl font-bold text-warm-gold">
+                第{storyProgress?.currentChapter || 1}章
+              </p>
+              <p className="text-elderly-sm text-warm-gray-600">共12章</p>
             </div>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="progress-overview">
-            <div className="text-center">
-              <ProgressRing 
-                percentage={userStats?.memoryProgress || 0} 
-                color="hsl(45, 78%, 52%)"
-                size={96}
-              />
-              <p className="text-elderly-base font-medium text-gray-800 mt-4 mb-1">記憶訓練</p>
-              <p className="text-elderly-sm text-warm-gray-600">今日完成 3/4</p>
+          {/* Story Timeline */}
+          <div className="relative" data-testid="story-timeline">
+            <div className="absolute left-8 top-0 bottom-0 w-px bg-warm-gray-100"></div>
+            
+            {/* Completed Chapter */}
+            <div className="relative flex items-start mb-8">
+              <div className="w-16 h-16 bg-warm-gold rounded-full flex items-center justify-center z-10">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+              <div className="ml-6 flex-1">
+                <div className="bg-warm-gray-50 rounded-xl p-4">
+                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">第二章：智慧的種子</h4>
+                  <p className="text-elderly-base text-warm-gray-600 mb-3">
+                    您已成功完成了記憶訓練，就像在心田中播下智慧的種子。繼續努力，這些種子將茁壯成長。
+                  </p>
+                  <div className="flex items-center text-elderly-sm text-green-600">
+                    <Trophy className="w-4 h-4 mr-2" />
+                    <span>獲得成就：{storyProgress?.achievements?.[0] || "記憶大師"}</span>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div className="text-center">
-              <ProgressRing 
-                percentage={userStats?.reactionProgress || 0} 
-                color="hsl(0, 62%, 55%)"
-                size={96}
-              />
-              <p className="text-elderly-base font-medium text-gray-800 mt-4 mb-1">反應訓練</p>
-              <p className="text-elderly-sm text-warm-gray-600">今日完成 2/4</p>
+            {/* Current Chapter */}
+            <div className="relative flex items-start mb-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-warm-gold to-yellow-500 rounded-full flex items-center justify-center z-10">
+                <Play className="w-6 h-6 text-white" />
+              </div>
+              <div className="ml-6 flex-1">
+                <div className="bg-warm-gold bg-opacity-10 border-2 border-warm-gold rounded-xl p-4">
+                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">
+                    第{storyProgress?.currentChapter || 3}章：專注之光
+                  </h4>
+                  <p className="text-elderly-base text-warm-gray-600 mb-3">
+                    現在正是修煉專注力的時候。完成反應訓練遊戲，點亮內心的專注之光。
+                  </p>
+                  <div className="w-full bg-warm-gray-200 rounded-full h-2 mb-3">
+                    <div 
+                      className="bg-warm-gold h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${storyProgress?.chapterProgress || 60}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-elderly-sm text-warm-gray-600">
+                    進度：{storyProgress?.chapterProgress || 60}%
+                  </p>
+                </div>
+              </div>
             </div>
             
-            <div className="text-center">
-              <ProgressRing 
-                percentage={userStats?.logicProgress || 0} 
-                color="hsl(95, 20%, 55%)"
-                size={96}
-              />
-              <p className="text-elderly-base font-medium text-gray-800 mt-4 mb-1">邏輯思考</p>
-              <p className="text-elderly-sm text-warm-gray-600">今日完成 1/4</p>
-            </div>
-            
-            <div className="text-center">
-              <ProgressRing 
-                percentage={userStats?.focusProgress || 0} 
-                color="hsl(192, 38%, 47%)"
-                size={96}
-              />
-              <p className="text-elderly-base font-medium text-gray-800 mt-4 mb-1">專注訓練</p>
-              <p className="text-elderly-sm text-warm-gray-600">今日完成 4/4</p>
+            {/* Next Chapter */}
+            <div className="relative flex items-start">
+              <div className="w-16 h-16 bg-warm-gray-200 rounded-full flex items-center justify-center z-10">
+                <Lock className="w-6 h-6 text-warm-gray-400" />
+              </div>
+              <div className="ml-6 flex-1">
+                <div className="bg-warm-gray-50 rounded-xl p-4 opacity-60">
+                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">第四章：邏輯之門</h4>
+                  <p className="text-elderly-base text-warm-gray-600">
+                    完成當前章節後解鎖。邏輯思維將為您開啟更深層的智慧大門。
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -295,90 +316,7 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
         </div>
       </div>
 
-      {/* Story Progress Section */}
-      <Card className="shadow-lg">
-        <CardContent className="p-6 md:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-elderly-xl font-semibold text-gray-800 mb-2">修行故事進度</h3>
-              <p className="text-elderly-base text-warm-gray-600">跟隨智慧導師的腳步，展開心靈之旅</p>
-            </div>
-            <div className="text-right">
-              <p className="text-elderly-2xl font-bold text-warm-gold">
-                第{storyProgress?.currentChapter || 1}章
-              </p>
-              <p className="text-elderly-sm text-warm-gray-600">共12章</p>
-            </div>
-          </div>
-          
-          {/* Story Timeline */}
-          <div className="relative" data-testid="story-timeline">
-            <div className="absolute left-8 top-0 bottom-0 w-px bg-warm-gray-100"></div>
-            
-            {/* Completed Chapter */}
-            <div className="relative flex items-start mb-8">
-              <div className="w-16 h-16 bg-warm-gold rounded-full flex items-center justify-center z-10">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-              <div className="ml-6 flex-1">
-                <div className="bg-warm-gray-50 rounded-xl p-4">
-                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">第二章：智慧的種子</h4>
-                  <p className="text-elderly-base text-warm-gray-600 mb-3">
-                    您已成功完成了記憶訓練，就像在心田中播下智慧的種子。繼續努力，這些種子將茁壯成長。
-                  </p>
-                  <div className="flex items-center text-elderly-sm text-green-600">
-                    <Trophy className="w-4 h-4 mr-2" />
-                    <span>獲得成就：{storyProgress?.achievements?.[0] || "記憶大師"}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Current Chapter */}
-            <div className="relative flex items-start mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-warm-gold to-yellow-500 rounded-full flex items-center justify-center z-10">
-                <Play className="w-6 h-6 text-white" />
-              </div>
-              <div className="ml-6 flex-1">
-                <div className="bg-warm-gold bg-opacity-10 border-2 border-warm-gold rounded-xl p-4">
-                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">
-                    第{storyProgress?.currentChapter || 3}章：專注之光 
-                    <span className="text-elderly-sm text-warm-gold font-normal ml-2">(進行中)</span>
-                  </h4>
-                  <p className="text-elderly-base text-warm-gray-600 mb-3">
-                    學習專注的力量，就像點燃心中的明燈。完成反應訓練，體驗身心合一的境界。
-                  </p>
-                  <div className="w-full bg-warm-gray-100 rounded-full h-3 mb-3">
-                    <div 
-                      className="bg-warm-gold h-3 rounded-full transition-all duration-500" 
-                      style={{ width: `${storyProgress?.chapterProgress || 60}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-elderly-sm">
-                    <span className="text-warm-gray-600">進度：{storyProgress?.chapterProgress || 60}%</span>
-                    <span className="text-warm-gold font-medium">預計完成：今天</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Next Chapter */}
-            <div className="relative flex items-start">
-              <div className="w-16 h-16 bg-warm-gray-100 rounded-full flex items-center justify-center z-10">
-                <Lock className="w-6 h-6 text-warm-gray-600" />
-              </div>
-              <div className="ml-6 flex-1">
-                <div className="bg-warm-gray-50 rounded-xl p-4 opacity-75">
-                  <h4 className="text-elderly-lg font-semibold text-warm-gray-600 mb-2">第四章：慈悲之心</h4>
-                  <p className="text-elderly-base text-warm-gray-600">
-                    完成第三章後解鎖，學習慈悲與智慧的真正意義...
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Sharing Modal */}
       {showSharing && (

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ReligionSelection from "../components/religion-selection";
 import Dashboard from "../components/dashboard";
+import UserInfoModal from "../components/user-info-modal";
 import { Button } from "@/components/ui/button";
 import { Bell, User } from "lucide-react";
 
@@ -25,6 +26,7 @@ const DEMO_USER_ID = "demo-user-1";
 
 export default function Home() {
   const [showReligionSelection, setShowReligionSelection] = useState(true);
+  const [showUserInfo, setShowUserInfo] = useState(false);
 
   const { data: user, refetch: refetchUser } = useQuery<User>({
     queryKey: ['/api/user', DEMO_USER_ID],
@@ -84,14 +86,19 @@ export default function Home() {
                 </span>
               </Button>
               
-              <div className="flex items-center space-x-3 bg-warm-gray-50 rounded-xl px-4 py-2" data-testid="user-profile">
+              <Button
+                onClick={() => setShowUserInfo(true)}
+                variant="ghost"
+                className="flex items-center space-x-3 bg-warm-gray-50 rounded-xl px-4 py-2 hover:bg-warm-gray-100 transition-colors"
+                data-testid="button-user-profile"
+              >
                 <div className="w-10 h-10 bg-warm-gold rounded-full flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-elderly-base font-medium hidden sm:block">
-                  {user?.displayName || "使用者"}
+                  {user?.displayName || "王阿嬤"}
                 </span>
-              </div>
+              </Button>
             </div>
           </div>
         </div>
@@ -130,6 +137,16 @@ export default function Home() {
           </svg>
         </Button>
       </div>
+
+      {/* User Info Modal */}
+      {showUserInfo && (
+        <UserInfoModal
+          userName={user?.displayName}
+          selectedReligion={user?.selectedReligion || undefined}
+          userStats={userStats}
+          onClose={() => setShowUserInfo(false)}
+        />
+      )}
     </div>
   );
 }
