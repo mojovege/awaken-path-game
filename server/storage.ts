@@ -8,6 +8,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(userId: string, updates: Partial<Pick<User, 'displayName' | 'selectedReligion'> & { age?: number }>): Promise<User>;
   updateUserReligion(userId: string, religion: Religion): Promise<User>;
   
   // Game progress
@@ -115,6 +116,20 @@ export class MemStorage implements IStorage {
     this.storyProgress.set(id, story);
     
     return user;
+  }
+
+  async updateUser(userId: string, updates: Partial<Pick<User, 'displayName' | 'selectedReligion'> & { age?: number }>): Promise<User> {
+    const user = this.users.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    const updatedUser: User = {
+      ...user,
+      ...updates,
+    };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 
   async updateUserReligion(userId: string, religion: Religion): Promise<User> {

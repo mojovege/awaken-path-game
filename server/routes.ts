@@ -29,6 +29,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/user/:id", async (req, res) => {
+    try {
+      const user = await storage.updateUser(req.params.id, req.body);
+      res.json(user);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update user" });
+    }
+  });
+
   app.put("/api/user/:id/religion", async (req, res) => {
     try {
       const { religion } = req.body;

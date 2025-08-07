@@ -41,11 +41,17 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // Check if user needs to complete setup first
+    if (user && (!user.displayName || user.displayName === "王阿嬤")) {
+      setLocation("/setup");
+      return;
+    }
+    
     if (user?.selectedReligion) {
       setShowReligionSelection(false);
       setShowStoryProgress(true);
     }
-  }, [user]);
+  }, [user, setLocation]);
 
   const handleReligionSelected = async () => {
     await refetchUser();
