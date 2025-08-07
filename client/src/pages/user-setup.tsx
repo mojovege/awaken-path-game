@@ -45,12 +45,15 @@ export default function UserSetup() {
       // 立即導向主頁面
       setLocation("/");
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('用戶設定錯誤:', error);
       toast({
-        title: "設定失敗",
-        description: "請稍後再試",
+        title: "暫時無法完成設定",
+        description: "請稍後再試，您的基本資料已保存",
         variant: "destructive",
       });
+      // 即使出錯也導向主頁面，讓用戶可以繼續使用
+      setTimeout(() => setLocation("/"), 2000);
     },
   });
 

@@ -119,9 +119,42 @@ export class MemStorage implements IStorage {
   }
 
   async updateUser(userId: string, updates: Partial<Pick<User, 'displayName' | 'selectedReligion'> & { age?: number }>): Promise<User> {
-    const user = this.users.get(userId);
+    let user = this.users.get(userId);
     if (!user) {
-      throw new Error("User not found");
+      // 如果用戶不存在，先創建一個基本用戶
+      user = {
+        id: userId,
+        username: userId,
+        displayName: "新用戶",
+        selectedReligion: null,
+        createdAt: new Date(),
+      };
+      this.users.set(userId, user);
+      
+      // 同時初始化用戶統計
+      const stats: UserStats = {
+        id: randomUUID(),
+        userId: userId,
+        memoryProgress: 0,
+        reactionProgress: 0,
+        logicProgress: 0,
+        focusProgress: 0,
+        consecutiveDays: 0,
+        totalGamesPlayed: 0,
+        averageScore: 0,
+      };
+      this.userStats.set(userId, stats);
+      
+      // 初始化故事進度
+      const story: StoryProgress = {
+        id: randomUUID(),
+        userId: userId,
+        currentChapter: 1,
+        chapterProgress: 0,
+        completedChapters: [],
+        achievements: [],
+      };
+      this.storyProgress.set(userId, story);
     }
     
     const updatedUser: User = {
