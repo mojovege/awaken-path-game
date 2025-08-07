@@ -48,23 +48,23 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     setBeats(pattern);
   }, [gameStarted]);
 
-  // Game timer
+  // Game timer - 標準計時器模式
   useEffect(() => {
     if (!gameStarted) return;
     
     const timer = setInterval(() => {
-      setCurrentTime(prev => {
-        if (prev + 100 >= gameLength) {
-          // 停止遊戲
-          setGameStarted(false);
-          return gameLength;
-        }
-        return prev + 100;
-      });
+      setCurrentTime(prev => prev + 100);
     }, 100);
 
     return () => clearInterval(timer);
-  }, [gameStarted, gameLength]);
+  }, [gameStarted]);
+
+  // Game end check - 分離時間檢查邏輯
+  useEffect(() => {
+    if (gameStarted && currentTime >= gameLength) {
+      endGame();
+    }
+  }, [gameStarted, currentTime, gameLength]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -79,15 +79,8 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     setGameStarted(false);
     const finalScore = Math.floor(score * (combo / 10 + 1));
     onScore(finalScore);
-    setTimeout(() => onComplete(), 500); // 延遲一點讓UI更新
+    setTimeout(() => onComplete(), 500);
   };
-  
-  // Check if game should end
-  useEffect(() => {
-    if (!gameStarted && currentTime >= gameLength) {
-      endGame();
-    }
-  }, [gameStarted, currentTime, gameLength]);
 
   const hitBeat = () => {
     const tolerance = difficulty.reactionWindow; // 根據等級調整容錯時間
