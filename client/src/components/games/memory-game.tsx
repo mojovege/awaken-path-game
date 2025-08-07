@@ -168,7 +168,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       const shuffled = [...gameCards].sort(() => Math.random() - 0.5);
       setCards(shuffled);
     }
-  }, [gameStarted, studyPhase, cards.length]);
+  }, [gameStarted, studyPhase]);
 
   // Study phase timer
   useEffect(() => {
