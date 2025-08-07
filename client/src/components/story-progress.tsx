@@ -322,47 +322,16 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
                 {currentStory.content}
               </p>
               
-              {/* 當前關卡重點遊戲 */}
-              <div className="bg-white rounded-lg p-4 mb-6 border border-warm-gold border-opacity-30">
-                <h4 className="text-elderly-base font-semibold text-warm-gold mb-2">
-                  🎯 本關重點訓練
-                </h4>
-                <div className="flex items-center justify-center">
-                  <Button
-                    onClick={() => onGameClick(currentGameType)}
-                    className="bg-warm-gold text-white hover:bg-opacity-90 text-elderly-base px-8 py-3"
-                    data-testid={`button-main-game-${currentGameType}`}
-                  >
-                    <Play className="w-5 h-5 mr-2" />
-                    開始 {getGameTitle(currentGameType)}
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Games in Chapter */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                {currentStory.games.map((game, index) => (
-                  <Button
-                    key={game.type}
-                    onClick={() => onGameClick(game.type)}
-                    variant="outline"
-                    size="sm"
-                    className="text-elderly-sm h-auto py-3 text-left flex flex-col items-center"
-                    data-testid={`button-chapter-game-${game.type}`}
-                  >
-                    <div className="flex items-center justify-center w-8 h-8 bg-warm-gold bg-opacity-20 rounded-full mb-2">
-                      <span className="text-elderly-sm font-semibold">{index + 1}</span>
-                    </div>
-                    <span className="text-center">{game.title}</span>
-                    {game.stars > 0 && (
-                      <div className="flex mt-1">
-                        {Array.from({ length: Math.min(game.stars, 3) }).map((_, i) => (
-                          <Star key={i} className="w-3 h-3 text-yellow-500 fill-current" />
-                        ))}
-                      </div>
-                    )}
-                  </Button>
-                ))}
+              {/* 開始當前關卡按鈕 */}
+              <div className="flex items-center justify-center mb-6">
+                <Button
+                  onClick={() => onGameClick(currentGameType)}
+                  className="bg-warm-gold text-white hover:bg-opacity-90 text-elderly-lg px-12 py-4"
+                  data-testid={`button-start-current-game`}
+                >
+                  <Play className="w-6 h-6 mr-3" />
+                  開始遊戲
+                </Button>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
