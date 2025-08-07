@@ -26,7 +26,12 @@ interface GameState {
   totalQuestions: number;
 }
 
-const DEMO_USER_ID = "demo-user-1";
+// Use localStorage to get current user ID
+const getCurrentUserId = () => {
+  return localStorage.getItem('userId') || "demo-user-1";
+};
+
+const DEMO_USER_ID = getCurrentUserId();
 
 export default function GamePage() {
   const { gameType } = useParams<{ gameType: string }>();
@@ -72,13 +77,14 @@ export default function GamePage() {
   };
 
   // Get user data to determine religion
+  const [currentUserId] = useState(() => getCurrentUserId());
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
-    queryKey: ['/api/user', DEMO_USER_ID],
+    queryKey: ['/api/user', currentUserId],
   });
 
   // Load user stats to get current stars
   const { data: userStats } = useQuery({
-    queryKey: [`/api/user/${DEMO_USER_ID}/stats`],
+    queryKey: [`/api/user/${currentUserId}/stats`],
     enabled: !!user?.selectedReligion,
   });
   
@@ -120,14 +126,14 @@ export default function GamePage() {
   const saveProgressMutation = useMutation({
     mutationFn: async (data: { gameType: string; score: number; level: number }) => {
       const response = await apiRequest('POST', '/api/game/progress', {
-        userId: DEMO_USER_ID,
+        userId: currentUserId,
         ...data,
       });
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID, 'stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID, 'game-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user', currentUserId, 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user', currentUserId, 'game-progress'] });
     },
   });
 
