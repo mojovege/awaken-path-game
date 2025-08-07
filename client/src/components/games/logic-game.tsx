@@ -107,10 +107,10 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
   }, [gameStarted]);
 
   useEffect(() => {
-    if (sequences.length > 0) {
+    if (sequences.length > 0 && !completed) {
       checkCompletion();
     }
-  }, [sequences]);
+  }, [sequences, completed]);
 
   const startGame = () => {
     setGameStarted(true);

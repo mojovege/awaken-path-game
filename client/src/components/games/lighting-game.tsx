@@ -166,7 +166,10 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   };
 
   const endGame = () => {
+    if (gamePhase === 'complete') return; // 防止重複調用
+    
     setGamePhase('complete');
+    setGameStarted(false);
     setTimeout(onComplete, 1000);
   };
 
