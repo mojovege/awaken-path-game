@@ -101,7 +101,9 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
   }, [gameStarted]);
 
   useEffect(() => {
-    checkCompletion();
+    if (sequences.length > 0) {
+      checkCompletion();
+    }
   }, [sequences]);
 
   const startGame = () => {
@@ -111,6 +113,8 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
   };
 
   const moveItem = (id: number, direction: 'up' | 'down') => {
+    if (completed) return; // 防止完成後繼續操作
+    
     setAttempts(prev => prev + 1);
     
     setSequences(prev => {
@@ -131,13 +135,15 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
   };
 
   const checkCompletion = () => {
+    if (sequences.length === 0 || completed) return;
+    
     const isComplete = sequences.every((item, index) => item.order === index + 1);
     
-    if (isComplete && sequences.length > 0 && !completed) {
+    if (isComplete) {
       setCompleted(true);
       const score = Math.max(50, 200 - (attempts * 10));
       onScore(score);
-      setTimeout(onComplete, 2000);
+      setTimeout(onComplete, 2500); // 給用戶更多時間看結果
     }
   };
 

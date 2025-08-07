@@ -19,7 +19,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
   const [currentTime, setCurrentTime] = useState(0);
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
-  const [gameLength] = useState(15000); // 15 seconds
+  const [gameLength] = useState(20000); // 20 seconds，給用戶更多時間
   const [combo, setCombo] = useState(0);
 
   // Generate rhythm pattern
@@ -27,7 +27,8 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
     if (!gameStarted) return;
     
     const pattern: Beat[] = [];
-    const intervals = [1000, 1500, 2000, 2800, 3500, 4200, 5000, 5800, 6500, 7300, 8000, 8700, 9500, 10200, 11000, 11800, 12500, 13300, 14000];
+    // 更慢的節奏，適合中老年用戶
+    const intervals = [2000, 3000, 4500, 6000, 7500, 9000, 10500, 12000, 13500];
     
     intervals.forEach((timing, index) => {
       pattern.push({
@@ -72,7 +73,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
   };
 
   const hitBeat = () => {
-    const tolerance = 300; // 300ms tolerance
+    const tolerance = 500; // 500ms tolerance，讓中老年用戶更容易成功
     const nearbyBeat = beats.find(beat => 
       !beat.hit && 
       Math.abs(beat.timing - currentTime) <= tolerance
@@ -107,10 +108,10 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion }
 
   const getInstrumentEmoji = () => {
     switch (religion) {
-      case 'buddhism': return '🪣';
+      case 'buddhism': return '🥢'; // 木魚棒
       case 'taoism': return '🔔';
       case 'mazu': return '🪘';
-      default: return '🪣';
+      default: return '🥢';
     }
   };
 

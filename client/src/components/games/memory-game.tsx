@@ -97,7 +97,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   };
 
   useEffect(() => {
-    if (gameStarted && !studyPhase) {
+    if (gameStarted && !studyPhase && cards.length === 0) {
       const content = getGameContent();
       const gameCards = content.map((item, index) => ({
         id: index,
@@ -111,7 +111,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       const shuffled = [...gameCards].sort(() => Math.random() - 0.5);
       setCards(shuffled);
     }
-  }, [gameStarted, studyPhase]);
+  }, [gameStarted, studyPhase, cards.length]);
 
   // Study phase timer
   useEffect(() => {
@@ -120,7 +120,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
         setStudyTime(prev => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (studyPhase && studyTime === 0) {
+    } else if (studyPhase && gameStarted && studyTime === 0) {
       setStudyPhase(false);
     }
   }, [studyPhase, studyTime, gameStarted]);
@@ -129,8 +129,10 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   useEffect(() => {
     if (flippedCards.length === 2) {
       const [first, second] = flippedCards;
-      const firstCard = cards[first];
-      const secondCard = cards[second];
+      const firstCard = cards.find(c => c.id === first);
+      const secondCard = cards.find(c => c.id === second);
+      
+      if (!firstCard || !secondCard) return;
       
       setAttempts(prev => prev + 1);
       
@@ -142,17 +144,18 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             : card
         ));
         
-        setMatches(prev => prev + 1);
+        const newMatches = matches + 1;
+        setMatches(newMatches);
         onScore(100 - (attempts * 5)); // Higher score for fewer attempts
         
         setFlippedCards([]);
         
         // Check if game is complete
-        if (matches + 1 === cards.length / 2) {
-          setTimeout(onComplete, 1000);
+        if (newMatches === cards.length / 2) {
+          setTimeout(onComplete, 1500);
         }
       } else {
-        // No match, flip back after delay
+        // No match, flip back after longer delay for elderly users
         setTimeout(() => {
           setCards(prev => prev.map(card => 
             card.id === firstCard.id || card.id === secondCard.id
@@ -160,15 +163,17 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
               : card
           ));
           setFlippedCards([]);
-        }, 1500);
+        }, 2500); // 增加到2.5秒讓用戶看清楚
       }
     }
-  }, [flippedCards, cards, attempts, matches]);
+  }, [flippedCards]); // 修正依賴項
 
   const startGame = () => {
+    setCards([]); // 重置卡片
+    setFlippedCards([]);
     setGameStarted(true);
     setStudyPhase(true);
-    setStudyTime(8);
+    setStudyTime(12); // 增加記憶時間到12秒
     setAttempts(0);
     setMatches(0);
   };

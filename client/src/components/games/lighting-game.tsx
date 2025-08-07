@@ -50,7 +50,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
 
   const generateSequence = () => {
     const newSequence: number[] = [];
-    const sequenceLength = Math.min(3 + currentRound, 7); // Start with 4, max 8
+    const sequenceLength = Math.min(2 + currentRound, 5); // 從3個開始，最多6個
     
     for (let i = 0; i < sequenceLength; i++) {
       newSequence.push(Math.floor(Math.random() * 9));
@@ -68,19 +68,22 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     for (let i = 0; i < seq.length; i++) {
       const lampId = seq[i];
       
+      // 等待時間讓用戶準備
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Light up the lamp
       setLamps(prev => prev.map(lamp => 
         lamp.id === lampId ? { ...lamp, lit: true, target: true } : lamp
       ));
       
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 1200)); // 增加顯示時間
       
       // Turn off the lamp
       setLamps(prev => prev.map(lamp => 
         lamp.id === lampId ? { ...lamp, lit: false, target: false } : lamp
       ));
       
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 400)); // 增加間隔時間
     }
     
     setShowingSequence(false);
@@ -107,15 +110,21 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     // Check if the sequence matches
     const currentIndex = newPlayerSequence.length - 1;
     if (newPlayerSequence[currentIndex] !== sequence[currentIndex]) {
-      // Wrong! Game over or retry
+      // Wrong! Give feedback and retry or end
+      setLamps(prev => prev.map(lamp => 
+        lamp.id === lampId ? { ...lamp, lit: true } : lamp
+      ));
+      
       setTimeout(() => {
+        setLamps(prev => prev.map(lamp => ({ ...lamp, lit: false })));
+        
         if (currentRound > 1) {
           setCurrentRound(prev => prev - 1);
-          generateSequence();
+          setTimeout(generateSequence, 1500); // 給用戶更多時間理解
         } else {
           endGame();
         }
-      }, 500);
+      }, 1000);
       return;
     }
     
@@ -129,11 +138,13 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
       if (currentRound >= 5) {
         // Game complete
         setGamePhase('complete');
-        setTimeout(onComplete, 1500);
+        setTimeout(onComplete, 2000); // 給更多時間看結果
       } else {
-        // Next round
-        setCurrentRound(prev => prev + 1);
-        setTimeout(generateSequence, 1000);
+        // Next round - 給用戶休息時間
+        setTimeout(() => {
+          setCurrentRound(prev => prev + 1);
+          setTimeout(generateSequence, 1000);
+        }, 1500);
       }
     }
   };
