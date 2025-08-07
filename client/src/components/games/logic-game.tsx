@@ -511,12 +511,19 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
           </div>
         </div>
 
-        <GameRulesModal 
-          isOpen={showRules}
-          onClose={() => setShowRules(false)}
-          gameType={gameType}
-          religion={religion}
-        />
+        {showRules && (
+          <GameRulesModal 
+            gameType={gameType}
+            level={level}
+            religion={religion}
+            difficulty={difficulty}
+            onStart={() => {
+              setShowRules(false);
+              startGame();
+            }}
+            onClose={() => setShowRules(false)}
+          />
+        )}
       </>
     );
   }
