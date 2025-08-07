@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Flame, Zap, Lightbulb } from 'lucide-react';
+import { Flame, Zap, Lightbulb, Clock } from 'lucide-react';
 import GameRulesModal from '../game-rules-modal';
 import { getDifficultyForLevel } from '@/lib/game-logic';
 
@@ -32,10 +32,17 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
   const [score, setScore] = useState(0);
   const [showingSequence, setShowingSequence] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [gameLength] = useState(difficulty.timeLimit * 1000);
+  const [maxRounds, setMaxRounds] = useState(1);
 
-  // Initialize lamps in a 3x3 grid
+  // Initialize lamps and game parameters
   useEffect(() => {
     if (gameStarted) {
+      // 根據等級設定回合數：簡單關卡少回合，困難關卡多回合
+      const rounds = level <= 3 ? 3 : level <= 6 ? 4 : level <= 9 ? 5 : level <= 12 ? 6 : 7;
+      setMaxRounds(rounds);
+      
       const initialLamps: Lamp[] = [];
       for (let i = 0; i < 9; i++) {
         const row = Math.floor(i / 3);
@@ -52,7 +59,30 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
       setLamps(initialLamps);
       generateSequence();
     }
+  }, [gameStarted, level]);
+
+  // Game timer - 標準計時器模式
+  useEffect(() => {
+    if (!gameStarted) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(prev => {
+        if (prev >= gameLength - 100) {
+          return gameLength;
+        }
+        return prev + 100;
+      });
+    }, 100);
+
+    return () => clearInterval(timer);
   }, [gameStarted]);
+
+  // Game end check - 分離時間檢查邏輯
+  useEffect(() => {
+    if (gameStarted && currentTime >= gameLength) {
+      setTimeout(() => endGame(), 100);
+    }
+  }, [gameStarted, currentTime]);
 
   const generateSequence = () => {
     const newSequence: number[] = [];
@@ -84,7 +114,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
         lamp.id === lampId ? { ...lamp, lit: true, target: true } : lamp
       ));
       
-      const displayTime = Math.max(800, difficulty.memoryTime * 1000 * 0.8); // 根據等級調整顯示時間
+      const displayTime = difficulty.memoryTime * 1000; // 直接使用memoryTime參數
       await new Promise(resolve => setTimeout(resolve, displayTime));
       
       // Turn off the lamp
@@ -144,7 +174,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
       setScore(prev => prev + points);
       onScore(points);
       
-      if (currentRound >= Math.min(3 + Math.floor(level / 2), 8)) { // 根據等級調整回合數
+      if (currentRound >= maxRounds) { // 使用動態計算的回合數
         // Game complete
         setGamePhase('complete');
         setTimeout(onComplete, 2000); // 給更多時間看結果
@@ -163,6 +193,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     setCurrentRound(1);
     setScore(0);
     setPlayerSequence([]);
+    setCurrentTime(0);
   };
 
   const endGame = () => {
@@ -271,7 +302,7 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
             總得分: {score}
           </p>
           <p className="text-elderly-base text-warm-gray-600">
-            完成回合: {currentRound}/5
+            完成回合: {currentRound}/{maxRounds}
           </p>
         </div>
         <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
@@ -288,14 +319,36 @@ const LightingGame: React.FC<LightingGameProps> = ({ onScore, onComplete, religi
     );
   }
 
+  const timeRemaining = Math.max(0, gameLength - currentTime);
+  const seconds = Math.ceil(timeRemaining / 1000);
+  const progressPercent = (currentTime / gameLength) * 100;
+
   return (
     <div className="space-y-6">
+      {/* 計時器顯示 */}
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Clock className="w-5 h-5 text-warm-gold" />
+          <span className={`text-elderly-lg font-bold ${seconds <= 10 ? 'text-red-500 animate-pulse' : 'text-warm-gray-700'}`}>
+            {seconds} 秒
+          </span>
+        </div>
+        <div className="w-full bg-warm-gray-200 rounded-full h-4">
+          <div 
+            className={`rounded-full h-4 transition-all duration-100 ${
+              seconds <= 10 ? 'bg-red-500' : 'bg-warm-gold'
+            }`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
       {/* Game status */}
       <div className="text-center space-y-2">
         <div className="flex justify-between items-center">
           <div>
             <p className="text-elderly-sm text-warm-gray-600">回合</p>
-            <p className="text-elderly-lg font-bold text-warm-gold">{currentRound}/5</p>
+            <p className="text-elderly-lg font-bold text-warm-gold">{currentRound}/{maxRounds}</p>
           </div>
           <div>
             <p className="text-elderly-sm text-warm-gray-600">得分</p>
