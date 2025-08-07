@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 import GameRulesModal from '../game-rules-modal';
@@ -48,38 +48,22 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     setBeats(pattern);
   }, [gameStarted]);
 
-  // Game timer - 使用useRef來存儲timer引用
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
+  // Game timer
   useEffect(() => {
-    if (!gameStarted) {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      return;
-    }
+    if (!gameStarted) return;
     
-    timerRef.current = setInterval(() => {
+    const timer = setInterval(() => {
       setCurrentTime(prev => {
-        const newTime = prev + 100;
-        if (newTime >= gameLength) {
-          if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-          }
+        if (prev + 100 >= gameLength) {
+          // 停止遊戲
+          setGameStarted(false);
           return gameLength;
         }
-        return newTime;
+        return prev + 100;
       });
     }, 100);
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
+    return () => clearInterval(timer);
   }, [gameStarted, gameLength]);
 
   const startGame = () => {
@@ -92,14 +76,7 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   const endGame = () => {
     if (!gameStarted) return; // 防止重複調用
     
-    // 立即清理計時器
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    
     setGameStarted(false);
-    setCurrentTime(gameLength); // 確保時間停在最終值
     const finalScore = Math.floor(score * (combo / 10 + 1));
     onScore(finalScore);
     setTimeout(() => onComplete(), 500); // 延遲一點讓UI更新
@@ -107,10 +84,10 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   
   // Check if game should end
   useEffect(() => {
-    if (gameStarted && currentTime >= gameLength) {
+    if (!gameStarted && currentTime >= gameLength) {
       endGame();
     }
-  }, [currentTime, gameLength]);
+  }, [gameStarted, currentTime, gameLength]);
 
   const hitBeat = () => {
     const tolerance = difficulty.reactionWindow; // 根據等級調整容錯時間
