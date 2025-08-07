@@ -27,16 +27,12 @@ interface GameState {
 }
 
 export default function GamePage() {
-  // Force user to have valid userId, no fallback to demo
+  // Use localStorage to get current user ID with fallback
   const getCurrentUserId = () => {
     const userId = localStorage.getItem('userId');
     console.log(`getCurrentUserId: Found userId=${userId} in localStorage`);
-    if (!userId) {
-      // Redirect to setup if no user ID
-      window.location.href = '/user-setup';
-      return null;
-    }
-    return userId;
+    // Return userId or create a temporary demo user for testing
+    return userId || "demo-user-1";
   };
   const { gameType } = useParams<{ gameType: string }>();
   const [, setLocation] = useLocation();
@@ -102,10 +98,8 @@ export default function GamePage() {
   
   console.log(`🎮 Game Page: Using userId="${currentUserId}"`);
   
-  // Don't query if no valid user ID
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
     queryKey: ['/api/user', currentUserId],
-    enabled: !!currentUserId,
   });
   
   console.log(`👤 Game Page: User data loaded:`, user);
@@ -113,7 +107,7 @@ export default function GamePage() {
   // Load user stats to get current stars
   const { data: userStats } = useQuery({
     queryKey: [`/api/user/${currentUserId}/stats`],
-    enabled: !!currentUserId && !!user?.selectedReligion,
+    enabled: !!user?.selectedReligion,
   });
   
   useEffect(() => {
@@ -136,10 +130,10 @@ export default function GamePage() {
     setUseCustomGame(customGameTypes.includes(gameType || ''));
   }, [gameType]);
 
-  // Get game question (only for traditional Q&A games)
+  // Get game question (only for traditional Q&A games)  
   const { data: question, refetch: refetchQuestion } = useQuery<GameQuestion>({
     queryKey: ['/api/game/question', gameType, user?.selectedReligion],
-    enabled: !!currentUserId && !!user?.selectedReligion && !useCustomGame,
+    enabled: !!user?.selectedReligion && !useCustomGame,
     queryFn: async () => {
       const response = await apiRequest('POST', '/api/game/question', {
         gameType,
