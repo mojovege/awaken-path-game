@@ -23,13 +23,12 @@ export default function UserSetup() {
       const response = await apiRequest('PUT', `/api/user/${DEMO_USER_ID}`, userData);
       return response.json();
     },
-    onSuccess: () => {
-      // 立即更新緩存並導向主頁面
-      queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user', DEMO_USER_ID, 'stats'] });
+    onSuccess: (updatedUser) => {
+      // 直接更新緩存而不是失效化，避免重新載入
+      queryClient.setQueryData(['/api/user', DEMO_USER_ID], updatedUser);
       
       toast({
-        title: "歡迎您！",
+        title: "歡迎您！", 
         description: "讓我們開始這段美好的修行之旅",
       });
       
@@ -67,6 +66,10 @@ export default function UserSetup() {
       return;
     }
 
+    // 立即導向主頁面，在背景更新資料
+    setLocation("/");
+    
+    // 背景更新用戶資料
     updateUserMutation.mutate({
       displayName: displayName.trim(),
       age: ageNum,

@@ -34,12 +34,12 @@ export default function Home() {
 
   const { data: user, refetch: refetchUser } = useQuery<User>({
     queryKey: ['/api/user', DEMO_USER_ID],
-    staleTime: 0, // 立即重新獲取最新資料
+    staleTime: 5 * 60 * 1000, // 5分鐘緩存，減少不必要的請求
   });
 
   const { data: userStats } = useQuery<UserStats>({
     queryKey: ['/api/user', DEMO_USER_ID, 'stats'],
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -52,6 +52,7 @@ export default function Home() {
       return;
     }
     
+    // 立即顯示內容，不等待所有查詢完成
     if (user?.selectedReligion) {
       setShowReligionSelection(false);
       setShowStoryProgress(true);
