@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 import GameRulesModal from '../game-rules-modal';
@@ -48,22 +48,39 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
     setBeats(pattern);
   }, [gameStarted]);
 
-  // Game timer
+  // Game timer - 使用useRef來存儲timer引用
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!gameStarted) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
     
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setCurrentTime(prev => {
         const newTime = prev + 100;
         if (newTime >= gameLength) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           return gameLength;
         }
         return newTime;
       });
     }, 100);
 
-    return () => clearInterval(timer);
-  }, [gameStarted]);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [gameStarted, gameLength]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -75,10 +92,17 @@ const RhythmGame: React.FC<RhythmGameProps> = ({ onScore, onComplete, religion, 
   const endGame = () => {
     if (!gameStarted) return; // 防止重複調用
     
+    // 立即清理計時器
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
     setGameStarted(false);
+    setCurrentTime(gameLength); // 確保時間停在最終值
     const finalScore = Math.floor(score * (combo / 10 + 1));
     onScore(finalScore);
-    onComplete();
+    setTimeout(() => onComplete(), 500); // 延遲一點讓UI更新
   };
   
   // Check if game should end
