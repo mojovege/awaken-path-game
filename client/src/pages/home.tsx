@@ -182,6 +182,7 @@ export default function Home() {
           userName={user?.displayName}
           selectedReligion={user?.selectedReligion || undefined}
           userStats={userStats}
+          userId={DEMO_USER_ID}
           onClose={() => setShowUserInfo(false)}
         />
       )}

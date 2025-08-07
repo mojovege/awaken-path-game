@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { X, User, Flame } from "lucide-react";
+import { X, User, Flame, Trophy, Star, Lock, BookOpen } from "lucide-react";
 import ProgressRing from "./progress-ring";
+import { useQuery } from "@tanstack/react-query";
 
 interface UserStats {
   memoryProgress: number;
@@ -13,10 +14,18 @@ interface UserStats {
   averageScore: number;
 }
 
+interface StoryProgress {
+  currentChapter: number;
+  chapterProgress: number;
+  completedChapters: string[];
+  achievements: string[];
+}
+
 interface UserInfoModalProps {
   userName?: string;
   selectedReligion?: string;
   userStats?: UserStats;
+  userId?: string;
   onClose: () => void;
 }
 
@@ -24,8 +33,14 @@ export default function UserInfoModal({
   userName, 
   selectedReligion, 
   userStats, 
+  userId = "demo-user-1",
   onClose 
 }: UserInfoModalProps) {
+  const { data: storyProgress } = useQuery<StoryProgress>({
+    queryKey: ['/api/user', userId, 'story'],
+    enabled: !!userId,
+  });
+
   const getReligionName = () => {
     switch (selectedReligion) {
       case 'buddhism': return '佛教修行';
@@ -143,6 +158,81 @@ export default function UserInfoModal({
                     {userStats?.averageScore || 0}
                   </p>
                   <p className="text-elderly-sm text-warm-gray-600">平均分數</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Story Progress Section */}
+          <Card className="shadow-lg mt-6">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4 className="text-elderly-lg font-semibold text-gray-800 mb-2">修行故事進度</h4>
+                  <p className="text-elderly-base text-warm-gray-600">跟隨智慧導師的腳步，展開心靈之旅</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-elderly-xl font-bold text-warm-gold">
+                    第{storyProgress?.currentChapter || 1}章
+                  </p>
+                  <p className="text-elderly-sm text-warm-gray-600">共5章</p>
+                </div>
+              </div>
+              
+              {/* Story Timeline */}
+              <div className="space-y-4">
+                {/* Completed Chapter */}
+                {(storyProgress?.completedChapters?.length || 0) > 0 && (
+                  <div className="flex items-center p-4 bg-green-50 rounded-xl border border-green-200">
+                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                      <Trophy className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="text-elderly-base font-semibold text-gray-800">已完成章節</h5>
+                      <p className="text-elderly-sm text-warm-gray-600">
+                        獲得成就：{storyProgress?.achievements?.[0] || "修行有成"}
+                      </p>
+                    </div>
+                    <div className="text-green-600">
+                      <Star className="w-5 h-5 fill-current" />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Current Chapter */}
+                <div className="flex items-center p-4 bg-warm-gold bg-opacity-10 rounded-xl border border-warm-gold">
+                  <div className="w-12 h-12 bg-warm-gold rounded-full flex items-center justify-center mr-4">
+                    <BookOpen className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="text-elderly-base font-semibold text-gray-800">
+                      第{storyProgress?.currentChapter || 1}章：當前修行
+                    </h5>
+                    <div className="w-full bg-warm-gray-200 rounded-full h-2 mt-2">
+                      <div 
+                        className="bg-warm-gold h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${storyProgress?.chapterProgress || 0}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-elderly-sm text-warm-gray-600 mt-1">
+                      進度：{storyProgress?.chapterProgress || 0}%
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Next Chapter Preview */}
+                <div className="flex items-center p-4 bg-warm-gray-50 rounded-xl opacity-60">
+                  <div className="w-12 h-12 bg-warm-gray-300 rounded-full flex items-center justify-center mr-4">
+                    <Lock className="w-6 h-6 text-warm-gray-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="text-elderly-base font-semibold text-gray-800">
+                      第{(storyProgress?.currentChapter || 1) + 1}章：即將開啟
+                    </h5>
+                    <p className="text-elderly-sm text-warm-gray-600">
+                      完成當前章節後解鎖
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
