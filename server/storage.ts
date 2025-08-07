@@ -41,7 +41,7 @@ export class MemStorage implements IStorage {
       id: "demo-user-1",
       username: "demo",
       displayName: "王阿嬤",
-      selectedReligion: null,
+      selectedReligion: "buddhism",
       createdAt: new Date(),
     };
     this.users.set(demoUser.id, demoUser);
