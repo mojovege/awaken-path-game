@@ -60,12 +60,18 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '平安', emoji: '🕊️' },
             { content: '感恩', emoji: '🤲' },
             { content: '健康', emoji: '💪' },
-            // 進階內容
+            // 進階內容 - 與邏輯遊戲統一
+            { content: '苦', emoji: '😔' },
+            { content: '集', emoji: '🔗' },
+            { content: '滅', emoji: '🌅' },
+            { content: '道', emoji: '🛤️' },
+            { content: '聞', emoji: '👂' },
+            { content: '思', emoji: '🤔' },
+            { content: '修', emoji: '🧘' },
+            { content: '證', emoji: '✨' },
             { content: '色即是空', emoji: '🌸' },
             { content: '諸行無常', emoji: '🍃' },
             { content: '因果循環', emoji: '🔄' },
-            { content: '四聖諦理', emoji: '🧘' },
-            { content: '八正道行', emoji: '🛤️' },
             { content: '三寶皈依', emoji: '🙏' },
             { content: '六波羅蜜', emoji: '⭐' },
             { content: '十二因緣', emoji: '🔗' },
@@ -73,12 +79,6 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
             { content: '般若智慧', emoji: '💎' },
             { content: '慈悲喜捨', emoji: '🤲' },
             { content: '戒定慧學', emoji: '📿' },
-            { content: '五蘊皆空', emoji: '🌀' },
-            { content: '三十七道品', emoji: '🌟' },
-            { content: '菩提心願', emoji: '🌺' },
-            { content: '正法眼藏', emoji: '👁️' },
-            { content: '禪定解脫', emoji: '🕯️' },
-            { content: '功德圓滿', emoji: '✨' },
           ];
         case 'taoism':
           return [
@@ -268,12 +268,16 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
     return [...gameCards].sort(() => Math.random() - 0.5);
   }, [level, gameType, religion, difficulty.chapter, difficulty.gridSize]);
 
+  // 記錄是否已初始化卡片
+  const [cardsInitialized, setCardsInitialized] = useState(false);
+  
   useEffect(() => {
-    if (gameStarted && !studyPhase && cards.length === 0) {
+    if (gameStarted && !studyPhase && !cardsInitialized) {
       const shuffledCards = generateCards();
       setCards(shuffledCards);
+      setCardsInitialized(true);
     }
-  }, [gameStarted, studyPhase, cards.length, generateCards]);
+  }, [gameStarted, studyPhase, cardsInitialized, generateCards]);
 
   // Study phase timer
   useEffect(() => {
@@ -335,12 +339,13 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   const startGame = () => {
     setCards([]); // 重置卡片
     setFlippedCards([]);
-    setGameStarted(true);
-    setStudyPhase(true);
-    setStudyTime(difficulty.memoryTime);
     setAttempts(0);
     setMatches(0);
     setShowRules(false);
+    setCardsInitialized(false); // 重置初始化狀態
+    setGameStarted(true);
+    setStudyPhase(true);
+    setStudyTime(difficulty.memoryTime);
   };
 
   const flipCard = (cardId: number) => {

@@ -33,26 +33,56 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
       // Scripture interpretation
       switch (religion) {
         case 'buddhism':
-          return [
-            { content: '苦', order: 1 },
-            { content: '集', order: 2 },
-            { content: '滅', order: 3 },
-            { content: '道', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '念佛', order: 1 },
+              { content: '慈悲', order: 2 },
+              { content: '善心', order: 3 },
+              { content: '平安', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '苦', order: 1 },
+              { content: '集', order: 2 },
+              { content: '滅', order: 3 },
+              { content: '道', order: 4 },
+            ];
+          }
         case 'taoism':
-          return [
-            { content: '道生一', order: 1 },
-            { content: '一生二', order: 2 },
-            { content: '二生三', order: 3 },
-            { content: '三生萬物', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '養生', order: 1 },
+              { content: '自然', order: 2 },
+              { content: '和諧', order: 3 },
+              { content: '平衡', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '道生一', order: 1 },
+              { content: '一生二', order: 2 },
+              { content: '二生三', order: 3 },
+              { content: '三生萬物', order: 4 },
+            ];
+          }
         case 'mazu':
-          return [
-            { content: '誠心祈求', order: 1 },
-            { content: '媽祖庇佑', order: 2 },
-            { content: '化險為夷', order: 3 },
-            { content: '平安歸來', order: 4 },
-          ];
+          // 根據章節選擇不同難度的內容
+          if (difficulty.chapter <= 2) {
+            return [
+              { content: '平安', order: 1 },
+              { content: '健康', order: 2 },
+              { content: '順利', order: 3 },
+              { content: '保佑', order: 4 },
+            ];
+          } else {
+            return [
+              { content: '誠心祈求', order: 1 },
+              { content: '媽祖庇佑', order: 2 },
+              { content: '化險為夷', order: 3 },
+              { content: '平安歸來', order: 4 },
+            ];
+          }
         default:
           return [];
       }
