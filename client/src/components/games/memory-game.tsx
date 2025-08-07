@@ -32,21 +32,6 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   
   const difficulty = getDifficultyForLevel(level);
 
-  const getGameContent = () => {
-    // 根據章節調整配對數量，初心啟蒙保持簡單，後期章節更豐富
-    let pairsNeeded;
-    if (difficulty.chapter === 1) {
-      // 初心啟蒙：保持簡單，最多2-3對
-      pairsNeeded = Math.max(2, Math.floor(difficulty.gridSize / 3));
-    } else {
-      // 後期章節：內容更豐富
-      pairsNeeded = Math.floor(difficulty.gridSize / 2) * Math.min(2, difficulty.chapter * 0.5);
-    }
-    
-    const allContent = getFullGameContent();
-    return allContent.slice(0, pairsNeeded);
-  };
-
   const getFullGameContent = () => {
     console.log(`🔍 Memory Game Debug: religion="${religion}", gameType="${gameType}", level=${level}`);
     
@@ -236,19 +221,21 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
     }
   };
 
-  // 將getGameContent移到useEffect外部，避免依賴問題
+  // Generate cards for the game
   const generateCards = useCallback(() => {
-    // 根據章節調整配對數量，初心啟蒙保持簡單，後期章節更豐富
+    console.log(`🔍 Memory Game Debug: religion="${religion}", gameType="${gameType}", level=${level}`);
+    
+    // Get all available content based on religion and game type
+    const allContent = getFullGameContent();
+    
+    // Calculate pairs needed based on difficulty
     let pairsNeeded;
     if (difficulty.chapter === 1) {
-      // 初心啟蒙：保持簡單，最多2-3對
       pairsNeeded = Math.max(2, Math.floor(difficulty.gridSize / 3));
     } else {
-      // 後期章節：內容更豐富
       pairsNeeded = Math.floor(difficulty.gridSize / 2) * Math.min(2, difficulty.chapter * 0.5);
     }
     
-    const allContent = getFullGameContent();
     const content = allContent.slice(0, pairsNeeded);
     console.log(`Level ${level}: Generated ${content.length} pairs for memory game`, content.map(c => c.content));
     
@@ -273,127 +260,112 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
     return [...gameCards].sort(() => Math.random() - 0.5);
   }, [level, gameType, religion, difficulty.chapter, difficulty.gridSize]);
 
-  // 記錄是否已初始化卡片
-  const [cardsInitialized, setCardsInitialized] = useState(false);
-  
+  // Initialize cards on game start
   useEffect(() => {
-    if (gameStarted && !studyPhase && !cardsInitialized) {
-      const shuffledCards = generateCards();
-      setCards(shuffledCards);
-      setCardsInitialized(true);
+    if (gameStarted && !studyPhase) {
+      const newCards = generateCards();
+      setCards(newCards);
+      setMatches(0);
+      setAttempts(0);
     }
-  }, [gameStarted, studyPhase, cardsInitialized, generateCards]);
+  }, [gameStarted, studyPhase, generateCards]);
 
   // Study phase timer
   useEffect(() => {
     if (studyPhase && gameStarted && studyTime > 0) {
-      const timer = setTimeout(() => {
-        setStudyTime(prev => prev - 1);
-      }, 1000);
+      const timer = setTimeout(() => setStudyTime(prev => prev - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (studyPhase && gameStarted && studyTime === 0) {
+    } else if (studyPhase && studyTime === 0) {
       setStudyPhase(false);
     }
   }, [studyPhase, studyTime, gameStarted]);
 
-  // Check for matches
-  useEffect(() => {
-    if (flippedCards.length === 2) {
-      const [first, second] = flippedCards;
-      const firstCard = cards.find(c => c.id === first);
-      const secondCard = cards.find(c => c.id === second);
-      
-      if (!firstCard || !secondCard) return;
-      
-      setAttempts(prev => prev + 1);
-      
-      if (firstCard.content === secondCard.content && firstCard.emoji === secondCard.emoji) {
-        // Match found
-        setCards(prev => prev.map(card => 
-          card.id === firstCard.id || card.id === secondCard.id
-            ? { ...card, isMatched: true }
-            : card
-        ));
-        
-        const newMatches = matches + 1;
-        setMatches(newMatches);
-        // 確保分數為正數，每次配對成功給予固定分數
-        const matchScore = Math.max(10, 50 - (attempts * 2));
-        onScore(matchScore);
-        
-        setFlippedCards([]);
-        
-        // Check if game is complete
-        if (newMatches === cards.length / 2) {
-          setTimeout(onComplete, 1500);
-        }
-      } else {
-        // No match, flip back after longer delay for elderly users
-        setTimeout(() => {
-          setCards(prev => prev.map(card => 
-            card.id === firstCard.id || card.id === secondCard.id
-              ? { ...card, isFlipped: false }
-              : card
-          ));
-          setFlippedCards([]);
-        }, 2500); // 增加到2.5秒讓用戶看清楚
-      }
-    }
-  }, [flippedCards, cards, matches, attempts, onScore, onComplete]);
-
   const startGame = () => {
-    setCards([]); // 重置卡片
-    setFlippedCards([]);
-    setAttempts(0);
-    setMatches(0);
-    setShowRules(false);
-    setCardsInitialized(false); // 重置初始化狀態
     setGameStarted(true);
     setStudyPhase(true);
-    setStudyTime(difficulty.memoryTime);
+    // Calculate study time based on level: level 1 = 8s, level 15 = 2s
+    const calculatedTime = Math.max(2, 10 - Math.floor(level / 2));
+    setStudyTime(calculatedTime);
   };
 
   const flipCard = (cardId: number) => {
-    if (studyPhase || flippedCards.length >= 2) return;
-    
-    const card = cards.find(c => c.id === cardId);
-    if (!card || card.isFlipped || card.isMatched) return;
-    
-    setCards(prev => prev.map(c => 
-      c.id === cardId ? { ...c, isFlipped: true } : c
-    ));
-    
-    setFlippedCards(prev => [...prev, cardId]);
-  };
+    if (flippedCards.length === 2) return;
+    if (flippedCards.includes(cardId)) return;
+    if (cards[cardId]?.isMatched) return;
 
-  const getGameTitle = () => {
-    return gameType === 'memory-scripture' ? '經文記憶配對' : '寺廟導覽記憶';
+    const newFlippedCards = [...flippedCards, cardId];
+    setFlippedCards(newFlippedCards);
+
+    if (newFlippedCards.length === 2) {
+      setAttempts(prev => prev + 1);
+      const [firstId, secondId] = newFlippedCards;
+      const firstCard = cards[firstId];
+      const secondCard = cards[secondId];
+
+      if (firstCard.content === secondCard.content) {
+        // Match found
+        setTimeout(() => {
+          setCards(prev => prev.map(card => 
+            card.id === firstId || card.id === secondId 
+              ? { ...card, isMatched: true }
+              : card
+          ));
+          setMatches(prev => prev + 1);
+          setFlippedCards([]);
+          
+          // Calculate score based on attempts and level
+          const baseScore = 50;
+          const levelBonus = level * 5;
+          const attemptPenalty = Math.max(0, (attempts - 1) * 5);
+          const finalScore = Math.max(10, baseScore + levelBonus - attemptPenalty);
+          onScore(finalScore);
+          
+          // Check if game is complete
+          if (matches + 1 >= cards.length / 2) {
+            setTimeout(() => onComplete(), 500);
+          }
+        }, 1000);
+      } else {
+        // No match
+        setTimeout(() => {
+          setFlippedCards([]);
+        }, 1000);
+      }
+    }
   };
 
   if (!gameStarted) {
     return (
       <>
         <div className="text-center space-y-6">
-          <div className="text-8xl mb-4">🧠</div>
-          <h3 className="text-elderly-xl font-semibold text-gray-800">
-            {getGameTitle()}
-          </h3>
-          <p className="text-elderly-base text-warm-gray-600">
-            記住配對內容，訓練記憶力和專注力
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Brain className="w-8 h-8 text-warm-gold" />
+            <h2 className="text-elderly-2xl font-bold text-warm-gold">
+              {gameType === 'memory-scripture' ? '經文配對記憶' : '寺廟導覽記憶'}
+            </h2>
+          </div>
+          
+          <p className="text-elderly-base text-warm-gray-600 max-w-md mx-auto leading-relaxed">
+            {gameType === 'memory-scripture' 
+              ? '記住經文概念的配對，然後在記憶中找出相同的內容' 
+              : '記住寺廟建築的名稱和位置，訓練你的空間記憶能力'
+            }
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button 
+          
+          <div className="flex gap-4 justify-center">
+            <Button
               onClick={() => setShowRules(true)}
               variant="outline"
-              className="text-elderly-base px-8 py-3"
-              data-testid="button-show-rules"
+              className="text-elderly-base px-6 py-3"
+              data-testid="button-rules-memory"
             >
               <Lightbulb className="w-5 h-5 mr-2" />
               遊戲說明
             </Button>
-            <Button 
+            
+            <Button
               onClick={startGame}
-              className="btn-primary text-elderly-base px-8 py-3"
+              className="bg-warm-gold hover:bg-warm-gold/80 text-warm-brown text-elderly-base px-6 py-3"
               data-testid="button-start-memory"
             >
               <Brain className="w-5 h-5 mr-2" />
@@ -423,7 +395,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   }
 
   if (studyPhase) {
-    const content = getGameContent();
+    const content = getFullGameContent().slice(0, Math.floor(difficulty.gridSize / 2));
     return (
       <div className="text-center space-y-6">
         <div className="flex items-center justify-center space-x-2 mb-4">
@@ -438,7 +410,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
         </div>
         
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          {content.map((item, index) => (
+          {content.map((item: any, index: number) => (
             <div 
               key={index}
               className="bg-warm-gray-50 rounded-xl p-4 border-2 border-warm-gray-200"
@@ -470,43 +442,31 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       </div>
 
       <div className={`grid gap-3 max-w-lg mx-auto ${
-        difficulty.gridSize <= 6 ? 'grid-cols-3' : 
-        difficulty.gridSize <= 12 ? 'grid-cols-4' : 
-        difficulty.gridSize <= 20 ? 'grid-cols-5' : 'grid-cols-6'
+        difficulty.gridSize <= 8 ? 'grid-cols-4' : 'grid-cols-4'
       }`}>
-        {cards.map((card) => (
+        {cards.map(card => (
           <button
             key={card.id}
             onClick={() => flipCard(card.id)}
-            disabled={studyPhase || card.isMatched || flippedCards.length >= 2}
-            className={`
-              aspect-square rounded-xl border-2 transition-all duration-300 transform hover:scale-105
-              ${card.isMatched 
-                ? 'bg-green-100 border-green-500' 
-                : card.isFlipped 
-                ? 'bg-white border-warm-gold' 
-                : 'bg-warm-gray-100 border-warm-gray-200 hover:border-warm-gold'
-              }
-            `}
+            className={`aspect-square p-4 rounded-xl border-2 transition-all duration-300 ${
+              card.isMatched 
+                ? 'bg-sage-green/20 border-sage-green text-sage-green cursor-default'
+                : flippedCards.includes(card.id)
+                ? 'bg-warm-gold/20 border-warm-gold text-warm-gold'
+                : 'bg-warm-gray-100 border-warm-gray-200 hover:border-warm-gold text-warm-brown'
+            }`}
+            disabled={card.isMatched || flippedCards.length === 2}
             data-testid={`card-${card.id}`}
           >
-            {card.isFlipped || card.isMatched ? (
-              <div className="flex flex-col items-center justify-center h-full">
+            {(flippedCards.includes(card.id) || card.isMatched) && (
+              <div className="text-center">
                 <div className="text-2xl mb-1">{card.emoji}</div>
-                <div className="text-elderly-xs text-center px-1">{card.content}</div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <EyeOff className="w-6 h-6 text-warm-gray-400" />
+                <div className="text-elderly-xs font-medium">{card.content}</div>
               </div>
             )}
           </button>
         ))}
       </div>
-
-      <p className="text-center text-elderly-sm text-warm-gray-600">
-        點擊卡片找出相同圖標的配對
-      </p>
     </div>
   );
 };
