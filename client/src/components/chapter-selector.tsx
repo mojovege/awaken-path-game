@@ -33,35 +33,35 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
       {
         id: 1,
         title: '初心啟蒙',
-        levels: [1, 2, 3],
+        levels: [1, 2, 3, 4, 5, 6],
         requiredStars: 0,
         description: '開始修行之路，學習基礎知識'
       },
       {
         id: 2,
         title: '勤修精進',
-        levels: [4, 5, 6],
+        levels: [7, 8, 9, 10, 11, 12],
         requiredStars: 6,
         description: '持續修行，技能逐步提升'
       },
       {
         id: 3,
         title: '智慧開悟',
-        levels: [7, 8, 9],
+        levels: [13, 14, 15, 16, 17, 18],
         requiredStars: 12,
         description: '開始領悟更深層的智慧'
       },
       {
         id: 4,
         title: '深度修行',
-        levels: [10, 11, 12],
+        levels: [19, 20, 21, 22, 23, 24],
         requiredStars: 18,
         description: '修行進入更深層次'
       },
       {
         id: 5,
         title: '圓滿境界',
-        levels: [13, 14, 15],
+        levels: [25, 26, 27, 28, 29, 30],
         requiredStars: 24,
         description: '達到修行的最高境界'
       }
@@ -166,23 +166,46 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
 
                   {/* Levels in Chapter */}
                   {isUnlocked && (
-                    <div className="flex flex-wrap gap-2">
-                      {chapter.levels.map((level) => (
-                        <Button
-                          key={level}
-                          onClick={() => {
-                            onLevelSelect(level);
-                            onClose();
-                          }}
-                          variant={level === currentLevel ? "default" : "outline"}
-                          size="sm"
-                          className="text-elderly-sm min-w-[60px]"
-                          data-testid={`button-level-${level}`}
-                        >
-                          <Play className="w-3 h-3 mr-1" />
-                          第{level}關
-                        </Button>
-                      ))}
+                    <div className="space-y-2">
+                      <p className="text-elderly-sm text-warm-gray-600 mb-3">
+                        本章包含6種不同的認知訓練遊戲
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {chapter.levels.map((level) => {
+                          const gameTypes = [
+                            'memory-scripture', 'memory-temple', 
+                            'reaction-rhythm', 'reaction-lighting', 
+                            'logic-scripture', 'logic-sequence'
+                          ];
+                          const gameTypeIndex = (level - 1) % 6;
+                          const gameType = gameTypes[gameTypeIndex];
+                          const gameTitles = {
+                            'memory-scripture': '經文記憶',
+                            'memory-temple': '寺廟導覽', 
+                            'reaction-rhythm': '木魚節奏',
+                            'reaction-lighting': '祈福點燈',
+                            'logic-scripture': '佛理邏輯',
+                            'logic-sequence': '智慧序列'
+                          };
+                          
+                          return (
+                            <Button
+                              key={level}
+                              onClick={() => {
+                                onLevelSelect(level);
+                                onClose();
+                              }}
+                              variant={level === currentLevel ? "default" : "outline"}
+                              size="sm"
+                              className="text-elderly-sm h-auto py-2 px-3 flex flex-col items-center"
+                              data-testid={`button-level-${level}`}
+                            >
+                              <span className="text-xs opacity-75">第{level}關</span>
+                              <span className="font-medium">{gameTitles[gameType]}</span>
+                            </Button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </CardContent>

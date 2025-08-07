@@ -228,9 +228,30 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
   };
 
   const stories = getStoryContent();
-  // 根據選擇的關卡計算當前章節 (每章3關)
-  const currentChapter = Math.ceil(selectedLevel / 3);
+  // 根據選擇的關卡計算當前章節 (每章6關，對應6種遊戲類型)
+  const currentChapter = Math.ceil(selectedLevel / 6);
   const currentStory = stories[currentChapter - 1] || stories[0];
+  
+  // 根據關卡計算當前遊戲類型
+  const gameTypes = [
+    'memory-scripture', 'memory-temple', 
+    'reaction-rhythm', 'reaction-lighting', 
+    'logic-scripture', 'logic-sequence'
+  ];
+  const gameTypeIndex = (selectedLevel - 1) % 6;
+  const currentGameType = gameTypes[gameTypeIndex];
+  
+  const getGameTitle = (gameType: string) => {
+    const gameTitles = {
+      'memory-scripture': '經文記憶配對',
+      'memory-temple': '寺廟導覽記憶', 
+      'reaction-rhythm': '木魚節奏訓練',
+      'reaction-lighting': '祈福點燈',
+      'logic-scripture': '佛理邏輯',
+      'logic-sequence': '智慧序列'
+    };
+    return gameTitles[gameType] || '認知訓練';
+  };
 
   const getReligionTitle = () => {
     switch (religion) {
@@ -278,7 +299,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
             className="text-elderly-base px-6 py-3 border-2 border-warm-gold text-warm-gold hover:bg-warm-gold hover:text-white"
           >
             <ChevronDown className="w-5 h-5 mr-2" />
-            選擇章節 (第{currentChapter}章)
+            第{selectedLevel}關：{getGameTitle(currentGameType)}
           </Button>
         </div>
       </div>
@@ -291,12 +312,32 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
               {currentStory.id}
             </div>
             <div className="flex-1">
-              <h2 className="text-elderly-xl font-semibold text-gray-800 mb-4">
-                {currentStory.title}
+              <h2 className="text-elderly-xl font-semibold text-gray-800 mb-2">
+                第{selectedLevel}關：{getGameTitle(currentGameType)}
               </h2>
+              <h3 className="text-elderly-lg font-medium text-warm-gray-700 mb-4">
+                {currentStory.title} - 章節背景
+              </h3>
               <p className="text-elderly-base text-warm-gray-700 mb-6 leading-relaxed">
                 {currentStory.content}
               </p>
+              
+              {/* 當前關卡重點遊戲 */}
+              <div className="bg-white rounded-lg p-4 mb-6 border border-warm-gold border-opacity-30">
+                <h4 className="text-elderly-base font-semibold text-warm-gold mb-2">
+                  🎯 本關重點訓練
+                </h4>
+                <div className="flex items-center justify-center">
+                  <Button
+                    onClick={() => onGameClick(currentGameType)}
+                    className="bg-warm-gold text-white hover:bg-opacity-90 text-elderly-base px-8 py-3"
+                    data-testid={`button-main-game-${currentGameType}`}
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    開始 {getGameTitle(currentGameType)}
+                  </Button>
+                </div>
+              </div>
               
               {/* Games in Chapter */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
