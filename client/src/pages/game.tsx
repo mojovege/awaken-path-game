@@ -26,12 +26,12 @@ interface GameState {
   totalQuestions: number;
 }
 
-// Use localStorage to get current user ID
+// Use localStorage to get current user ID - moved inside component to be reactive
 const getCurrentUserId = () => {
-  return localStorage.getItem('userId') || "demo-user-1";
+  const userId = localStorage.getItem('userId');
+  console.log(`getCurrentUserId: Found userId=${userId} in localStorage`);
+  return userId || "demo-user-1";
 };
-
-const DEMO_USER_ID = getCurrentUserId();
 
 export default function GamePage() {
   const { gameType } = useParams<{ gameType: string }>();
@@ -76,8 +76,26 @@ export default function GamePage() {
     return gameLevel + (chapterOffset * 6); // 6 games per chapter
   };
 
-  // Get user data to determine religion
-  const [currentUserId] = useState(() => getCurrentUserId());
+  // Get user data to determine religion - reactive to localStorage changes
+  const [currentUserId, setCurrentUserId] = useState(() => getCurrentUserId());
+  
+  // Update user ID when component mounts and localStorage changes
+  useEffect(() => {
+    const userId = getCurrentUserId();
+    setCurrentUserId(userId);
+    console.log(`Game Page: Updated userId to ${userId}`);
+    
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      const newUserId = getCurrentUserId();
+      setCurrentUserId(newUserId);
+      console.log(`Game Page: Storage changed, updated userId to ${newUserId}`);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  
   console.log(`Game Page: Using userId=${currentUserId}`);
   
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
