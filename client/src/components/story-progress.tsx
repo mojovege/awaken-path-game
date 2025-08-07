@@ -10,163 +10,213 @@ interface StoryProgressProps {
   onGameClick: (gameType: string) => void;
 }
 
+interface GameInChapter {
+  type: string;
+  title: string;
+  completed: boolean;
+  stars: number;
+}
+
 interface StoryChapter {
   id: number;
   title: string;
   content: string;
-  gameType: string;
-  gameTitle: string;
+  games: GameInChapter[];
   unlocked: boolean;
   completed: boolean;
+  totalStars: number;
+  requiredStars: number;
 }
 
 export default function StoryProgress({ religion, onChatClick, onGameClick }: StoryProgressProps) {
   const [, setLocation] = useLocation();
 
   const getStoryContent = (): StoryChapter[] => {
+    const baseGames: GameInChapter[] = [
+      { type: 'memory-scripture', title: '經文記憶配對', completed: false, stars: 0 },
+      { type: 'memory-temple', title: '寺廟導覽記憶', completed: false, stars: 0 },
+      { type: 'reaction-rhythm', title: '木魚節奏訓練', completed: false, stars: 0 },
+      { type: 'reaction-lighting', title: '祈福點燈', completed: false, stars: 0 },
+      { type: 'logic-scripture', title: '佛理邏輯', completed: false, stars: 0 },
+      { type: 'logic-sequence', title: '智慧序列', completed: false, stars: 0 },
+    ];
+
     switch (religion) {
       case 'buddhism':
         return [
           {
             id: 1,
-            title: '初心之路',
-            content: '在古老的寺院中，一位年輕的僧侶開始了他的修行之路。清晨的鐘聲響起，他學會了靜心觀想，記住佛陀的教誨。每一句經文都深深印在心中，如同明燈照亮前路。',
-            gameType: 'memory-scripture',
-            gameTitle: '經文記憶配對',
+            title: '初心啟蒙',
+            content: '一位年長者來到寺院，學習靜心觀想和慈悲心。透過記憶佛陀的智慧話語，跟隨木魚聲節奏誦經，在佛前點燈祈願，理解基本的佛理教導，學會排序簡單的修行步驟。每一個動作都是為了培養內心的平靜與慈悲。',
+            games: baseGames.map(g => ({ ...g, title: g.title.replace('木魚', '木魚') })),
             unlocked: true,
             completed: false,
+            totalStars: 0,
+            requiredStars: 0,
           },
           {
             id: 2,
-            title: '節奏修行',
-            content: '木魚聲聲，節拍如心跳般規律。僧侶學會了跟隨木魚的節奏誦經，每一下敲擊都與內心的平靜共鳴。在這規律的節拍中，找到了專注與寧靜。',
-            gameType: 'reaction-rhythm',
-            gameTitle: '木魚節奏訓練',
-            unlocked: true,
+            title: '勤修精進',
+            content: '修行者開始更深入地學習，記住各種善行與功德，掌握更複雜的誦經節拍，學會點亮代表智慧的燈火序列，理解因果報應的道理，並能安排日常修行的順序。持之以恆是通往智慧的關鍵。',
+            games: baseGames.map(g => ({ ...g })),
+            unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 6,
           },
           {
             id: 3,
-            title: '智慧點燈',
-            content: '在佛前點燃酥油燈，每一盞燈都代表一份智慧。僧侶必須記住點燈的順序，象徵著修行路上的每一個階段。燈光搖曳，照亮了心中的疑惑。',
-            gameType: 'reaction-lighting',
-            gameTitle: '祈福點燈',
+            title: '智慧開悟',
+            content: '經過長期修行，修行者開始領悟更深的佛法智慧。能記住各種佛教典故和寺院建築意義，與清晨鐘聲完美同步，點燃象徵覺悟的明燈，深入理解空性和無常的道理，正確安排複雜的修行課程。',
+            games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 12,
           },
           {
             id: 4,
-            title: '佛理思辨',
-            content: '面對佛理的深奥，僧侶學會了邏輯思考。四聖諦的順序、八正道的排列，每一個概念都需要正確的理解和安排。智慧在思辨中逐漸綻放。',
-            gameType: 'logic-scripture',
-            gameTitle: '佛理邏輯',
+            title: '深度修行',
+            content: '修行者進入更高的修行層次，能夠記住深奧的佛學概念，在快速變化的節拍中保持專注，以正確順序點亮代表菩提道的燈火，理解中觀哲學和唯識學說，安排精密的禪修次第。',
+            games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 18,
           },
           {
             id: 5,
             title: '圓滿境界',
-            content: '經過長期的修行，僧侶達到了圓滿的境界。他已能夠自如地運用所學的一切，在生活中實踐佛法，幫助眾生離苦得樂。',
-            gameType: 'logic-sequence',
-            gameTitle: '智慧序列',
+            content: '達到了修行的最高境界，成為能夠指導他人的智者。完全掌握各種佛法要義，在任何節拍下都能保持內心平靜，點亮最複雜的智慧燈陣，完全理解緣起性空的深義，能夠完美安排利益眾生的各種方法。',
+            games: baseGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 24,
           },
         ];
       case 'taoism':
+        const taoGames: GameInChapter[] = [
+          { type: 'memory-scripture', title: '道經記憶', completed: false, stars: 0 },
+          { type: 'memory-temple', title: '道觀導覽記憶', completed: false, stars: 0 },
+          { type: 'reaction-rhythm', title: '鐘鼓節奏', completed: false, stars: 0 },
+          { type: 'reaction-lighting', title: '心燈點亮', completed: false, stars: 0 },
+          { type: 'logic-scripture', title: '道理邏輯', completed: false, stars: 0 },
+          { type: 'logic-sequence', title: '道法序列', completed: false, stars: 0 },
+        ];
+        
         return [
           {
             id: 1,
-            title: '道法自然',
-            content: '山中隱士開始學習道法，觀察自然的規律，記憶天地間的奧秘。每一個符號、每一句道德經，都蘊含著宇宙的智慧。',
-            gameType: 'memory-scripture',
-            gameTitle: '道經記憶',
+            title: '初心啟蒙',
+            content: '一位尋道者來到山中道觀，開始學習道法自然的智慧。記住基本的道德經句子，跟隨古鐘的悠揚聲響，點燃心燈照亮前路，理解陰陽平衡的基礎概念，學會安排簡單的修煉步驟。',
+            games: taoGames.map(g => ({ ...g })),
             unlocked: true,
             completed: false,
+            totalStars: 0,
+            requiredStars: 0,
           },
           {
             id: 2,
-            title: '鐘鼓和鳴',
-            content: '道觀中鐘鼓齊鳴，隱士學會了與天地節拍同步。每一下鐘聲都與道的韻律相合，在和諧的節奏中感受天人合一。',
-            gameType: 'reaction-rhythm',
-            gameTitle: '道鐘節奏',
-            unlocked: true,
+            title: '勤修精進',
+            content: '修道者深入學習五行相生相剋的道理，記住各種天地自然的規律，掌握更複雜的鐘鼓節拍，點亮代表五行的燈火，理解太極圖的變化，安排更精密的煉氣方法。',
+            games: taoGames.map(g => ({ ...g })),
+            unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 6,
           },
           {
             id: 3,
-            title: '點亮心燈',
-            content: '在靜室中點燃心燈，每一盞燈代表一份領悟。隱士必須按照特定順序點亮，象徵著修道過程中的層層境界。',
-            gameType: 'reaction-lighting',
-            gameTitle: '心燈點亮',
+            title: '智慧開悟',
+            content: '通過持續修煉，修道者開始與天地同頻共振。能記住複雜的道家典籍，在變化的節拍中找到不變的道，點燃象徵天人合一的燈陣，深度理解無為而治的智慧，正確安排內丹修煉的次序。',
+            games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 12,
           },
           {
             id: 4,
-            title: '陰陽平衡',
-            content: '理解陰陽五行的奧秘，隱士學會了邏輯推理。太極圖的變化、五行的相生相剋，每一個概念都需要精確的排列和理解。',
-            gameType: 'logic-scripture',
-            gameTitle: '道理邏輯',
+            title: '深度修行',
+            content: '修道者達到更高的境界，開始理解宇宙運行的深層規律。掌握高深的道學理論，在快速節拍中保持如水般的柔韌，以精確順序點亮北斗七星燈陣，理解返璞歸真的真義，安排復雜的修真方法。',
+            games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 18,
           },
           {
             id: 5,
-            title: '得道成仙',
-            content: '通過不斷的修煉，隱士終於達到了得道的境界。他已能運用道法自如，與天地同壽，幫助有緣人領悟道的真諦。',
-            gameType: 'logic-sequence',
-            gameTitle: '道法序列',
+            title: '圓滿境界',
+            content: '成為得道高人，具備了濟世救人的能力。完全融會貫通道家思想，任何節拍都不能動搖其內心的寧靜，點亮最高層次的仙家燈陣，完全理解道的本質，能夠安排幫助眾生的各種方便法門。',
+            games: taoGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 24,
           },
         ];
       case 'mazu':
+        const mazuGames: GameInChapter[] = [
+          { type: 'memory-scripture', title: '媽祖故事記憶', completed: false, stars: 0 },
+          { type: 'memory-temple', title: '廟宇導覽記憶', completed: false, stars: 0 },
+          { type: 'reaction-rhythm', title: '廟會鑣鼓', completed: false, stars: 0 },
+          { type: 'reaction-lighting', title: '祈福明燈', completed: false, stars: 0 },
+          { type: 'logic-scripture', title: '救援邏輯', completed: false, stars: 0 },
+          { type: 'logic-sequence', title: '護航序列', completed: false, stars: 0 },
+        ];
+        
         return [
           {
             id: 1,
-            title: '媽祖顯靈',
-            content: '漁村中的年輕人開始學習媽祖的故事，記住每一個神蹟、每一次救助。媽祖的慈悲與智慧深深印在心中，成為海上的明燈。',
-            gameType: 'memory-scripture',
-            gameTitle: '媽祖故事記憶',
+            title: '初心啟蒙',
+            content: '一位漁村子弟開始學習媽祖的慈悲精神。記住媽祖救苦救難的故事，跟隨廟會鑣鼓的熱鬧節拍，點燃祈求平安的明燈，理解助人為樂的道理，學會安排簡單的行善步驟。',
+            games: mazuGames.map(g => ({ ...g })),
             unlocked: true,
             completed: false,
+            totalStars: 0,
+            requiredStars: 0,
           },
           {
             id: 2,
-            title: '鑼鼓喧天',
-            content: '媽祖廟會中鑼鼓喧天，信徒們跟隨著節拍祈福。每一下鑼聲都承載著虔誠的心願，在熱鬧的節奏中感受媽祖的庇佑。',
-            gameType: 'reaction-rhythm',
-            gameTitle: '廟會鑼鼓',
-            unlocked: true,
+            title: '勤修精進',
+            content: '信徒更深入理解媽祖的大愛精神，記住各種行善積德的方法，掌握更複雜的廟會節慶節拍，點亮代表家庭和睦的燈火，理解守護家園的重要，安排更多的善行計畫。',
+            games: mazuGames.map(g => ({ ...g })),
+            unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 6,
           },
           {
             id: 3,
-            title: '祈福明燈',
-            content: '在媽祖面前點燃祈福燈，每一盞燈代表一個心願。信徒必須按照正確順序點亮，祈求媽祖保佑家人平安、出入順利。',
-            gameType: 'reaction-lighting',
-            gameTitle: '祈福明燈',
+            title: '智慧開悟',
+            content: '通過不斷的善行，信徒開始體會媽祖無私奉獻的精神。能記住複雜的媽祖靈驗故事，在變化的鑣鼓聲中找到內心的安定，點燃象徵社區和諧的燈陣，深入理解海納百川的胸懷，正確安排社區服務的順序。',
+            games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 12,
           },
           {
             id: 4,
-            title: '海上救援',
-            content: '學習媽祖救助海難的智慧，理解每一次救援的邏輯和順序。在危急時刻，需要正確的判斷和行動，才能化險為夷。',
-            gameType: 'logic-scripture',
-            gameTitle: '救援邏輯',
+            title: '深度修行',
+            content: '信徒成長為能夠幫助他人的善心人士。掌握各種助人技巧和智慧，在激昂的節拍中保持慈悲的心境，以精準順序點亮代表眾生平安的燈火，理解犧牲奉獻的真諦，安排複雜的公益活動。',
+            games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 18,
           },
           {
             id: 5,
-            title: '海神護航',
-            content: '成為媽祖的使者，擁有了保護海上平安的能力。已能預知風浪、指引航向，成為所有海上人的守護神。',
-            gameType: 'logic-sequence',
-            gameTitle: '護航序列',
+            title: '圓滿境界',
+            content: '成為如媽祖一般的慈悲使者，時刻守護著需要幫助的人。完全體現媽祖的慈悲智慧，任何困難都不能阻擋其助人的決心，點亮最神聖的護佑眾生燈陣，完全理解無條件大愛的意義，能夠安排各種濟世救人的方法。',
+            games: mazuGames.map(g => ({ ...g })),
             unlocked: false,
             completed: false,
+            totalStars: 0,
+            requiredStars: 24,
           },
         ];
       default:
@@ -175,7 +225,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
   };
 
   const stories = getStoryContent();
-  const currentStory = stories.find(s => !s.completed) || stories[0];
+  const currentStory = stories.find(s => s.unlocked && !s.completed) || stories[0];
 
   const getReligionTitle = () => {
     switch (religion) {
@@ -231,16 +281,33 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
                 {currentStory.content}
               </p>
               
+              {/* Games in Chapter */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                {currentStory.games.map((game, index) => (
+                  <Button
+                    key={game.type}
+                    onClick={() => onGameClick(game.type)}
+                    variant="outline"
+                    size="sm"
+                    className="text-elderly-sm h-auto py-3 text-left flex flex-col items-center"
+                    data-testid={`button-chapter-game-${game.type}`}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 bg-warm-gold bg-opacity-20 rounded-full mb-2">
+                      <span className="text-elderly-sm font-semibold">{index + 1}</span>
+                    </div>
+                    <span className="text-center">{game.title}</span>
+                    {game.stars > 0 && (
+                      <div className="flex mt-1">
+                        {Array.from({ length: Math.min(game.stars, 3) }).map((_, i) => (
+                          <Star key={i} className="w-3 h-3 text-yellow-500 fill-current" />
+                        ))}
+                      </div>
+                    )}
+                  </Button>
+                ))}
+              </div>
+              
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={() => onGameClick(currentStory.gameType)}
-                  className="btn-primary text-elderly-base px-8 py-3"
-                  data-testid="button-start-story-game"
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  開始 {currentStory.gameTitle}
-                </Button>
-                
                 <Button
                   onClick={onChatClick}
                   variant="outline"
@@ -295,22 +362,34 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
                         {story.title}
                       </h4>
                       <p className="text-elderly-sm text-warm-gray-600">
-                        {story.gameTitle}
+                        {story.games.length} 個訓練遊戲
+                        {story.requiredStars > 0 && ` · 需要 ${story.requiredStars} 顆星解鎖`}
                       </p>
                     </div>
                   </div>
                   
-                  {story.unlocked && (
-                    <Button
-                      onClick={() => onGameClick(story.gameType)}
-                      size="sm"
-                      variant={story.id === currentStory.id ? "default" : "outline"}
-                      className="text-elderly-sm"
-                      data-testid={`button-story-game-${story.id}`}
-                    >
-                      {story.completed ? '重新遊戲' : '開始遊戲'}
-                    </Button>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-elderly-sm text-warm-gray-500">
+                      {story.totalStars}/18 ⭐
+                    </span>
+                    {story.unlocked && (
+                      <Button
+                        onClick={() => {
+                          // Navigate to first uncompleted game in chapter
+                          const firstUncompletedGame = story.games.find(g => !g.completed);
+                          if (firstUncompletedGame) {
+                            onGameClick(firstUncompletedGame.type);
+                          }
+                        }}
+                        size="sm"
+                        variant={story.id === currentStory.id ? "default" : "outline"}
+                        className="text-elderly-sm"
+                        data-testid={`button-story-chapter-${story.id}`}
+                      >
+                        {story.completed ? '重玩章節' : '進入章節'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

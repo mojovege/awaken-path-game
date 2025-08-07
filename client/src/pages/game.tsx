@@ -51,11 +51,50 @@ export default function GamePage() {
   const [showChapterSelector, setShowChapterSelector] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [userStars, setUserStars] = useState(0);
+  
+  // Game type to level mapping - each game type represents levels within chapters
+  const getGameLevel = (gameType: string) => {
+    const gameTypeMap: Record<string, number> = {
+      'memory-scripture': 1,    // Level 1 in current chapter
+      'memory-temple': 2,       // Level 2 in current chapter  
+      'reaction-rhythm': 3,     // Level 3 in current chapter
+      'reaction-lighting': 4,   // Level 4 in current chapter
+      'logic-scripture': 5,     // Level 5 in current chapter
+      'logic-sequence': 6,      // Level 6 in current chapter
+    };
+    return gameTypeMap[gameType] || 1;
+  };
+  
+  // Convert game type and chapter to actual level (1-15)
+  const getActualLevel = (gameType: string, chapterOffset = 0) => {
+    const gameLevel = getGameLevel(gameType);
+    return gameLevel + (chapterOffset * 6); // 6 games per chapter
+  };
 
   // Get user data to determine religion
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
     queryKey: ['/api/user', DEMO_USER_ID],
   });
+
+  // Load user stats to get current stars
+  const { data: userStats } = useQuery({
+    queryKey: [`/api/user/${DEMO_USER_ID}/stats`],
+    enabled: !!user?.selectedReligion,
+  });
+  
+  useEffect(() => {
+    if (userStats) {
+      setUserStars(userStats.totalStars || 0);
+    }
+  }, [userStats]);
+
+  // Initialize game level based on game type
+  useEffect(() => {
+    if (gameType) {
+      const level = getActualLevel(gameType);
+      setCurrentLevel(level);
+    }
+  }, [gameType]);
 
   // Check if this game type should use custom game component
   useEffect(() => {
