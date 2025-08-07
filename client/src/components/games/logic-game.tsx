@@ -89,20 +89,49 @@ const LogicGame: React.FC<LogicGameProps> = ({ onScore, onComplete, religion, ga
   useEffect(() => {
     if (gameStarted) {
       const content = getGameContent();
-      // Shuffle the items
-      const shuffled = content
-        .map((item, index) => ({
-          ...item,
-          id: index,
-          currentPosition: index,
-        }))
-        .sort(() => Math.random() - 0.5)
-        .map((item, index) => ({
-          ...item,
-          currentPosition: index,
-        }));
+      let shuffled;
+      let attempts = 0;
+      
+      // 確保打亂後的序列不等於正確答案，最多嘗試10次
+      do {
+        shuffled = content
+          .map((item, index) => ({
+            ...item,
+            id: index,
+            currentPosition: index,
+          }))
+          .sort(() => Math.random() - 0.5)
+          .map((item, index) => ({
+            ...item,
+            currentPosition: index,
+          }));
+        attempts++;
+      } while (
+        attempts < 10 && 
+        shuffled.every((item, index) => item.order === index + 1)
+      );
+      
+      // 如果10次都是正確順序，手動打亂
+      if (shuffled.every((item, index) => item.order === index + 1)) {
+        // 簡單交換第一個和第二個元素
+        if (shuffled.length >= 2) {
+          [shuffled[0], shuffled[1]] = [shuffled[1], shuffled[0]];
+          shuffled = shuffled.map((item, index) => ({
+            ...item,
+            currentPosition: index,
+          }));
+        }
+      }
+      
+      console.log('Generated logic sequence:', { 
+        original: content.map(item => item.content), 
+        shuffled: shuffled.map(item => item.content),
+        isAlreadyCorrect: shuffled.every((item, index) => item.order === index + 1)
+      });
       
       setSequences(shuffled);
+      setCompleted(false);
+      setAttempts(0);
     }
   }, [gameStarted]);
 
