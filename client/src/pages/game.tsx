@@ -26,14 +26,13 @@ interface GameState {
   totalQuestions: number;
 }
 
-// Use localStorage to get current user ID - moved inside component to be reactive
-const getCurrentUserId = () => {
-  const userId = localStorage.getItem('userId');
-  console.log(`getCurrentUserId: Found userId=${userId} in localStorage`);
-  return userId || "demo-user-1";
-};
-
 export default function GamePage() {
+  // Use localStorage to get current user ID - moved inside component to be reactive
+  const getCurrentUserId = () => {
+    const userId = localStorage.getItem('userId');
+    console.log(`getCurrentUserId: Found userId=${userId} in localStorage`);
+    return userId || "demo-user-1";
+  };
   const { gameType } = useParams<{ gameType: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -96,13 +95,13 @@ export default function GamePage() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
-  console.log(`Game Page: Using userId=${currentUserId}`);
+  console.log(`🎮 Game Page: Using userId="${currentUserId}"`);
   
   const { data: user } = useQuery<{id: string; selectedReligion?: string}>({
     queryKey: ['/api/user', currentUserId],
   });
   
-  console.log(`Game Page: User data loaded:`, user);
+  console.log(`👤 Game Page: User data loaded:`, user);
 
   // Load user stats to get current stars
   const { data: userStats } = useQuery({

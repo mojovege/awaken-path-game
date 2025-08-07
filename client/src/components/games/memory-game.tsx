@@ -48,7 +48,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
   };
 
   const getFullGameContent = () => {
-    console.log(`Memory Game Debug: religion=${religion}, gameType=${gameType}, level=${level}`);
+    console.log(`🔍 Memory Game Debug: religion="${religion}", gameType="${gameType}", level=${level}`);
     
     if (gameType === 'memory-scripture') {
       // Scripture memory matching
@@ -145,7 +145,7 @@ const MemoryGame: React.FC<MemoryGameProps> = ({ onScore, onComplete, religion, 
       }
     } else {
       // Temple/location memory
-      console.log(`Temple Memory: About to switch on religion=${religion}`);
+      console.log(`🏛️ Temple Memory: About to switch on religion="${religion}"`);
       
       switch (religion) {
         case 'buddhism':
