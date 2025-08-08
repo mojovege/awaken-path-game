@@ -90,28 +90,9 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   const playBeatSound = (delay: number = 0) => {
     setTimeout(() => {
       if (gameStarted && !isComplete) {
-        try {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          // 不同宗教不同音效
-          const frequency = religion === 'buddhism' ? 800 : religion === 'taoism' ? 400 : 600;
-          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-          oscillator.type = religion === 'buddhism' ? 'sine' : 'square';
-          
-          gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.15);
-          
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.15);
-        } catch (error) {
-          console.log('Audio not supported');
-        }
+        import('../audio/sound-effects').then(({ SoundEffects }) => {
+          SoundEffects.playSound('beat', religion);
+        });
       }
     }, delay);
   };
@@ -146,12 +127,19 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
       setScore(prev => prev + points);
       setHits(prev => prev + 1);
       
-      // 播放回饋音效
-      playBeatSound();
+      // 播放成功音效
+      import('../audio/sound-effects').then(({ SoundEffects }) => {
+        SoundEffects.playSound('success');
+      });
     } else {
       // 錯誤點擊，扣分
       setScore(prev => Math.max(0, prev - 2));
       setMisses(prev => prev + 1);
+      
+      // 播放錯誤音效
+      import('../audio/sound-effects').then(({ SoundEffects }) => {
+        SoundEffects.playSound('error');
+      });
     }
   };
 

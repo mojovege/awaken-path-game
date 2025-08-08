@@ -119,6 +119,11 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
           ));
           setScore(prev => prev + 20);
           
+          // 播放成功音效
+          import('../audio/sound-effects').then(({ SoundEffects }) => {
+            SoundEffects.playSound('success');
+          });
+          
           // 檢查是否完成
           const matchedCount = cards.filter(c => c.isMatched).length + 2;
           if (matchedCount === cards.length) {
@@ -132,6 +137,11 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
           setCards(prev => prev.map(c => 
             newSelected.includes(c.id) ? { ...c, isFlipped: false } : c
           ));
+          
+          // 播放錯誤音效
+          import('../audio/sound-effects').then(({ SoundEffects }) => {
+            SoundEffects.playSound('error');
+          });
         }
         
         setSelectedCards([]);
