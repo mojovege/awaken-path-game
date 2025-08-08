@@ -10,17 +10,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/:id", async (req, res) => {
     try {
       let user = await storage.getUser(req.params.id);
-      // 如果用戶不存在，自動創建一個新用戶
+      
+      // If user not found by ID, try to find by username
       if (!user) {
-        const newUser = {
-          username: req.params.id,
-          displayName: "新用戶", // 會在用戶設定頁面更新
-          selectedReligion: null,
-        };
-        user = await storage.createUser(newUser);
+        user = await storage.getUserByUsername(req.params.id);
       }
+      
+      // If still not found, create a new user
+      if (!user) {
+        try {
+          const newUser = {
+            username: req.params.id,
+            displayName: "新用戶", // 會在用戶設定頁面更新
+            selectedReligion: null,
+          };
+          user = await storage.createUser(newUser);
+        } catch (createError) {
+          // If creation fails due to unique constraint, try to find by username again
+          user = await storage.getUserByUsername(req.params.id);
+          if (!user) {
+            throw createError;
+          }
+        }
+      }
+      
       res.json(user);
     } catch (error) {
+      console.error("Error getting user:", error);
       res.status(500).json({ message: "Failed to get user" });
     }
   });
@@ -103,7 +119,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Story progress routes
   app.get("/api/user/:id/story", async (req, res) => {
     try {
-      const story = await storage.getStoryProgress(req.params.id);
+      let story = await storage.getStoryProgress(req.params.id);
+      
+      // If story doesn't exist, get user (by ID or username) and create story progress
+      if (!story) {
+        let user = await storage.getUser(req.params.id);
+        if (!user) {
+          user = await storage.getUserByUsername(req.params.id);
+        }
+        
+        if (user) {
+          // Use the user's actual ID for story operations
+          story = await storage.updateStoryProgress(user.id, {
+            currentChapter: 1,
+            chapterProgress: 0,
+            completedChapters: [],
+            achievements: [],
+          });
+        }
+      }
+      
       if (!story) {
         return res.status(404).json({ message: "Story progress not found" });
       }
