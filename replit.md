@@ -20,6 +20,8 @@ Awaken Path is a cognitive training game specifically designed for middle-aged a
   - Proper foreign key relationships and data integrity
 - **Database Relations**: Defined explicit relations between all tables using Drizzle ORM
 - **Migration Success**: Schema successfully pushed to production database using `npm run db:push`
+- **Connection Issues Resolved**: Fixed Neon PostgreSQL connection timeout issues by recreating database connection
+- **User Management Fixed**: Resolved duplicate user creation and display name issues - new users now correctly show "新用戶"
 
 ### Major Bug Fixes Completed
 - **Navigation Issues**: Fixed homepage return buttons in game containers with proper redirect logic
