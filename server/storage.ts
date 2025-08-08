@@ -306,38 +306,60 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(userId: string, updates: Partial<Pick<User, 'displayName' | 'selectedReligion'> & { age?: number }>): Promise<User> {
-    // First try to get the user
+    // First try to get the user by ID
     let user = await this.getUser(userId);
     
     if (!user) {
-      // If user doesn't exist, create one with the updates
-      user = await this.createUser({
-        username: userId,
-        displayName: updates.displayName || "新用戶",
-        selectedReligion: updates.selectedReligion || null,
-      });
-      return user;
+      // If user doesn't exist by ID, check if user exists by username (userId as username)
+      user = await this.getUserByUsername(userId);
+      
+      if (!user) {
+        // User doesn't exist at all, create one with the updates
+        try {
+          user = await this.createUser({
+            username: userId,
+            displayName: updates.displayName || "新用戶",
+            selectedReligion: updates.selectedReligion || null,
+          });
+          return user;
+        } catch (error) {
+          // If creation fails due to unique constraint, try to get by username again
+          user = await this.getUserByUsername(userId);
+          if (!user) {
+            throw error;
+          }
+        }
+      }
     }
     
-    // User exists, update it
+    // User exists, update it using the correct ID
     const [updatedUser] = await db
       .update(users)
       .set(updates)
-      .where(eq(users.id, userId))
+      .where(eq(users.id, user.id))
       .returning();
       
     return updatedUser;
   }
 
   async updateUserReligion(userId: string, religion: Religion): Promise<User> {
+    // First get the user to ensure we use the correct ID
+    let user = await this.getUser(userId);
+    if (!user) {
+      user = await this.getUserByUsername(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+    }
+    
     const [updatedUser] = await db
       .update(users)
       .set({ selectedReligion: religion })
-      .where(eq(users.id, userId))
+      .where(eq(users.id, user.id))
       .returning();
       
     if (!updatedUser) {
-      throw new Error("User not found");
+      throw new Error("Failed to update user religion");
     }
     
     return updatedUser;

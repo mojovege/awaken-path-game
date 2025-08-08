@@ -61,12 +61,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       let stats = await storage.getUserStats(req.params.id);
       
-      // If stats don't exist, ensure user exists and create initial stats
+      // If stats don't exist, get user (by ID or username) and create stats
       if (!stats) {
-        const user = await storage.getUser(req.params.id);
+        let user = await storage.getUser(req.params.id);
+        if (!user) {
+          user = await storage.getUserByUsername(req.params.id);
+        }
+        
         if (user) {
-          // User exists but no stats, initialize stats manually
-          await storage.updateUserStats(req.params.id, {
+          // Use the user's actual ID for stats operations
+          stats = await storage.updateUserStats(user.id, {
             memoryProgress: 0,
             reactionProgress: 0,
             logicProgress: 0,
@@ -75,7 +79,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalGamesPlayed: 0,
             averageScore: 0,
           });
-          stats = await storage.getUserStats(req.params.id);
         }
       }
       
