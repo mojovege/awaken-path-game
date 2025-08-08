@@ -9,6 +9,29 @@ export default function SimpleGamePage() {
   const [score, setScore] = useState(0);
   const [gamePhase, setGamePhase] = useState<'memorize' | 'recall' | 'complete'>('memorize');
   const [timeLeft, setTimeLeft] = useState(8);
+  const [userReligion, setUserReligion] = useState<string>('buddhism');
+
+  // Get user's religion from localStorage or API
+  React.useEffect(() => {
+    const userId = localStorage.getItem('userId') || 'demo-user-1';
+    // Check if there's stored religion preference
+    const storedReligion = localStorage.getItem('selectedReligion');
+    if (storedReligion) {
+      setUserReligion(storedReligion);
+    }
+    
+    // Fetch from API if available
+    fetch(`/api/user/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.selectedReligion) {
+          setUserReligion(data.selectedReligion);
+        }
+      })
+      .catch(() => {
+        // Use default or stored value
+      });
+  }, []);
 
   // Memory game timer
   useEffect(() => {
@@ -98,7 +121,9 @@ export default function SimpleGamePage() {
         {gameType === 'memory-temple' && (
           <div style={{ textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', color: '#8B6914', marginBottom: '20px' }}>
-              佛教寺廟建築記憶
+              {userReligion === 'buddhism' && '佛教寺廟建築記憶'}
+              {userReligion === 'taoism' && '道教宮觀建築記憶'}
+              {userReligion === 'mazu' && '媽祖廟宇建築記憶'}
             </h2>
             
             {!gameStarted && (
@@ -152,14 +177,41 @@ export default function SimpleGamePage() {
               maxWidth: '600px',
               margin: '0 auto'
             }}>
-              {[
-                { name: '大雄寶殿', emoji: '🏛️' },
-                { name: '天王殿', emoji: '🏮' },
-                { name: '觀音殿', emoji: '🏛' },
-                { name: '藏經樓', emoji: '📚' },
-                { name: '鐘樓', emoji: '🔔' },
-                { name: '鼓樓', emoji: '🥁' }
-              ].map((item, index) => {
+              {(() => {
+                // Buddhist temple buildings
+                if (userReligion === 'buddhism') {
+                  return [
+                    { name: '大雄寶殿', emoji: '🏛️' },
+                    { name: '天王殿', emoji: '🏮' },
+                    { name: '觀音殿', emoji: '🏛' },
+                    { name: '藏經樓', emoji: '📚' },
+                    { name: '鐘樓', emoji: '🔔' },
+                    { name: '鼓樓', emoji: '🥁' }
+                  ];
+                }
+                // Taoist temple buildings
+                else if (userReligion === 'taoism') {
+                  return [
+                    { name: '三清殿', emoji: '⛩️' },
+                    { name: '玉皇閣', emoji: '🏯' },
+                    { name: '太極殿', emoji: '☯️' },
+                    { name: '藏經閣', emoji: '📜' },
+                    { name: '鐘亭', emoji: '🔔' },
+                    { name: '鼓亭', emoji: '🥁' }
+                  ];
+                }
+                // Mazu temple buildings
+                else {
+                  return [
+                    { name: '正殿', emoji: '🏛️' },
+                    { name: '媽祖廟', emoji: '🛕' },
+                    { name: '觀音亭', emoji: '🏮' },
+                    { name: '文昌閣', emoji: '📚' },
+                    { name: '鐘樓', emoji: '🔔' },
+                    { name: '香客大樓', emoji: '🏢' }
+                  ];
+                }
+              })().map((item, index) => {
                 const isTargetCard = index < 3; // First 3 cards are the target
                 const isVisible = !gameStarted || showingCards || gamePhase === 'recall' || gamePhase === 'complete';
                 const isSelected = selectedCards.includes(index);
@@ -235,7 +287,9 @@ export default function SimpleGamePage() {
         {gameType === 'memory-scripture' && (
           <div style={{ textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', color: '#8B6914', marginBottom: '20px' }}>
-              佛教經文概念記憶
+              {userReligion === 'buddhism' && '佛教經文概念記憶'}
+              {userReligion === 'taoism' && '道教經典概念記憶'}
+              {userReligion === 'mazu' && '媽祖信仰概念記憶'}
             </h2>
             <div style={{
               display: 'grid',
@@ -244,14 +298,41 @@ export default function SimpleGamePage() {
               maxWidth: '600px',
               margin: '0 auto'
             }}>
-              {[
-                { name: '念佛', emoji: '🙏' },
-                { name: '慈悲', emoji: '❤️' },
-                { name: '智慧', emoji: '🧠' },
-                { name: '禪定', emoji: '🧘' },
-                { name: '功德', emoji: '✨' },
-                { name: '因果', emoji: '🔄' }
-              ].map((item, index) => (
+              {(() => {
+                // Buddhist concepts
+                if (userReligion === 'buddhism') {
+                  return [
+                    { name: '念佛', emoji: '🙏' },
+                    { name: '慈悲', emoji: '❤️' },
+                    { name: '智慧', emoji: '🧠' },
+                    { name: '禪定', emoji: '🧘' },
+                    { name: '功德', emoji: '✨' },
+                    { name: '因果', emoji: '🔄' }
+                  ];
+                }
+                // Taoist concepts
+                else if (userReligion === 'taoism') {
+                  return [
+                    { name: '無為', emoji: '🌊' },
+                    { name: '陰陽', emoji: '☯️' },
+                    { name: '道德', emoji: '⭐' },
+                    { name: '修煉', emoji: '🧘' },
+                    { name: '自然', emoji: '🌿' },
+                    { name: '長生', emoji: '🌸' }
+                  ];
+                }
+                // Mazu concepts  
+                else {
+                  return [
+                    { name: '護佑', emoji: '🛡️' },
+                    { name: '慈航', emoji: '⛵' },
+                    { name: '靈驗', emoji: '✨' },
+                    { name: '祈福', emoji: '🙏' },
+                    { name: '平安', emoji: '🕊️' },
+                    { name: '豐收', emoji: '🌾' }
+                  ];
+                }
+              })().map((item, index) => (
                 <div key={index} style={{
                   backgroundColor: '#fff5f0',
                   border: '2px solid #FFB366',
