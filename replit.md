@@ -39,17 +39,18 @@ Preferred communication style: Simple, everyday language.
 - Demo user implementation for immediate access without registration barriers
 - Religion-based personalization affecting AI interactions and game content
 
-### Game Logic System
+### Game Logic System (Updated 2025-08-08)
 - **Chapter Structure**: 5-chapter progression system with 6 games each (初心啟蒙, 勤修精進, 智慧開悟, 深度修行, 圓滿境界)
 - **Game Types**: 6 distinct game types per chapter - memory-scripture, memory-temple, reaction-rhythm, reaction-lighting, logic-scripture, logic-sequence
 - **Level Mapping**: Each game type represents levels 1-6 within current chapter, total 30 games (5 chapters × 6 games)
-- **Inverted Difficulty System**: Correct progression for elderly users - easier levels are shorter and simpler, harder levels are longer and more complex
-  - **Time Limits**: Level 1 (15s) → Level 15 (80s) - increasing game duration
-  - **Task Complexity**: Level 1 (few beats, fixed rhythm) → Level 15 (many beats, variable rhythm)
-  - **Memory Parameters**: Level 1 (8s memory time) → Level 15 (2s memory time)  
-  - **Reaction Windows**: Level 1 (1000ms) → Level 15 (250ms) - faster required responses
-  - **Beat Patterns**: Simple fixed intervals → Complex variable rhythms with random variations
-- **Scoring Algorithm**: Time-based scoring with difficulty multipliers and star rating system (1-3 stars per level)
+- **Task-Oriented Difficulty System**: Difficulty increases through complexity and time pressure, designed for elderly cognitive training
+  - **Memory Parameters**: Level 1 (10s memory time) → Level 5 (4s memory time)
+  - **Reaction Windows**: Level 1 (1000ms) → Level 5 (300ms)
+  - **Element Quantity**: Level 1 (3 elements) → Level 5 (9 elements)
+  - **Speed Multiplier**: Level 1 (1.0x) → Level 5 (2.5x)
+  - **Game Duration**: Task-specific timing - memory games (记忆时间+15s作答), reaction games (20-35s), logic games (30-60s)
+- **Audio Integration**: Contextual audio for immersion - Zen music for memory/logic games, wooden fish/drum sounds for rhythm games, fire lighting sounds for lamp games
+- **Scoring Algorithm**: Task completion and accuracy-based scoring with star rating system (1-3 stars per level)
 - **Chapter Unlocking**: Star-based progression (6, 12, 18, 24 stars required for chapters 2-5)
 - **Story Integration**: Each chapter contains thematic story content that connects with all 6 game types
 - **Religious Personalization**: Three distinct story paths with culturally appropriate game content for Buddhism, Taoism, and Mazu faith

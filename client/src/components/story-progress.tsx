@@ -343,7 +343,7 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
               {/* 開始當前關卡按鈕 */}
               <div className="flex items-center justify-center mb-6">
                 <Button
-                  onClick={() => onGameClick(currentGameType)}
+                  onClick={() => setLocation(`/game/level/${selectedLevel}`)}
                   className="bg-warm-gold text-white hover:bg-opacity-90 text-elderly-lg px-12 py-4"
                   data-testid={`button-start-current-game`}
                 >

@@ -7,6 +7,7 @@ import Home from "./pages/home";
 import GamePage from "./pages/simple-game";
 import UserSetup from "./pages/user-setup";
 import NotFound from "./pages/not-found";
+import GameContainer from "./components/games/game-container";
 
 function Router() {
   return (
@@ -14,6 +15,9 @@ function Router() {
       <Route path="/user-setup" component={UserSetup} />
       <Route path="/setup" component={UserSetup} />
       <Route path="/" component={Home} />
+      <Route path="/game/level/:level">
+        {(params) => <GameContainer level={parseInt(params.level)} />}
+      </Route>
       <Route path="/game/:gameType" component={GamePage} />
       <Route component={NotFound} />
     </Switch>
