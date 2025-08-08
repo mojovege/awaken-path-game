@@ -77,7 +77,20 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     console.log('生成節拍:', newBeats.length, '個節拍，間隔:', beatInterval, '宗教:', religion);
   };
 
-  const startGame = () => {
+  const startGame = async () => {
+    console.log('🎮 開始節奏遊戲，宗教:', religion);
+    
+    // 初始化音效系統
+    try {
+      const { SoundEffects } = await import('../audio/sound-effects');
+      const audioReady = await SoundEffects.testAudio();
+      if (!audioReady) {
+        console.error('❌ 音效系統未就緒，遊戲可能無聲音');
+      }
+    } catch (error) {
+      console.error('❌ 音效系統測試失敗:', error);
+    }
+    
     setGameStarted(true);
     setCurrentTime(0);
     setScore(0);
@@ -85,41 +98,53 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     setMisses(0);
     setIsComplete(false);
     gameStartTimeRef.current = Date.now();
+    
+    // 先生成節拍
     generateBeats();
     
-    // 重新生成節拍並播放
+    // 等待狀態更新後播放序列
     setTimeout(() => {
-      console.log('1秒後開始播放節拍序列，當前beats數量:', beats.length);
-      if (beats.length > 0) {
-        playRhythmSequence();
-      } else {
-        console.log('重新生成節拍');
-        generateBeats();
-        setTimeout(() => playRhythmSequence(), 100);
-      }
+      console.log('🎵 準備播放節拍序列...');
+      playRhythmSequence();
     }, 1000);
   };
 
-  const playBeatSound = (delay: number = 0) => {
-    setTimeout(() => {
+  const playBeatSound = async (delay: number = 0) => {
+    setTimeout(async () => {
       if (gameStarted && !isComplete) {
-        console.log('播放節拍音效，宗教:', religion);
-        import('../audio/sound-effects').then(({ SoundEffects }) => {
-          SoundEffects.playSound('beat', religion);
-        }).catch(error => {
-          console.error('音效載入失敗:', error);
-        });
+        console.log('🥁 準備播放節拍音效，宗教:', religion, '延遲:', delay);
+        try {
+          const { SoundEffects } = await import('../audio/sound-effects');
+          const success = await SoundEffects.playSound('beat', religion);
+          if (!success) {
+            console.error('❌ 節拍音效播放失敗');
+          }
+        } catch (error) {
+          console.error('❌ 音效模塊載入失敗:', error);
+        }
       }
     }, delay);
   };
 
   const playRhythmSequence = () => {
-    console.log('開始播放節拍序列，共', beats.length, '個節拍');
-    beats.forEach((beat, index) => {
+    // 使用最新的beats狀態
+    const currentBeats = beats.length > 0 ? beats : [];
+    
+    if (currentBeats.length === 0) {
+      console.error('❌ 沒有節拍數據，重新生成...');
+      generateBeats();
+      return;
+    }
+    
+    console.log('🎼 開始播放節拍序列，共', currentBeats.length, '個節拍');
+    
+    currentBeats.forEach((beat, index) => {
       const delay = beat.time * 1000;
-      console.log(`安排第${index + 1}個節拍，延遲${delay}ms播放`);
+      console.log(`📅 安排第${index + 1}個節拍，${beat.time}秒後播放 (延遲${delay}ms)`);
       playBeatSound(delay);
     });
+    
+    console.log('✅ 節拍序列安排完成');
   };
 
   const handleBeatClick = () => {

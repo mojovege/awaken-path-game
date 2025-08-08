@@ -4,36 +4,60 @@ export class SoundEffects {
   private static isInitialized = false;
 
   static async initialize() {
-    if (this.isInitialized) return;
+    if (this.isInitialized && this.audioContext) {
+      console.log('音效系統已初始化');
+      return true;
+    }
     
     try {
+      console.log('開始初始化音效系統...');
+      
       if (!window.AudioContext && !(window as any).webkitAudioContext) {
-        console.log('Web Audio API not supported');
-        return;
+        console.error('瀏覽器不支持 Web Audio API');
+        return false;
       }
 
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       this.audioContext = new AudioContextClass();
       
+      console.log('AudioContext 創建完成，狀態:', this.audioContext.state);
+      
       if (this.audioContext.state === 'suspended') {
+        console.log('嘗試恢復 AudioContext...');
         await this.audioContext.resume();
+        console.log('AudioContext 恢復後狀態:', this.audioContext.state);
       }
       
       this.isInitialized = true;
+      console.log('音效系統初始化成功');
+      return true;
     } catch (error) {
-      console.log('Audio initialization failed:', error);
+      console.error('音效系統初始化失敗:', error);
+      return false;
     }
   }
 
   static async playSound(type: 'beat' | 'fire' | 'success' | 'error', religion?: string) {
-    console.log('SoundEffects.playSound 被調用:', type, '宗教:', religion);
+    console.log('🔊 播放音效請求:', type, '宗教:', religion);
+    
     try {
-      await this.initialize();
-      console.log('音效系統初始化完成，準備播放音效');
+      const initialized = await this.initialize();
+      if (!initialized || !this.audioContext) {
+        console.error('❌ 音效系統初始化失敗，無法播放音效');
+        return false;
+      }
       
-      if (!this.audioContext) {
-        console.error('AudioContext 未能初始化');
-        return;
+      if (this.audioContext.state !== 'running') {
+        console.log('⚠️ AudioContext 不在運行狀態:', this.audioContext.state);
+        if (this.audioContext.state === 'suspended') {
+          try {
+            await this.audioContext.resume();
+            console.log('✅ AudioContext 已恢復運行');
+          } catch (resumeError) {
+            console.error('❌ 無法恢復 AudioContext:', resumeError);
+            return false;
+          }
+        }
       }
 
       const oscillator = this.audioContext.createOscillator();
@@ -117,14 +141,41 @@ export class SoundEffects {
       gainNode.gain.linearRampToValueAtTime(gain, this.audioContext.currentTime + 0.01);
       gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
       
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration);
+      const startTime = this.audioContext.currentTime;
+      const stopTime = startTime + duration;
       
-      console.log('音效播放完成:', type, '頻率:', frequency, '持續時間:', duration);
+      oscillator.start(startTime);
+      oscillator.stop(stopTime);
+      
+      console.log('🎵 音效播放開始:', {
+        type,
+        religion,
+        frequency: frequency + 'Hz',
+        duration: duration + 's',
+        oscillatorType,
+        gain
+      });
+      
+      return true;
       
     } catch (error) {
-      console.log('Sound playback failed:', error);
+      console.error('❌ 音效播放失敗:', error);
+      return false;
     }
+  }
+  
+  // 測試音效系統是否正常工作
+  static async testAudio() {
+    console.log('🧪 開始音效系統測試...');
+    
+    const initialized = await this.initialize();
+    if (!initialized) {
+      console.error('❌ 音效系統測試失敗：初始化失敗');
+      return false;
+    }
+    
+    console.log('✅ 音效系統測試通過');
+    return true;
   }
 
   static cleanup() {
