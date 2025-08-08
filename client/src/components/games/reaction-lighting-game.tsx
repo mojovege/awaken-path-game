@@ -71,10 +71,17 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
     setSequence(newSequence);
   };
 
-  const playLightingSound = () => {
-    import('../audio/sound-effects').then(({ SoundEffects }) => {
-      SoundEffects.playSound('fire');
-    });
+  const playLightingSound = async () => {
+    try {
+      console.log('播放點燈音效，宗教:', religion);
+      const { SoundEffects } = await import('../audio/sound-effects');
+      const success = await SoundEffects.playSound('fire', religion);
+      if (!success) {
+        console.error('點燈音效播放失敗');
+      }
+    } catch (error) {
+      console.error('點燈音效載入失敗:', error);
+    }
   };
 
   const startGame = () => {
@@ -135,31 +142,45 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
     }, difficulty.reactionWindow * sequence.length);
   };
 
-  const handleLampClick = (lampId: number) => {
+  const handleLampClick = async (lampId: number) => {
     if (!waitingForInput || isComplete) return;
     
     const expectedLamp = sequence[currentStep];
     
     if (lampId === expectedLamp) {
       // 正確點擊
+      console.log('點燈正確:', lampId, '當前步驟:', currentStep + 1, '/', sequence.length);
+      
       setLamps(prev => prev.map(lamp => 
         lamp.id === lampId ? { ...lamp, isLit: true } : lamp
       ));
       
-      playLightingSound();
+      await playLightingSound();
       setScore(prev => prev + 15);
       setCurrentStep(prev => prev + 1);
       
       // 檢查是否完成
       if (currentStep + 1 >= sequence.length) {
+        console.log('點燈遊戲完成！');
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-        completeGame();
+        setTimeout(() => completeGame(), 500);
       }
     } else {
-      // 錯誤點擊，扣分
+      // 錯誤點擊
+      console.log('點燈錯誤:', lampId, '預期:', expectedLamp);
       setScore(prev => Math.max(0, prev - 5));
+      
+      // 播放錯誤音效
+      try {
+        const { SoundEffects } = await import('../audio/sound-effects');
+        SoundEffects.playSound('error', religion);
+      } catch (error) {
+        console.error('錯誤音效播放失敗:', error);
+      }
+      
+      setTimeout(() => completeGame(), 1000);
     }
   };
 

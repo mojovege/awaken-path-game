@@ -123,6 +123,8 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
   }, [gameStarted, timeLeft, isComplete]);
 
   const generateQuestions = () => {
+    console.log('生成智慧序列題目 - 宗教:', religion, '題目數量:', questionCount);
+    
     const patterns = generateSequencePatterns();
     const newQuestions: SequenceQuestion[] = [];
 
@@ -145,9 +147,16 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
         options: allOptions,
         correctAnswer: pattern.next
       });
+      
+      console.log(`題目${i + 1}:`, {
+        序列: pattern.base,
+        正確答案: pattern.next,
+        選項: allOptions
+      });
     }
 
     setQuestions(newQuestions);
+    console.log('智慧序列題目生成完成，共', newQuestions.length, '題');
   };
 
   const generateWrongOptions = (correctAnswer: string): string[] => {

@@ -72,7 +72,12 @@ export default function GameContainer({ level, gameType: propGameType, religion:
 
   const handleBackToStory = () => {
     console.log('返回主頁...');
-    setLocation('/');
+    // 清除所有遊戲狀態
+    setIsComplete(false);
+    setCurrentScore(0);
+    setCurrentStars(0);
+    // 強制重新載入首頁
+    window.location.href = '/';
   };
 
   const handleNextLevel = () => {
@@ -136,7 +141,10 @@ export default function GameContainer({ level, gameType: propGameType, religion:
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => setLocation('/')}
+                onClick={() => {
+                  console.log('點擊主頁按鈕');
+                  window.location.href = '/';
+                }}
                 className="text-warm-gray-600 hover:text-warm-brown"
               >
                 <Home className="w-5 h-5 mr-2" />

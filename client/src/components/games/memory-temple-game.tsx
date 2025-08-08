@@ -113,20 +113,41 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
   };
 
   const completeGame = () => {
-    // 計算得分
+    console.log('記憶導覽遊戲完成 - 當前建築:', buildings.map(b => ({name: b.name, target: b.isTarget, selected: b.isSelected})));
+    
+    // 計算得分 - 修正邏輯
     let finalScore = 0;
-    const originalTargets = buildings.slice(0, difficulty.elementCount).map(b => b.id);
+    let correctSelections = 0;
+    let incorrectSelections = 0;
+    
+    // 找出原始目標建築的ID（前difficulty.elementCount個）
+    const originalTargetIds = Array.from({length: difficulty.elementCount}, (_, i) => i);
     
     setBuildings(prev => prev.map(b => {
-      const wasOriginalTarget = originalTargets.includes(b.id);
+      const wasOriginalTarget = originalTargetIds.includes(b.id);
       const isCorrect = b.isSelected && wasOriginalTarget;
       
-      if (isCorrect) {
-        finalScore += 20;
+      if (b.isSelected) {
+        if (wasOriginalTarget) {
+          correctSelections++;
+          finalScore += 20; // 正確選擇加20分
+        } else {
+          incorrectSelections++;
+          finalScore -= 5; // 錯誤選擇扣5分
+        }
       }
       
       return { ...b, isCorrect: wasOriginalTarget };
     }));
+
+    finalScore = Math.max(0, finalScore); // 確保分數不為負數
+    
+    console.log('記憶導覽分數計算:', {
+      正確選擇: correctSelections,
+      錯誤選擇: incorrectSelections,
+      最終分數: finalScore,
+      最高分數: maxScore
+    });
 
     setScore(finalScore);
     setGamePhase('complete');

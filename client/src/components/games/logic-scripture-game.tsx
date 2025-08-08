@@ -113,6 +113,7 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
   };
 
   const startGame = () => {
+    console.log('開始經典排序遊戲 - 宗教:', religion, '題目數量:', difficulty.elementCount);
     setGameStarted(true);
     setTimeLeft(gameTime);
     setScore(0);

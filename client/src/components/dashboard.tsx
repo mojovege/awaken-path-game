@@ -59,7 +59,12 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
       {/* Back to Religion Selection Button */}
       <div className="flex justify-between items-center">
         <Button
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            console.log('重新選擇信仰');
+            // 清除宗教選擇後重新載入頁面
+            localStorage.removeItem('selectedReligion');
+            window.location.href = '/';
+          }}
           variant="outline"
           className="text-warm-gray-600 hover:text-gray-800 border-warm-gray-300"
           data-testid="button-back-to-selection"

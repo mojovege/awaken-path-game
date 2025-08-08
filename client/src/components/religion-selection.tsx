@@ -56,17 +56,28 @@ export default function ReligionSelection({ userId, onReligionSelected }: Religi
 
   const selectReligionMutation = useMutation({
     mutationFn: async (religion: string) => {
-      const response = await apiRequest('PUT', `/api/user/${userId}/religion`, { religion });
-      return response.json();
+      console.log('選擇信仰:', religion, '用戶:', userId);
+      try {
+        const response = await apiRequest('PUT', `/api/user/${userId}/religion`, { religion });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('信仰選擇API錯誤:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      console.log('信仰選擇成功');
       toast({
         title: "信仰選擇完成",
         description: "歡迎開始您的修行之路！",
       });
       onReligionSelected();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('信仰選擇失敗:', error);
       toast({
         title: "選擇失敗",
         description: "請重新嘗試選擇您的信仰",
