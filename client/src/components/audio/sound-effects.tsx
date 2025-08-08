@@ -26,12 +26,15 @@ export class SoundEffects {
   }
 
   static async playSound(type: 'beat' | 'fire' | 'success' | 'error', religion?: string) {
-    // 調試輸出
-    console.log('播放音效:', type, '宗教:', religion);
+    console.log('SoundEffects.playSound 被調用:', type, '宗教:', religion);
     try {
       await this.initialize();
+      console.log('音效系統初始化完成，準備播放音效');
       
-      if (!this.audioContext) return;
+      if (!this.audioContext) {
+        console.error('AudioContext 未能初始化');
+        return;
+      }
 
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
@@ -116,6 +119,8 @@ export class SoundEffects {
       
       oscillator.start(this.audioContext.currentTime);
       oscillator.stop(this.audioContext.currentTime + duration);
+      
+      console.log('音效播放完成:', type, '頻率:', frequency, '持續時間:', duration);
       
     } catch (error) {
       console.log('Sound playback failed:', error);

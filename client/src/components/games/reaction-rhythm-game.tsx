@@ -74,6 +74,7 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     }
     
     setBeats(newBeats);
+    console.log('生成節拍:', newBeats.length, '個節拍，間隔:', beatInterval, '宗教:', religion);
   };
 
   const startGame = () => {
@@ -86,23 +87,38 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     gameStartTimeRef.current = Date.now();
     generateBeats();
     
-    // 播放節拍序列
-    setTimeout(() => playRhythmSequence(), 500);
+    // 重新生成節拍並播放
+    setTimeout(() => {
+      console.log('1秒後開始播放節拍序列，當前beats數量:', beats.length);
+      if (beats.length > 0) {
+        playRhythmSequence();
+      } else {
+        console.log('重新生成節拍');
+        generateBeats();
+        setTimeout(() => playRhythmSequence(), 100);
+      }
+    }, 1000);
   };
 
   const playBeatSound = (delay: number = 0) => {
     setTimeout(() => {
       if (gameStarted && !isComplete) {
+        console.log('播放節拍音效，宗教:', religion);
         import('../audio/sound-effects').then(({ SoundEffects }) => {
           SoundEffects.playSound('beat', religion);
+        }).catch(error => {
+          console.error('音效載入失敗:', error);
         });
       }
     }, delay);
   };
 
   const playRhythmSequence = () => {
-    beats.forEach(beat => {
-      playBeatSound(beat.time * 1000);
+    console.log('開始播放節拍序列，共', beats.length, '個節拍');
+    beats.forEach((beat, index) => {
+      const delay = beat.time * 1000;
+      console.log(`安排第${index + 1}個節拍，延遲${delay}ms播放`);
+      playBeatSound(delay);
     });
   };
 
