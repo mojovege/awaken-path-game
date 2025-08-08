@@ -30,19 +30,17 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   const difficulty = getDifficultyForLevel(gameLevel);
 
   useEffect(() => {
-    // 獲取用戶宗教選擇
-    const storedReligion = localStorage.getItem('selectedReligion') || propReligion;
-    if (storedReligion) {
-      setUserReligion(storedReligion);
-    }
-
     // 從API獲取用戶信息
-    const userId = localStorage.getItem('userId') || 'demo-user-1';
+    const userId = localStorage.getItem('awaken_path_user_id') || localStorage.getItem('userId') || 'demo-user-1';
+    
     fetch(`/api/user/${userId}`)
       .then(res => res.json())
       .then(data => {
+        console.log('用戶資料:', data); // 調試信息
         if (data.selectedReligion) {
+          console.log('設定宗教為:', data.selectedReligion); // 調試信息
           setUserReligion(data.selectedReligion);
+          localStorage.setItem('selectedReligion', data.selectedReligion);
         }
       })
       .catch(console.error);
@@ -55,7 +53,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
 
     // 保存遊戲結果到服務器
     try {
-      const userId = localStorage.getItem('userId') || 'demo-user-1';
+      const userId = localStorage.getItem('awaken_path_user_id') || localStorage.getItem('userId') || 'demo-user-1';
       await fetch(`/api/user/${userId}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,8 +112,11 @@ export default function GameContainer({ level, gameType: propGameType, religion:
     }
   };
 
-  const religionData = RELIGIOUS_CONTENT[userReligion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[userReligion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const gameInfo = GAME_TYPES[gameType];
+  
+  // 調試輸出
+  console.log('當前宗教:', userReligion, '宗教資料:', religionData);
 
   return (
     <div className="min-h-screen bg-warm-bg">
