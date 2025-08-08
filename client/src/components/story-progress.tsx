@@ -33,6 +33,10 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
   const [, setLocation] = useLocation();
   const [showChapterSelector, setShowChapterSelector] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState(1); // 當前選擇的關卡
+  
+  const handleBackToHome = () => {
+    setLocation('/');
+  };
 
   const getStoryContent = (): StoryChapter[] => {
     const baseGames: GameInChapter[] = [
@@ -281,16 +285,30 @@ export default function StoryProgress({ religion, onChatClick, onGameClick }: St
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Header */}
+      {/* Header with Back Button */}
+      <div className="flex justify-between items-start mb-6">
+        <Button
+          onClick={handleBackToHome}
+          variant="ghost"
+          className="text-warm-gray-600 hover:text-warm-brown flex items-center"
+          data-testid="button-back-home"
+        >
+          ← 回到主頁
+        </Button>
+        <div className="text-center flex-1">
+          <div className="text-6xl">{getReligionEmoji()}</div>
+          <h1 className="text-elderly-2xl font-bold text-gray-800">
+            {getReligionTitle()}
+          </h1>
+          <p className="text-elderly-base text-warm-gray-600">
+            跟隨故事進度，完成相應的認知訓練遊戲
+          </p>
+        </div>
+        <div style={{ width: '100px' }}></div>
+      </div>
+      
+      {/* Chapter Selector and Game Info */}
       <div className="text-center space-y-4">
-        <div className="text-6xl">{getReligionEmoji()}</div>
-        <h1 className="text-elderly-2xl font-bold text-gray-800">
-          {getReligionTitle()}
-        </h1>
-        <p className="text-elderly-base text-warm-gray-600">
-          跟隨故事進度，完成相應的認知訓練遊戲
-        </p>
-        
         {/* Chapter Selector Button */}
         <div className="flex justify-center">
           <Button

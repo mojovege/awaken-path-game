@@ -1,6 +1,221 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'wouter';
 
+// Scripture Memory Game Component
+function ScriptureMemoryGame({ userReligion }: { userReligion: string }) {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [selectedPairs, setSelectedPairs] = useState<number[]>([]);
+  const [matchedPairs, setMatchedPairs] = useState<number[]>([]);
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+
+  const getGameContent = () => {
+    if (userReligion === 'buddhism') {
+      return {
+        title: '佛教經文概念配對',
+        pairs: [
+          { id: 1, text: '念佛', match: '阿彌陀佛', emoji: '🙏' },
+          { id: 2, text: '慈悲', match: '無緣大慈', emoji: '❤️' },
+          { id: 3, text: '智慧', match: '般若波羅蜜', emoji: '🧠' },
+          { id: 4, text: '禪定', match: '一心不亂', emoji: '🧘' },
+          { id: 5, text: '功德', match: '廣種福田', emoji: '✨' },
+          { id: 6, text: '因果', match: '善惡有報', emoji: '🔄' }
+        ]
+      };
+    } else if (userReligion === 'taoism') {
+      return {
+        title: '道教經典概念配對',
+        pairs: [
+          { id: 1, text: '無為', match: '順其自然', emoji: '🌊' },
+          { id: 2, text: '陰陽', match: '太極生兩儀', emoji: '☯️' },
+          { id: 3, text: '道德', match: '上善若水', emoji: '⭐' },
+          { id: 4, text: '修煉', match: '煉精化氣', emoji: '🧘' },
+          { id: 5, text: '自然', match: '道法自然', emoji: '🌿' },
+          { id: 6, text: '長生', match: '延年益壽', emoji: '🌸' }
+        ]
+      };
+    } else {
+      return {
+        title: '媽祖信仰概念配對',
+        pairs: [
+          { id: 1, text: '護佑', match: '海上平安', emoji: '🛡️' },
+          { id: 2, text: '慈航', match: '救苦救難', emoji: '⛵' },
+          { id: 3, text: '靈驗', match: '有求必應', emoji: '✨' },
+          { id: 4, text: '祈福', match: '風調雨順', emoji: '🙏' },
+          { id: 5, text: '平安', match: '出入平安', emoji: '🕊️' },
+          { id: 6, text: '豐收', match: '五穀豐登', emoji: '🌾' }
+        ]
+      };
+    }
+  };
+
+  const gameContent = getGameContent();
+  
+  // Create shuffled cards array
+  const createCards = () => {
+    const cards: Array<{id: number, text: string, type: 'concept' | 'meaning', pairId: number}> = [];
+    gameContent.pairs.forEach(pair => {
+      cards.push({ id: cards.length, text: pair.text, type: 'concept', pairId: pair.id });
+      cards.push({ id: cards.length, text: pair.match, type: 'meaning', pairId: pair.id });
+    });
+    return cards.sort(() => Math.random() - 0.5);
+  };
+
+  const [cards] = useState(createCards());
+
+  const handleCardClick = (cardId: number) => {
+    if (!gameStarted || selectedPairs.length >= 2 || selectedPairs.includes(cardId) || matchedPairs.includes(cardId)) {
+      return;
+    }
+
+    const newSelected = [...selectedPairs, cardId];
+    setSelectedPairs(newSelected);
+
+    if (newSelected.length === 2) {
+      setAttempts(prev => prev + 1);
+      const card1 = cards.find(c => c.id === newSelected[0]);
+      const card2 = cards.find(c => c.id === newSelected[1]);
+      
+      if (card1 && card2 && card1.pairId === card2.pairId) {
+        // Match found!
+        setTimeout(() => {
+          setMatchedPairs(prev => [...prev, ...newSelected]);
+          setSelectedPairs([]);
+          setScore(prev => prev + 10);
+          
+          if (matchedPairs.length + newSelected.length === cards.length) {
+            alert(`恭喜完成配對！總得分：${score + 10}分，嘗試次數：${attempts + 1}次`);
+          }
+        }, 1000);
+      } else {
+        // No match
+        setTimeout(() => {
+          setSelectedPairs([]);
+        }, 1000);
+      }
+    }
+  };
+
+  const startGame = () => {
+    setGameStarted(true);
+    setSelectedPairs([]);
+    setMatchedPairs([]);
+    setScore(0);
+    setAttempts(0);
+  };
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '24px', color: '#8B6914', marginBottom: '20px' }}>
+        {gameContent.title}
+      </h2>
+      
+      {!gameStarted && (
+        <div style={{ marginBottom: '30px' }}>
+          <p style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>
+            <strong>配對遊戲規則：</strong>
+          </p>
+          <p style={{ fontSize: '16px', color: '#666', marginBottom: '10px' }}>
+            1. 點擊兩張卡片，找出相關概念的配對
+          </p>
+          <p style={{ fontSize: '16px', color: '#666', marginBottom: '10px' }}>
+            2. 成功配對的卡片會保持顯示
+          </p>
+          <p style={{ fontSize: '16px', color: '#666', marginBottom: '20px' }}>
+            3. 完成所有配對即可獲得最終分數
+          </p>
+        </div>
+      )}
+
+      {gameStarted && (
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ fontSize: '18px', color: '#27ae60', fontWeight: 'bold' }}>
+            得分：{score} | 嘗試次數：{attempts} | 已配對：{matchedPairs.length / 2}/{gameContent.pairs.length}
+          </p>
+        </div>
+      )}
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '15px',
+        maxWidth: '800px',
+        margin: '0 auto 30px auto'
+      }}>
+        {cards.map(card => {
+          const isSelected = selectedPairs.includes(card.id);
+          const isMatched = matchedPairs.includes(card.id);
+          const isVisible = !gameStarted || isSelected || isMatched;
+          
+          return (
+            <div
+              key={card.id}
+              style={{
+                backgroundColor: isMatched ? '#d4edda' : (isSelected ? '#fff3cd' : '#f8f9fa'),
+                border: isMatched ? '3px solid #28a745' : (isSelected ? '3px solid #ffc107' : '2px solid #dee2e6'),
+                borderRadius: '10px',
+                padding: '15px',
+                textAlign: 'center',
+                cursor: gameStarted && !isMatched ? 'pointer' : 'default',
+                transition: 'all 0.3s ease',
+                minHeight: '80px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onClick={() => handleCardClick(card.id)}
+            >
+              <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>
+                {isVisible ? card.text : '❓'}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ marginTop: '30px' }}>
+        <button style={{
+          backgroundColor: '#8B6914',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '15px 30px',
+          fontSize: '18px',
+          cursor: 'pointer',
+          marginRight: '15px'
+        }} onClick={() => window.location.href = '/'}>
+          返回首頁
+        </button>
+        {!gameStarted || matchedPairs.length === cards.length ? (
+          <button style={{
+            backgroundColor: '#FFB366',
+            color: '#333',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '15px 30px',
+            fontSize: '18px',
+            cursor: 'pointer'
+          }} onClick={startGame}>
+            {matchedPairs.length === cards.length ? '再玩一次' : '開始遊戲'}
+          </button>
+        ) : (
+          <button style={{
+            backgroundColor: '#ccc',
+            color: '#666',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '15px 30px',
+            fontSize: '18px',
+            cursor: 'not-allowed'
+          }} disabled>
+            遊戲進行中...
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SimpleGamePage() {
   const { gameType } = useParams<{ gameType: string }>();
   const [gameStarted, setGameStarted] = useState(false);
@@ -285,98 +500,7 @@ export default function SimpleGamePage() {
         )}
 
         {gameType === 'memory-scripture' && (
-          <div style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '24px', color: '#8B6914', marginBottom: '20px' }}>
-              {userReligion === 'buddhism' && '佛教經文概念記憶'}
-              {userReligion === 'taoism' && '道教經典概念記憶'}
-              {userReligion === 'mazu' && '媽祖信仰概念記憶'}
-            </h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '15px',
-              maxWidth: '600px',
-              margin: '0 auto'
-            }}>
-              {(() => {
-                // Buddhist concepts
-                if (userReligion === 'buddhism') {
-                  return [
-                    { name: '念佛', emoji: '🙏' },
-                    { name: '慈悲', emoji: '❤️' },
-                    { name: '智慧', emoji: '🧠' },
-                    { name: '禪定', emoji: '🧘' },
-                    { name: '功德', emoji: '✨' },
-                    { name: '因果', emoji: '🔄' }
-                  ];
-                }
-                // Taoist concepts
-                else if (userReligion === 'taoism') {
-                  return [
-                    { name: '無為', emoji: '🌊' },
-                    { name: '陰陽', emoji: '☯️' },
-                    { name: '道德', emoji: '⭐' },
-                    { name: '修煉', emoji: '🧘' },
-                    { name: '自然', emoji: '🌿' },
-                    { name: '長生', emoji: '🌸' }
-                  ];
-                }
-                // Mazu concepts  
-                else {
-                  return [
-                    { name: '護佑', emoji: '🛡️' },
-                    { name: '慈航', emoji: '⛵' },
-                    { name: '靈驗', emoji: '✨' },
-                    { name: '祈福', emoji: '🙏' },
-                    { name: '平安', emoji: '🕊️' },
-                    { name: '豐收', emoji: '🌾' }
-                  ];
-                }
-              })().map((item, index) => (
-                <div key={index} style={{
-                  backgroundColor: '#fff5f0',
-                  border: '2px solid #FFB366',
-                  borderRadius: '10px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}>
-                  <div style={{ fontSize: '32px', marginBottom: '10px' }}>
-                    {item.emoji}
-                  </div>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: '30px' }}>
-              <button style={{
-                backgroundColor: '#8B6914',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '15px 30px',
-                fontSize: '18px',
-                cursor: 'pointer',
-                marginRight: '15px'
-              }} onClick={() => window.location.href = '/'}>
-                返回首頁
-              </button>
-              <button style={{
-                backgroundColor: '#FFB366',
-                color: '#333',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '15px 30px',
-                fontSize: '18px',
-                cursor: 'pointer'
-              }} onClick={() => alert('記憶遊戲功能正在完善中！')}>
-                開始遊戲
-              </button>
-            </div>
-          </div>
+          <ScriptureMemoryGame userReligion={userReligion} />
         )}
 
         {!gameType && (
