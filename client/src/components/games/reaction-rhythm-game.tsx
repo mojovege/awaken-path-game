@@ -32,9 +32,8 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   // 調試輸出
   console.log('節奏遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
-  useEffect(() => {
-    generateBeats();
-  }, [difficulty]);
+  // 移除這個useEffect，避免循環依賴
+  // generateBeats 會在startGame中調用
 
   useEffect(() => {
     let animationFrame: number;
@@ -62,63 +61,38 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   }, [gameStarted, isComplete, gameDuration]);
 
   const generateBeats = () => {
+    // 使用固定參數避免依賴問題
+    const beatInterval = 1.5;
+    const startTime = 2;
+    const maxBeats = 8; // 固定8個節拍，簡化邏輯
+    
     const newBeats: Beat[] = [];
-    const beatInterval = 1.5 / difficulty.speedMultiplier; // 調整間隔讓節拍更明顯
-    const startTime = 2; // 2秒後開始第一個節拍
-    
-    // 根據遊戲時間和間隔計算節拍數量
-    const totalBeats = Math.floor((gameDuration - startTime) / beatInterval);
-    const beatCount = Math.min(totalBeats, difficulty.elementCount + 5); // 至少有elementCount個節拍
-    
-    for (let i = 0; i < beatCount; i++) {
+    for (let i = 0; i < maxBeats; i++) {
       newBeats.push({
         time: startTime + (i * beatInterval),
         hit: false
       });
     }
     
-    console.log('節奏遊戲生成節拍:', {
-      節拍數量: newBeats.length,
-      間隔: beatInterval.toFixed(2) + 's', 
-      遊戲時長: gameDuration + 's',
-      速度倍數: difficulty.speedMultiplier,
-      宗教: religion,
-      節拍時間點: newBeats.slice(0, 5).map(b => b.time.toFixed(1) + 's').join(', ') + (newBeats.length > 5 ? '...' : '')
-    });
-    
-    setBeats(newBeats);
+    console.log('節拍生成完成:', newBeats.length, '個節拍');
+    return newBeats;
   };
 
-  const startGame = async () => {
-    console.log('開始節奏遊戲 - 宗教:', religion, '難度:', difficulty.chapter);
+  const startGame = () => {
+    console.log('開始節奏遊戲');
     
-    // 重置所有狀態
-    setGameStarted(false);
+    // 重置狀態
     setCurrentTime(0);
     setScore(0);
     setHits(0);
     setMisses(0);
     setIsComplete(false);
-    setBeats([]);
     
-    // 生成新的節拍序列
-    const newBeats: Beat[] = [];
-    const beatInterval = 1.5 / difficulty.speedMultiplier;
-    const startTime = 2;
-    const totalBeats = Math.floor((gameDuration - startTime) / beatInterval);
-    const beatCount = Math.min(totalBeats, difficulty.elementCount + 5);
-    
-    for (let i = 0; i < beatCount; i++) {
-      newBeats.push({
-        time: startTime + (i * beatInterval),
-        hit: false
-      });
-    }
-    
-    console.log('節拍序列生成完成:', beatCount, '個節拍，間隔:', beatInterval.toFixed(2), 's');
-    
-    // 設置節拍並開始遊戲
+    // 生成節拍
+    const newBeats = generateBeats();
     setBeats(newBeats);
+    
+    // 開始遊戲
     setGameStarted(true);
     gameStartTimeRef.current = Date.now();
     

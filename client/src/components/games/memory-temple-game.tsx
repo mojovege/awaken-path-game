@@ -99,7 +99,7 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     const building = buildings.find(b => b.id === buildingId);
     if (!building || building.isSelected) return;
     
-    if (selectedCount >= difficulty.elementCount) return;
+    if (selectedCount >= 3) return; // 固定選擇3個
 
     setBuildings(prev => prev.map(b => 
       b.id === buildingId ? { ...b, isSelected: true } : b
@@ -108,7 +108,7 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     setSelectedCount(prev => prev + 1);
     
     // 檢查是否選擇完畢
-    if (selectedCount + 1 === difficulty.elementCount) {
+    if (selectedCount + 1 === 3) {
       setTimeout(() => completeGame(), 500);
     }
   };
@@ -121,8 +121,9 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     let correctSelections = 0;
     let incorrectSelections = 0;
     
-    // 找出原始目標建築的ID（前difficulty.elementCount個）
-    const originalTargetIds = Array.from({length: difficulty.elementCount}, (_, i) => i);
+    // 固定選擇前3個建築作為目標，簡化邏輯
+    const targetCount = 3;
+    const originalTargetIds = Array.from({length: targetCount}, (_, i) => i);
     
     setBuildings(prev => prev.map(b => {
       const wasOriginalTarget = originalTargetIds.includes(b.id);

@@ -146,7 +146,7 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
               console.log('已配對卡片數:', matchedCount, '總卡片數:', updatedCards.length);
               
               if (matchedCount === updatedCards.length) {
-                console.log('🎉 遊戲完成!');
+                console.log('經文記憶遊戲完成!');
                 const stars = calculateStarRating(newScore, maxScore);
                 setTimeout(() => {
                   setGamePhase('complete');
@@ -160,7 +160,7 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
             return updatedCards;
           } else {
             // 配對失敗
-            console.log('❌ 配對失敗');
+            console.log('配對失敗');
             
             // 播放錯誤音效
             import('../audio/sound-effects').then(({ SoundEffects }) => {
