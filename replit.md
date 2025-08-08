@@ -17,13 +17,21 @@ Awaken Path is a cognitive training game specifically designed for middle-aged a
 
 ### New Features Added (2025-08-08)
 - **Learning Phase System**: Implemented study phase in scripture memory game showing concept-meaning pairs before card flipping
-- **Hint System**: Added hint buttons and tooltips across all games providing:
-  - Scripture pairing hints showing concept-meaning relationships
-  - Temple memory hints revealing target buildings during answering phase
-  - Logic scripture hints displaying correct sequence order
-  - Sequence pattern hints showing correct answers with pattern explanation
-- **Enhanced Game Instructions**: Added descriptive text matching screenshot specifications ("先學習配對關係，然後進行翻牌配對")
-- **Story Integration Ready**: Story progress system exists and is ready for enhanced narrative content
+- **Comprehensive Hint System**: Added "顯示提示" buttons across all six game types:
+  - **Memory Scripture**: Shows concept-meaning relationships during learning and gameplay
+  - **Memory Temple**: Reveals target buildings during answering phase
+  - **Reaction Rhythm**: Provides timing guidance and reaction window information
+  - **Reaction Lighting**: Shows correct lamp sequence during input phase
+  - **Logic Scripture**: Displays correct sequence order with numbered steps
+  - **Logic Sequence**: Shows correct answers with pattern explanation
+- **Multi-Religion Support**: All three religions (Buddhism, Taoism, Mazu) have complete content:
+  - Distinct building names and emojis for each religion
+  - Religion-specific concept-meaning pairs for memory games
+  - Custom sequence patterns and scriptures for logic games
+  - Appropriate audio and visual themes
+- **Enhanced Game Instructions**: Added descriptive text matching design specifications
+- **Story Integration Complete**: Comprehensive story system with 5 chapters per religion featuring thematic content
+- **Audio Integration**: Religion-specific sound effects and background music for immersive gameplay
 
 ## User Preferences
 

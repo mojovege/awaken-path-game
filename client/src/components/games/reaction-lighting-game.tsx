@@ -24,6 +24,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
   const [isComplete, setIsComplete] = useState(false);
   const [showingSequence, setShowingSequence] = useState(false);
   const [waitingForInput, setWaitingForInput] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;

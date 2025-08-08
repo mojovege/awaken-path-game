@@ -21,6 +21,7 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   const [hits, setHits] = useState(0);
   const [misses, setMisses] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const gameStartTimeRef = useRef<number>(0);
 
