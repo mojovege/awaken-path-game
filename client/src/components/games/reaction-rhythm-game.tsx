@@ -63,59 +63,69 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
 
   const generateBeats = () => {
     const newBeats: Beat[] = [];
-    const beatInterval = 1.2 / difficulty.speedMultiplier; // 基礎間隔調整
+    const beatInterval = 1.5 / difficulty.speedMultiplier; // 調整間隔讓節拍更明顯
     const startTime = 2; // 2秒後開始第一個節拍
     
-    // 生成固定數量的節拍，符合elementCount要求
-    for (let i = 0; i < difficulty.elementCount; i++) {
+    // 根據遊戲時間和間隔計算節拍數量
+    const totalBeats = Math.floor((gameDuration - startTime) / beatInterval);
+    const beatCount = Math.min(totalBeats, difficulty.elementCount + 5); // 至少有elementCount個節拍
+    
+    for (let i = 0; i < beatCount; i++) {
       newBeats.push({
         time: startTime + (i * beatInterval),
         hit: false
       });
     }
     
-    console.log('🎵 生成節拍序列:', {
-      數量: newBeats.length,
-      間隔: beatInterval + 's',
+    console.log('節奏遊戲生成節拍:', {
+      節拍數量: newBeats.length,
+      間隔: beatInterval.toFixed(2) + 's', 
+      遊戲時長: gameDuration + 's',
+      速度倍數: difficulty.speedMultiplier,
       宗教: religion,
-      難度: difficulty.chapter,
-      開始時間: startTime + 's',
-      節拍時間: newBeats.map(b => b.time.toFixed(1) + 's').join(', ')
+      節拍時間點: newBeats.slice(0, 5).map(b => b.time.toFixed(1) + 's').join(', ') + (newBeats.length > 5 ? '...' : '')
     });
     
     setBeats(newBeats);
   };
 
   const startGame = async () => {
-    console.log('🎮 開始節奏遊戲，宗教:', religion);
+    console.log('開始節奏遊戲 - 宗教:', religion, '難度:', difficulty.chapter);
     
-    // 初始化音效系統
-    try {
-      const { SoundEffects } = await import('../audio/sound-effects');
-      const audioReady = await SoundEffects.testAudio();
-      if (!audioReady) {
-        console.error('❌ 音效系統未就緒，遊戲可能無聲音');
-      }
-    } catch (error) {
-      console.error('❌ 音效系統測試失敗:', error);
-    }
-    
-    setGameStarted(true);
+    // 重置所有狀態
+    setGameStarted(false);
     setCurrentTime(0);
     setScore(0);
     setHits(0);
     setMisses(0);
     setIsComplete(false);
+    setBeats([]);
+    
+    // 生成新的節拍序列
+    const newBeats: Beat[] = [];
+    const beatInterval = 1.5 / difficulty.speedMultiplier;
+    const startTime = 2;
+    const totalBeats = Math.floor((gameDuration - startTime) / beatInterval);
+    const beatCount = Math.min(totalBeats, difficulty.elementCount + 5);
+    
+    for (let i = 0; i < beatCount; i++) {
+      newBeats.push({
+        time: startTime + (i * beatInterval),
+        hit: false
+      });
+    }
+    
+    console.log('節拍序列生成完成:', beatCount, '個節拍，間隔:', beatInterval.toFixed(2), 's');
+    
+    // 設置節拍並開始遊戲
+    setBeats(newBeats);
+    setGameStarted(true);
     gameStartTimeRef.current = Date.now();
     
-    // 先生成節拍
-    generateBeats();
-    
-    // 等待狀態更新後播放序列
+    // 播放節拍序列
     setTimeout(() => {
-      console.log('🎵 準備播放節拍序列...');
-      playRhythmSequence();
-    }, 1000);
+      playRhythmSequence(newBeats);
+    }, 500);
   };
 
   const playBeatSound = async (delay: number = 0) => {
@@ -135,56 +145,66 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     }, delay);
   };
 
-  const playRhythmSequence = () => {
-    // 使用當前beats狀態，但如果為空就等待
-    if (beats.length === 0) {
-      console.error('❌ 節拍序列為空，等待生成...');
-      setTimeout(() => playRhythmSequence(), 100);
+  const playRhythmSequence = (beatSequence: Beat[]) => {
+    if (!beatSequence || beatSequence.length === 0) {
+      console.error('節拍序列為空，無法播放');
       return;
     }
     
-    console.log('🎼 播放節拍序列，共', beats.length, '個節拍');
+    console.log('開始播放節拍序列，共', beatSequence.length, '個節拍');
     
-    beats.forEach((beat, index) => {
+    beatSequence.forEach((beat, index) => {
       const delay = beat.time * 1000;
-      console.log(`📅 第${index + 1}個節拍：${beat.time.toFixed(1)}秒後播放 (延遲${delay}ms)`);
       
       setTimeout(async () => {
         if (gameStarted && !isComplete) {
-          console.log(`🥁 播放第${index + 1}個節拍 (宗教: ${religion})`);
+          console.log(`播放節拍 ${index + 1}/${beatSequence.length} (時間: ${beat.time.toFixed(1)}s)`);
           try {
             const { SoundEffects } = await import('../audio/sound-effects');
-            const success = await SoundEffects.playSound('beat', religion);
-            if (!success) {
-              console.error(`❌ 第${index + 1}個節拍播放失敗`);
-            } else {
-              console.log(`✅ 第${index + 1}個節拍播放成功`);
-            }
+            await SoundEffects.playSound('beat', religion);
           } catch (error) {
-            console.error(`❌ 第${index + 1}個節拍音效載入失敗:`, error);
+            console.error('節拍音效播放失敗:', error);
           }
         }
       }, delay);
     });
-    
-    console.log('✅ 所有節拍已安排播放');
   };
 
   const handleBeatClick = () => {
-    if (!gameStarted || isComplete) return;
+    if (!gameStarted || isComplete || beats.length === 0) return;
+    
+    console.log('點擊節拍，當前時間:', currentTime.toFixed(2), 's');
     
     // 找到最近的未命中節拍
-    const nearestBeat = beats
-      .filter(beat => !beat.hit)
-      .reduce((closest, beat) => {
-        const currentDist = Math.abs(beat.time - currentTime);
-        const closestDist = closest ? Math.abs(closest.time - currentTime) : Infinity;
-        return currentDist < closestDist ? beat : closest;
-      }, null as Beat | null);
+    const availableBeats = beats.filter(beat => !beat.hit);
     
-    if (nearestBeat && Math.abs(nearestBeat.time - currentTime) <= (difficulty.reactionWindow / 1000)) {
-      const timeDiff = Math.abs(nearestBeat.time - currentTime);
-      const accuracy = Math.max(0, 1 - timeDiff / (difficulty.reactionWindow / 1000));
+    if (availableBeats.length === 0) {
+      console.log('所有節拍已被命中');
+      return;
+    }
+    
+    const nearestBeat = availableBeats.reduce((closest, beat) => {
+      const currentDist = Math.abs(beat.time - currentTime);
+      const closestDist = closest ? Math.abs(closest.time - currentTime) : Infinity;
+      return currentDist < closestDist ? beat : closest;
+    }, null as Beat | null);
+    
+    if (!nearestBeat) return;
+    
+    const timeDiff = Math.abs(nearestBeat.time - currentTime);
+    const reactionWindowSeconds = difficulty.reactionWindow / 1000;
+    
+    console.log('檢查節拍命中:', {
+      節拍時間: nearestBeat.time.toFixed(2),
+      當前時間: currentTime.toFixed(2),
+      時間差: timeDiff.toFixed(3),
+      反應窗口: reactionWindowSeconds.toFixed(3),
+      是否命中: timeDiff <= reactionWindowSeconds
+    });
+    
+    if (timeDiff <= reactionWindowSeconds) {
+      // 命中成功
+      const accuracy = Math.max(0, 1 - timeDiff / reactionWindowSeconds);
       const points = Math.floor(accuracy * 15); // 最高15分每拍
       
       setBeats(prev => prev.map(beat => 
@@ -194,14 +214,18 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
       setScore(prev => prev + points);
       setHits(prev => prev + 1);
       
+      console.log('節拍命中成功！準確度:', (accuracy * 100).toFixed(1) + '%', '得分:', points);
+      
       // 播放成功音效
       import('../audio/sound-effects').then(({ SoundEffects }) => {
         SoundEffects.playSound('success', religion);
       });
     } else {
-      // 錯誤點擊，扣分
+      // 錯誤點擊
       setScore(prev => Math.max(0, prev - 2));
       setMisses(prev => prev + 1);
+      
+      console.log('節拍錯過，扣2分');
       
       // 播放錯誤音效
       import('../audio/sound-effects').then(({ SoundEffects }) => {
