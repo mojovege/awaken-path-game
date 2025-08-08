@@ -4,6 +4,17 @@
 
 Awaken Path is a cognitive training game specifically designed for middle-aged and elderly users (50+) to help prevent mental decline through religious-themed gameplay. The application combines meditation, memory training, reaction exercises, and logical thinking challenges while incorporating elements from Buddhism, Taoism, and Mazu worship. The game features an AI companion system that provides personalized guidance based on the user's chosen religious path, along with sharing capabilities to connect with family and friends.
 
+## Recent Updates (2025-08-08)
+
+### Major Bug Fixes Completed
+- **Navigation Issues**: Fixed homepage return buttons in game containers with proper redirect logic
+- **Memory Temple Game**: Corrected scoring calculation algorithm and target building identification
+- **Reaction Lighting Game**: Fixed async/await syntax errors and improved error handling 
+- **Religion Selection**: Enhanced API error handling and debug logging for faith selection
+- **Dashboard Navigation**: Fixed "重新選擇信仰" button to properly clear localStorage and redirect
+- **Game Timing Logic**: Verified all games follow replit.md specified time constraints
+- **Logic Games**: Added comprehensive debug logging for scripture sorting and sequence games
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

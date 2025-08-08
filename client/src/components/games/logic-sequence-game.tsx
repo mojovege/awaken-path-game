@@ -171,10 +171,11 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
   };
 
   const startGame = () => {
+    console.log('開始智慧序列遊戲 - 宗教:', religion, '題目數量:', questionCount, '每題時間: 30秒');
     setGameStarted(true);
     setCurrentQuestion(0);
     setScore(0);
-    setTimeLeft(30);
+    setTimeLeft(30); // 每題30秒
     setIsComplete(false);
     setShowResult(false);
     generateQuestions();

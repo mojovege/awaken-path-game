@@ -185,6 +185,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
   };
 
   const completeGame = () => {
+    console.log('祈福點燈遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
     setIsComplete(true);
     setWaitingForInput(false);
     
@@ -193,6 +194,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
     }
     
     const stars = calculateStarRating(score, maxScore);
+    console.log('點燈遊戲星級評分:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 

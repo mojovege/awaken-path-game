@@ -80,7 +80,7 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     setGamePhase('shuffled');
     setTimeout(() => {
       setGamePhase('answering');
-      setTimeLeft(15); // 15秒作答時間
+      setTimeLeft(15); // 15秒作答時間（符合replit.md規範：記憶時間+15秒作答）
     }, 1000);
   };
 
