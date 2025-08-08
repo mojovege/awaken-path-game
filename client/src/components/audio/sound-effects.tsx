@@ -75,20 +75,59 @@ export class SoundEffects {
         case 'beat':
           // 根據宗教設定不同的節拍音效
           if (religion === 'buddhism') {
-            frequency = 800; // 高頻率，清脆的木魚聲
+            // 佛教木魚聲：短促清脆
+            frequency = 1000;
             oscillatorType = 'sine';
-            duration = 0.15;
-            gain = 0.15;
+            duration = 0.1;
+            gain = 0.2;
+            
+            // 添加諧波，模擬木魚的敲擊聲
+            const harmonicOsc = this.audioContext.createOscillator();
+            const harmonicGain = this.audioContext.createGain();
+            harmonicOsc.connect(harmonicGain);
+            harmonicGain.connect(this.audioContext.destination);
+            
+            harmonicOsc.frequency.setValueAtTime(frequency * 2, this.audioContext.currentTime);
+            harmonicOsc.type = 'triangle';
+            harmonicGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+            harmonicGain.gain.linearRampToValueAtTime(gain * 0.3, this.audioContext.currentTime + 0.01);
+            harmonicGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration * 0.5);
+            
+            harmonicOsc.start(this.audioContext.currentTime);
+            harmonicOsc.stop(this.audioContext.currentTime + duration * 0.5);
+            
           } else if (religion === 'taoism') {
-            frequency = 400; // 中頻率，沉穩的鼓聲
-            oscillatorType = 'square';
-            duration = 0.2;
-            gain = 0.18;
-          } else { // mazu
-            frequency = 600; // 中高頻率，海浪般的節拍
+            // 道教鼓聲：低沉有力
+            frequency = 120;
             oscillatorType = 'triangle';
-            duration = 0.18;
-            gain = 0.16;
+            duration = 0.3;
+            gain = 0.25;
+            
+            // 添加噪音元素，模擬鼓聲
+            const noiseBuffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.1, this.audioContext.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < output.length; i++) {
+              output[i] = (Math.random() * 2 - 1) * 0.1;
+            }
+            
+            const noiseNode = this.audioContext.createBufferSource();
+            const noiseGain = this.audioContext.createGain();
+            noiseNode.buffer = noiseBuffer;
+            noiseNode.connect(noiseGain);
+            noiseGain.connect(this.audioContext.destination);
+            
+            noiseGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+            noiseGain.gain.linearRampToValueAtTime(0.1, this.audioContext.currentTime + 0.01);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.05);
+            
+            noiseNode.start(this.audioContext.currentTime);
+            
+          } else { // mazu
+            // 媽祖海浪聲：流動溫和
+            frequency = 200;
+            oscillatorType = 'sine';
+            duration = 0.4;
+            gain = 0.15;
           }
           break;
           
@@ -131,10 +170,23 @@ export class SoundEffects {
           break;
       }
       
-      if (type !== 'fire' && type !== 'success') {
+      // 設定振盪器基本屬性
+      oscillator.type = oscillatorType;
+      
+      // 根據音效類型設定頻率
+      if (type === 'beat') {
+        if (religion === 'mazu') {
+          // 媽祖海浪聲：添加頻率調制
+          oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+          oscillator.frequency.linearRampToValueAtTime(frequency * 1.5, this.audioContext.currentTime + duration * 0.3);
+          oscillator.frequency.linearRampToValueAtTime(frequency * 0.8, this.audioContext.currentTime + duration);
+        } else {
+          // 佛教和道教節拍
+          oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        }
+      } else {
         oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
       }
-      oscillator.type = oscillatorType;
       
       // 音量包絡
       gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);

@@ -71,7 +71,8 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   };
 
   const handleBackToStory = () => {
-    window.location.href = '/';
+    console.log('返回主頁...');
+    setLocation('/');
   };
 
   const handleNextLevel = () => {
@@ -135,7 +136,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => window.location.href = '/'}
+                onClick={() => setLocation('/')}
                 className="text-warm-gray-600 hover:text-warm-brown"
               >
                 <Home className="w-5 h-5 mr-2" />
