@@ -26,8 +26,11 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
   const [waitingForInput, setWaitingForInput] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['reaction-lighting'].getMaxScore(difficulty);
+  
+  // 調試輸出
+  console.log('點燈遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
   useEffect(() => {
     initializeLamps();

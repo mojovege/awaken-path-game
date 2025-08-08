@@ -25,9 +25,12 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
   const [isComplete, setIsComplete] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['logic-sequence'].getMaxScore(difficulty);
   const questionCount = difficulty.chapter + 2; // 3-7題
+  
+  // 調試輸出
+  console.log('智慧序列遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
   // 根據宗教生成不同的序列模式
   const generateSequencePatterns = () => {

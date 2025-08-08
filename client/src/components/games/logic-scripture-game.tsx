@@ -23,9 +23,12 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
   const [isComplete, setIsComplete] = useState(false);
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['logic-scripture'].getMaxScore(difficulty);
   const gameTime = GAME_TYPES['logic-scripture'].getDuration(difficulty);
+  
+  // 調試輸出
+  console.log('經典排序遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
   // 根據宗教生成不同的經典內容
   const getScriptureSequences = () => {

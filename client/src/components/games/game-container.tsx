@@ -115,8 +115,8 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   const religionData = RELIGIOUS_CONTENT[userReligion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const gameInfo = GAME_TYPES[gameType];
   
-  // 調試輸出
-  console.log('當前宗教:', userReligion, '宗教資料:', religionData);
+  // 調試輸出 - 確保宗教內容正確
+  console.log('遊戲容器 - 當前宗教:', userReligion, '宗教名稱:', religionData?.name);
 
   return (
     <div className="min-h-screen bg-warm-bg">

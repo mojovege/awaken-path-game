@@ -24,9 +24,12 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const gameStartTimeRef = useRef<number>(0);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['reaction-rhythm'].getMaxScore(difficulty);
   const gameDuration = GAME_TYPES['reaction-rhythm'].getDuration(difficulty);
+  
+  // 調試輸出
+  console.log('節奏遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
   useEffect(() => {
     generateBeats();

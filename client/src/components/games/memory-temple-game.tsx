@@ -24,9 +24,12 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
   const [score, setScore] = useState(0);
   const [selectedCount, setSelectedCount] = useState(0);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['memory-temple'].getMaxScore(difficulty);
   const gameTime = GAME_TYPES['memory-temple'].getDuration(difficulty);
+  
+  // 調試輸出
+  console.log('寺廟記憶遊戲 - 宗教:', religion, '宗教資料:', religionData?.name, '建築:', religionData?.buildings);
 
   useEffect(() => {
     initializeBuildings();

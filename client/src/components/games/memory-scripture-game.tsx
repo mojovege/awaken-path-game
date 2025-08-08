@@ -31,8 +31,11 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
   const [studyPairs, setStudyPairs] = useState<ConceptPair[]>([]);
   const [studyTimeLeft, setStudyTimeLeft] = useState(0);
 
-  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT];
+  const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['memory-scripture'].getMaxScore(difficulty);
+  
+  // 調試輸出
+  console.log('經文配對遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
 
   useEffect(() => {
     initializeGame();
