@@ -34,6 +34,9 @@ export default function BackgroundMusic({ audioType, isPlaying, volume = 0.1 }: 
   const initializeAudio = async () => {
     if (isInitialized.current) return;
     
+    // 調試輸出
+    console.log('初始化背景音樂:', audioType, '播放狀態:', isPlaying);
+    
     try {
       // 檢查瀏覽器支持
       if (!window.AudioContext && !(window as any).webkitAudioContext) {
@@ -67,16 +70,19 @@ export default function BackgroundMusic({ audioType, isPlaying, volume = 0.1 }: 
       
       switch (audioType) {
         case 'zen':
+          // 禪風音樂：適合佛教冥想
           frequency = 220;
           type = 'sine';
           gain = volume * 0.2;
           break;
         case 'meditation':
+          // 冥想音樂：適合邏輯思考，各宗教通用
           frequency = 110;
           type = 'triangle';
           gain = volume * 0.15;
           break;
         case 'fire':
+          // 火焰音效：適合點燈祈福，各宗教通用
           frequency = 200;
           type = 'sawtooth';
           gain = volume * 0.1;

@@ -26,6 +26,8 @@ export class SoundEffects {
   }
 
   static async playSound(type: 'beat' | 'fire' | 'success' | 'error', religion?: string) {
+    // 調試輸出
+    console.log('播放音效:', type, '宗教:', religion);
     try {
       await this.initialize();
       
@@ -45,10 +47,22 @@ export class SoundEffects {
       switch (type) {
         case 'beat':
           // 根據宗教設定不同的節拍音效
-          frequency = religion === 'buddhism' ? 800 : religion === 'taoism' ? 400 : 600;
-          oscillatorType = religion === 'buddhism' ? 'sine' : 'square';
-          duration = 0.15;
-          gain = 0.15;
+          if (religion === 'buddhism') {
+            frequency = 800; // 高頻率，清脆的木魚聲
+            oscillatorType = 'sine';
+            duration = 0.15;
+            gain = 0.15;
+          } else if (religion === 'taoism') {
+            frequency = 400; // 中頻率，沉穩的鼓聲
+            oscillatorType = 'square';
+            duration = 0.2;
+            gain = 0.18;
+          } else { // mazu
+            frequency = 600; // 中高頻率，海浪般的節拍
+            oscillatorType = 'triangle';
+            duration = 0.18;
+            gain = 0.16;
+          }
           break;
           
         case 'fire':

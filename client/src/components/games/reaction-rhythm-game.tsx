@@ -247,7 +247,7 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
               msUserSelect: 'none'
             }}
           >
-            {religion === 'buddhism' ? '🥢' : religion === 'taoism' ? '🥁' : '🎵'}
+            {religion === 'buddhism' ? '🥢' : religion === 'taoism' ? '🥁' : religion === 'mazu' ? '🌊' : '🎵'}
           </div>
           <p className="text-elderly-base text-warm-gray-600 mt-4">
             {gameStarted && !isComplete ? '跟隨節拍點擊' : '等待開始'}
