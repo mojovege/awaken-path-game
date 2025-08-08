@@ -240,19 +240,24 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
 
         {/* 點擊區域 */}
         <div className="text-center mb-8">
-          <button
+          <div
             onClick={handleBeatClick}
-            disabled={!gameStarted || isComplete}
             className={`
-              w-32 h-32 rounded-full text-elderly-2xl font-bold transition-all duration-150
+              w-32 h-32 rounded-full text-elderly-2xl font-bold transition-all duration-150 cursor-pointer mx-auto flex items-center justify-center
               ${gameStarted && !isComplete
                 ? 'bg-warm-gold text-white hover:bg-yellow-600 hover:scale-110 active:scale-95 shadow-lg'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }
             `}
+            style={{ 
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              MozUserSelect: 'none',
+              msUserSelect: 'none'
+            }}
           >
             {religion === 'buddhism' ? '🥢' : religion === 'taoism' ? '🥁' : '🎵'}
-          </button>
+          </div>
           <p className="text-elderly-base text-warm-gray-600 mt-4">
             {gameStarted && !isComplete ? '跟隨節拍點擊' : '等待開始'}
           </p>

@@ -7,6 +7,8 @@ import MemoryScriptureGame from './memory-scripture-game';
 import MemoryTempleGame from './memory-temple-game';
 import ReactionRhythmGame from './reaction-rhythm-game';
 import ReactionLightingGame from './reaction-lighting-game';
+import LogicScriptureGame from './logic-scripture-game';
+import LogicSequenceGame from './logic-sequence-game';
 
 interface GameContainerProps {
   level?: number;
@@ -71,10 +73,14 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   };
 
   const handleBackToStory = () => {
-    setLocation('/');
+    window.location.href = '/';
   };
 
   const handleNextLevel = () => {
+    setIsComplete(false);
+    setCurrentScore(0);
+    setCurrentStars(0);
+    
     if (gameLevel < 30) {
       setLocation(`/game/level/${gameLevel + 1}`);
     } else {
@@ -100,9 +106,9 @@ export default function GameContainer({ level, gameType: propGameType, religion:
       case 'reaction-lighting':
         return <ReactionLightingGame {...gameProps} />;
       case 'logic-scripture':
-        return <div className="text-center p-8 text-elderly-lg">經典排序遊戲開發中...</div>;
+        return <LogicScriptureGame {...gameProps} />;
       case 'logic-sequence':
-        return <div className="text-center p-8 text-elderly-lg">智慧序列遊戲開發中...</div>;
+        return <LogicSequenceGame {...gameProps} />;
       default:
         return <div className="text-center p-8 text-elderly-lg">未知遊戲類型</div>;
     }
@@ -128,7 +134,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => setLocation('/')}
+                onClick={() => window.location.href = '/'}
                 className="text-warm-gray-600 hover:text-warm-brown"
               >
                 <Home className="w-5 h-5 mr-2" />

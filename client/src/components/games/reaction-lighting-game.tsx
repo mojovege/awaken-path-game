@@ -236,12 +236,16 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
               key={lamp.id}
               onClick={() => handleLampClick(lamp.id)}
               className={`
-                absolute w-12 h-16 cursor-pointer transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2
-                ${waitingForInput ? 'hover:scale-110' : ''}
+                absolute w-12 h-16 transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2
+                ${waitingForInput ? 'cursor-pointer hover:scale-110' : 'cursor-default'}
               `}
               style={{
                 left: `${lamp.position.x}%`,
-                top: `${lamp.position.y}%`
+                top: `${lamp.position.y}%`,
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                msUserSelect: 'none'
               }}
             >
               {/* 燈籠主體 */}
