@@ -30,6 +30,7 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
   const [gamePhase, setGamePhase] = useState<'waiting' | 'studying' | 'playing' | 'complete'>('waiting');
   const [studyPairs, setStudyPairs] = useState<ConceptPair[]>([]);
   const [studyTimeLeft, setStudyTimeLeft] = useState(0);
+  const [showHint, setShowHint] = useState(false);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['memory-scripture'].getMaxScore(difficulty);
@@ -308,9 +309,35 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
               </button>
             </div>
           ) : (
-            <p className="text-elderly-base text-warm-gray-600">
-              點擊卡片尋找配對...
-            </p>
+            <div className="space-y-4">
+              <p className="text-elderly-base text-warm-gray-600">
+                點擊卡片尋找配對...
+              </p>
+              
+              {/* 提示功能 */}
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setShowHint(!showHint)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded text-elderly-sm hover:bg-blue-600 transition-colors"
+                >
+                  {showHint ? '隱藏提示' : '顯示提示'}
+                </button>
+              </div>
+              
+              {/* 提示內容 */}
+              {showHint && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
+                  <h3 className="text-elderly-base font-bold text-blue-800 mb-2">配對提示：</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {studyPairs.map((pair, index) => (
+                      <div key={index} className="text-elderly-sm text-blue-700">
+                        <span className="font-medium">{pair.concept}</span> ↔ <span className="font-medium">{pair.meaning}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

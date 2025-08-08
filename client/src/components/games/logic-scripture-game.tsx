@@ -22,6 +22,7 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
   const [timeLeft, setTimeLeft] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
+  const [showHint, setShowHint] = useState(false);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['logic-scripture'].getMaxScore(difficulty);
@@ -278,12 +279,36 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
               <p className="text-elderly-base text-warm-gray-600">
                 拖拽卡片重新排序經典內容
               </p>
-              <button
-                onClick={checkSequence}
-                className="bg-green-500 text-white px-6 py-3 rounded-lg text-elderly-base font-bold hover:bg-green-600 transition-colors"
-              >
-                檢查排序
-              </button>
+              
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={checkSequence}
+                  className="bg-green-500 text-white px-6 py-3 rounded-lg text-elderly-base font-bold hover:bg-green-600 transition-colors"
+                >
+                  檢查排序
+                </button>
+                
+                <button
+                  onClick={() => setShowHint(!showHint)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded text-elderly-sm hover:bg-blue-600 transition-colors"
+                >
+                  {showHint ? '隱藏提示' : '顯示提示'}
+                </button>
+              </div>
+              
+              {/* 提示內容 */}
+              {showHint && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
+                  <h3 className="text-elderly-base font-bold text-blue-800 mb-2">正確順序提示：</h3>
+                  <div className="grid grid-cols-1 gap-1">
+                    {getScriptureSequences().slice(0, difficulty.elementCount).map((text, index) => (
+                      <div key={index} className="text-elderly-sm text-blue-700">
+                        <span className="font-medium">{index + 1}.</span> {text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

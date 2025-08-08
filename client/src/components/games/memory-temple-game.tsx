@@ -23,6 +23,7 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
   const [timeLeft, setTimeLeft] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedCount, setSelectedCount] = useState(0);
+  const [showHint, setShowHint] = useState(false);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['memory-temple'].getMaxScore(difficulty);

@@ -24,6 +24,7 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
   const [timeLeft, setTimeLeft] = useState(30);
   const [isComplete, setIsComplete] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
   const maxScore = GAME_TYPES['logic-sequence'].getMaxScore(difficulty);
@@ -366,9 +367,34 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
               正在進入下一題...
             </p>
           ) : (
-            <p className="text-elderly-base text-warm-gray-600">
-              觀察序列規律，選擇最合適的下一個元素
-            </p>
+            <div className="space-y-4">
+              <p className="text-elderly-base text-warm-gray-600">
+                觀察序列規律，選擇最合適的下一個元素
+              </p>
+              
+              {/* 提示功能 */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setShowHint(!showHint)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded text-elderly-sm hover:bg-blue-600 transition-colors"
+                >
+                  {showHint ? '隱藏提示' : '顯示提示'}
+                </button>
+              </div>
+              
+              {/* 提示內容 */}
+              {showHint && getCurrentQuestion() && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <h3 className="text-elderly-base font-bold text-blue-800 mb-2">解題提示：</h3>
+                  <p className="text-elderly-sm text-blue-700 mb-2">
+                    觀察序列中的規律模式
+                  </p>
+                  <p className="text-elderly-sm text-blue-600">
+                    正確答案：<span className="font-bold">{getCurrentQuestion().correctAnswer}</span>
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
