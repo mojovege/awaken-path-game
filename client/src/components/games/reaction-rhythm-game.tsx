@@ -83,38 +83,42 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     gameStartTimeRef.current = Date.now();
     generateBeats();
     
-    // 播放節拍音效（這裡用簡單的提示音代替）
-    playRhythmSound();
+    // 播放節拍序列
+    setTimeout(() => playRhythmSequence(), 500);
   };
 
-  const playRhythmSound = () => {
-    // 創建簡單的節拍音效
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
-    beats.forEach((beat, index) => {
-      setTimeout(() => {
-        if (gameStarted && !isComplete) {
-          // 播放木魚或鼓聲音效
+  const playBeatSound = (delay: number = 0) => {
+    setTimeout(() => {
+      if (gameStarted && !isComplete) {
+        try {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
           const oscillator = audioContext.createOscillator();
           const gainNode = audioContext.createGain();
           
           oscillator.connect(gainNode);
           gainNode.connect(audioContext.destination);
           
-          oscillator.frequency.setValueAtTime(
-            religion === 'buddhism' ? 800 : religion === 'taoism' ? 400 : 600, 
-            audioContext.currentTime
-          );
-          oscillator.type = 'sine';
+          // 不同宗教不同音效
+          const frequency = religion === 'buddhism' ? 800 : religion === 'taoism' ? 400 : 600;
+          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+          oscillator.type = religion === 'buddhism' ? 'sine' : 'square';
           
           gainNode.gain.setValueAtTime(0, audioContext.currentTime);
           gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
+          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.15);
           
           oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.1);
+          oscillator.stop(audioContext.currentTime + 0.15);
+        } catch (error) {
+          console.log('Audio not supported');
         }
-      }, beat.time * 1000);
+      }
+    }, delay);
+  };
+
+  const playRhythmSequence = () => {
+    beats.forEach(beat => {
+      playBeatSound(beat.time * 1000);
     });
   };
 
@@ -122,23 +126,31 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     if (!gameStarted || isComplete) return;
     
     // 找到最近的未命中節拍
-    const currentBeat = beats.find(beat => 
-      !beat.hit && 
-      Math.abs(beat.time - currentTime) <= (difficulty.reactionWindow / 1000)
-    );
+    const nearestBeat = beats
+      .filter(beat => !beat.hit)
+      .reduce((closest, beat) => {
+        const currentDist = Math.abs(beat.time - currentTime);
+        const closestDist = closest ? Math.abs(closest.time - currentTime) : Infinity;
+        return currentDist < closestDist ? beat : closest;
+      }, null as Beat | null);
     
-    if (currentBeat) {
-      const accuracy = 1 - Math.abs(currentBeat.time - currentTime) / (difficulty.reactionWindow / 1000);
-      const points = Math.floor(accuracy * 10);
+    if (nearestBeat && Math.abs(nearestBeat.time - currentTime) <= (difficulty.reactionWindow / 1000)) {
+      const timeDiff = Math.abs(nearestBeat.time - currentTime);
+      const accuracy = Math.max(0, 1 - timeDiff / (difficulty.reactionWindow / 1000));
+      const points = Math.floor(accuracy * 15); // 最高15分每拍
       
       setBeats(prev => prev.map(beat => 
-        beat === currentBeat ? { ...beat, hit: true, accuracy } : beat
+        beat === nearestBeat ? { ...beat, hit: true, accuracy } : beat
       ));
       
       setScore(prev => prev + points);
       setHits(prev => prev + 1);
+      
+      // 播放回饋音效
+      playBeatSound();
     } else {
-      // 錯誤點擊
+      // 錯誤點擊，扣分
+      setScore(prev => Math.max(0, prev - 2));
       setMisses(prev => prev + 1);
     }
   };

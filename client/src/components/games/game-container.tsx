@@ -6,6 +6,7 @@ import { GAME_TYPES, getDifficultyForLevel, getGameTypeFromLevel, RELIGIOUS_CONT
 import MemoryScriptureGame from './memory-scripture-game';
 import MemoryTempleGame from './memory-temple-game';
 import ReactionRhythmGame from './reaction-rhythm-game';
+import ReactionLightingGame from './reaction-lighting-game';
 
 interface GameContainerProps {
   level?: number;
@@ -97,7 +98,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
       case 'reaction-rhythm':
         return <ReactionRhythmGame {...gameProps} />;
       case 'reaction-lighting':
-        return <div className="text-center p-8 text-elderly-lg">祈福點燈遊戲開發中...</div>;
+        return <ReactionLightingGame {...gameProps} />;
       case 'logic-scripture':
         return <div className="text-center p-8 text-elderly-lg">經典排序遊戲開發中...</div>;
       case 'logic-sequence':

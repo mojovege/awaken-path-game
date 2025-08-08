@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RELIGIOUS_CONTENT, GameDifficulty, calculateStarRating, GAME_TYPES } from '@/lib/game-config';
+import BackgroundMusic from '../audio/background-music';
 
 interface MemoryTempleGameProps {
   religion: string;
@@ -150,6 +151,10 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
 
   return (
     <div className="min-h-screen bg-warm-bg p-6">
+      <BackgroundMusic 
+        audioType="zen" 
+        isPlaying={gamePhase === 'memorizing' || gamePhase === 'answering'} 
+      />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-elderly-2xl font-bold text-warm-gold mb-4">
