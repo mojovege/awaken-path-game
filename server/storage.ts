@@ -310,14 +310,16 @@ export class DatabaseStorage implements IStorage {
     let user = await this.getUser(userId);
     
     if (!user) {
-      // If user doesn't exist, create one
+      // If user doesn't exist, create one with the updates
       user = await this.createUser({
         username: userId,
-        displayName: "新用戶",
-        selectedReligion: null,
+        displayName: updates.displayName || "新用戶",
+        selectedReligion: updates.selectedReligion || null,
       });
+      return user;
     }
     
+    // User exists, update it
     const [updatedUser] = await db
       .update(users)
       .set(updates)
@@ -380,6 +382,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserStats(userId: string, statsUpdate: Partial<InsertUserStats>): Promise<UserStats> {
+    // First try to update existing stats
     const [updatedStats] = await db
       .update(userStats)
       .set(statsUpdate)
@@ -387,7 +390,25 @@ export class DatabaseStorage implements IStorage {
       .returning();
       
     if (!updatedStats) {
-      throw new Error("User stats not found");
+      // If no existing stats, create new ones
+      const newStats = {
+        userId,
+        memoryProgress: 0,
+        reactionProgress: 0,
+        logicProgress: 0,
+        focusProgress: 0,
+        consecutiveDays: 0,
+        totalGamesPlayed: 0,
+        averageScore: 0,
+        ...statsUpdate,
+      };
+      
+      const [createdStats] = await db
+        .insert(userStats)
+        .values(newStats)
+        .returning();
+        
+      return createdStats;
     }
     
     return updatedStats;
@@ -399,6 +420,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateStoryProgress(userId: string, progressUpdate: Partial<InsertStoryProgress>): Promise<StoryProgress> {
+    // First try to update existing progress
     const [updatedProgress] = await db
       .update(storyProgress)
       .set(progressUpdate)
@@ -406,7 +428,22 @@ export class DatabaseStorage implements IStorage {
       .returning();
       
     if (!updatedProgress) {
-      throw new Error("Story progress not found");
+      // If no existing progress, create new one
+      const newProgress = {
+        userId,
+        currentChapter: 1,
+        chapterProgress: 0,
+        completedChapters: [],
+        achievements: [],
+        ...progressUpdate,
+      };
+      
+      const [createdProgress] = await db
+        .insert(storyProgress)
+        .values(newProgress)
+        .returning();
+        
+      return createdProgress;
     }
     
     return updatedProgress;

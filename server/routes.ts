@@ -59,7 +59,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stats routes
   app.get("/api/user/:id/stats", async (req, res) => {
     try {
-      const stats = await storage.getUserStats(req.params.id);
+      let stats = await storage.getUserStats(req.params.id);
+      
+      // If stats don't exist, ensure user exists and create initial stats
+      if (!stats) {
+        const user = await storage.getUser(req.params.id);
+        if (user) {
+          // User exists but no stats, initialize stats manually
+          await storage.updateUserStats(req.params.id, {
+            memoryProgress: 0,
+            reactionProgress: 0,
+            logicProgress: 0,
+            focusProgress: 0,
+            consecutiveDays: 0,
+            totalGamesPlayed: 0,
+            averageScore: 0,
+          });
+          stats = await storage.getUserStats(req.params.id);
+        }
+      }
+      
       if (!stats) {
         return res.status(404).json({ message: "Stats not found" });
       }
