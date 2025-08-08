@@ -215,9 +215,14 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     
     // 計算未命中的節拍
     const missedBeats = beats.filter(beat => !beat.hit).length;
+    const hitBeats = beats.filter(beat => beat.hit).length;
     setMisses(prev => prev + missedBeats);
     
+    console.log('節奏遊戲完成 - 命中節拍:', hitBeats, '總節拍:', beats.length);
+    console.log('節奏遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
+    
     const stars = calculateStarRating(score, maxScore);
+    console.log('節奏遊戲星級評分:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 

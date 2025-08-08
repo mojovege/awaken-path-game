@@ -234,7 +234,12 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
 
   const completeGame = () => {
     setIsComplete(true);
+    const correctAnswers = questions.filter(q => q.userAnswer === q.correctAnswer).length;
+    console.log('智慧序列遊戲完成 - 正確答題:', correctAnswers, '總題數:', questions.length);
+    console.log('智慧序列遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
+    
     const stars = calculateStarRating(score, maxScore);
+    console.log('智慧序列遊戲星級評分:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 

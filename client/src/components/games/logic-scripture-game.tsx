@@ -168,6 +168,8 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
   };
 
   const completeGame = () => {
+    let finalScore = score;
+    
     // 如果還沒檢查，自動檢查序列
     if (score === 0) {
       let correctCount = 0;
@@ -176,13 +178,17 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
           correctCount++;
         }
       });
-      const finalScore = (correctCount / scriptureItems.length) * maxScore;
+      finalScore = (correctCount / scriptureItems.length) * maxScore;
       setScore(Math.floor(finalScore));
+      
+      console.log('經典排序遊戲完成 - 正確項目:', correctCount, '總項目:', scriptureItems.length);
+      console.log('經典排序遊戲完成 - 最終分數:', Math.floor(finalScore), '最高分數:', maxScore);
     }
 
     setIsComplete(true);
-    const stars = calculateStarRating(score, maxScore);
-    setTimeout(() => onGameComplete(score, stars), 1000);
+    const stars = calculateStarRating(Math.floor(finalScore), maxScore);
+    console.log('經典排序遊戲星級評分:', stars);
+    setTimeout(() => onGameComplete(Math.floor(finalScore), stars), 1000);
   };
 
   const getSortedItems = () => {

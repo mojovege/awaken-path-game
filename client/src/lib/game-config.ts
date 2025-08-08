@@ -139,7 +139,9 @@ export function getDifficultyForLevel(level: number): GameDifficulty {
 }
 
 export function calculateStarRating(score: number, maxScore: number): number {
+  if (maxScore === 0) return 0;
   const percentage = (score / maxScore) * 100;
+  console.log('計算星級評分:', { score, maxScore, percentage });
   if (percentage >= 85) return 3;
   if (percentage >= 60) return 2;
   if (percentage >= 30) return 1;
