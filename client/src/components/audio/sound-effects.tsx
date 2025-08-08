@@ -147,11 +147,23 @@ export class SoundEffects {
           break;
           
         case 'success':
-          // 成功音效
-          frequency = 523; // C5
-          oscillatorType = 'sine';
-          duration = 0.4;
-          gain = 0.2;
+          // 成功音效：根據宗教調整
+          if (religion === 'buddhism') {
+            frequency = 523; // C5 - 清亮的成功聲
+            oscillatorType = 'sine';
+            duration = 0.6;
+            gain = 0.25;
+          } else if (religion === 'taoism') {
+            frequency = 392; // G4 - 沉穩的成功聲
+            oscillatorType = 'triangle';
+            duration = 0.8;
+            gain = 0.3;
+          } else { // mazu
+            frequency = 440; // A4 - 溫暖的成功聲
+            oscillatorType = 'sine';
+            duration = 0.7;
+            gain = 0.2;
+          }
           
           // 上升音調
           oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
@@ -162,11 +174,30 @@ export class SoundEffects {
           break;
           
         case 'error':
-          // 錯誤音效
-          frequency = 220; // A3
-          oscillatorType = 'square';
-          duration = 0.3;
-          gain = 0.15;
+          // 錯誤音效：根據宗教調整
+          if (religion === 'buddhism') {
+            frequency = 196; // G3 - 溫和的提醒聲
+            oscillatorType = 'triangle';
+            duration = 0.4;
+            gain = 0.12;
+          } else if (religion === 'taoism') {
+            frequency = 220; // A3 - 低沉的提醒聲
+            oscillatorType = 'square';
+            duration = 0.5;
+            gain = 0.15;
+          } else { // mazu
+            frequency = 233; // Bb3 - 柔和的提醒聲
+            oscillatorType = 'sine';
+            duration = 0.45;
+            gain = 0.13;
+          }
+          
+          // 下降音調表示錯誤
+          oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+          oscillator.frequency.exponentialRampToValueAtTime(
+            frequency * 0.7, 
+            this.audioContext.currentTime + duration
+          );
           break;
       }
       

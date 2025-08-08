@@ -8,12 +8,16 @@ import GamePage from "./pages/simple-game";
 import UserSetup from "./pages/user-setup";
 import NotFound from "./pages/not-found";
 import GameContainer from "./components/games/game-container";
+import ComprehensiveGameTest from "./test/comprehensive-game-test";
+import AudioDebug from "./test/audio-debug";
 
 function Router() {
   return (
     <Switch>
       <Route path="/user-setup" component={UserSetup} />
       <Route path="/setup" component={UserSetup} />
+      <Route path="/test" component={ComprehensiveGameTest} />
+      <Route path="/audio-debug" component={AudioDebug} />
       <Route path="/" component={Home} />
       <Route path="/game/level/:level">
         {(params) => <GameContainer level={parseInt(params.level)} />}

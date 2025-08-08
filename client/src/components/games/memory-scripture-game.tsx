@@ -100,6 +100,8 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
     const card = cards.find(c => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched) return;
 
+    console.log('點擊卡片:', card.text, '類型:', card.type, '配對ID:', card.pairId);
+
     // 翻開卡片
     setCards(prev => prev.map(c => 
       c.id === cardId ? { ...c, isFlipped: true } : c
@@ -112,49 +114,73 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
       setAttempts(prev => prev + 1);
       
       setTimeout(() => {
-        const card1 = cards.find(c => c.id === newSelected[0]);
-        const card2 = cards.find(c => c.id === newSelected[1]);
-        
-        if (card1 && card2 && card1.pairId === card2.pairId) {
-          // 配對成功
-          setCards(prev => prev.map(c => 
-            newSelected.includes(c.id) ? { ...c, isMatched: true } : c
-          ));
-          setScore(prev => prev + 20);
+        // 重新獲取最新的卡片狀態
+        setCards(currentCards => {
+          const card1 = currentCards.find(c => c.id === newSelected[0]);
+          const card2 = currentCards.find(c => c.id === newSelected[1]);
           
-          // 播放成功音效
-          import('../audio/sound-effects').then(({ SoundEffects }) => {
-            SoundEffects.playSound('success');
-          });
+          console.log('檢查配對:', card1?.text, '↔', card2?.text);
+          console.log('配對ID:', card1?.pairId, '↔', card2?.pairId);
           
-          // 檢查是否完成
-          const matchedCount = cards.filter(c => c.isMatched).length + 2;
-          if (matchedCount === cards.length) {
-            const finalScore = score + 20;
-            const stars = calculateStarRating(finalScore, maxScore);
-            setGamePhase('complete');
-            onGameComplete(finalScore, stars);
+          if (card1 && card2 && card1.pairId === card2.pairId && card1.type !== card2.type) {
+            // 配對成功：確保是不同類型（concept vs meaning）且同一組
+            console.log('✅ 配對成功!');
+            
+            // 播放成功音效
+            import('../audio/sound-effects').then(({ SoundEffects }) => {
+              SoundEffects.playSound('success', religion);
+            });
+            
+            const updatedCards = currentCards.map(c => 
+              newSelected.includes(c.id) ? { ...c, isMatched: true } : c
+            );
+            
+            // 更新分數
+            setScore(prev => {
+              const newScore = prev + 20;
+              console.log('分數更新:', prev, '→', newScore);
+              
+              // 檢查是否完成
+              const matchedCount = updatedCards.filter(c => c.isMatched).length;
+              console.log('已配對卡片數:', matchedCount, '總卡片數:', updatedCards.length);
+              
+              if (matchedCount === updatedCards.length) {
+                console.log('🎉 遊戲完成!');
+                const stars = calculateStarRating(newScore, maxScore);
+                setTimeout(() => {
+                  setGamePhase('complete');
+                  onGameComplete(newScore, stars);
+                }, 500);
+              }
+              
+              return newScore;
+            });
+            
+            return updatedCards;
+          } else {
+            // 配對失敗
+            console.log('❌ 配對失敗');
+            
+            // 播放錯誤音效
+            import('../audio/sound-effects').then(({ SoundEffects }) => {
+              SoundEffects.playSound('error', religion);
+            });
+            
+            return currentCards.map(c => 
+              newSelected.includes(c.id) ? { ...c, isFlipped: false } : c
+            );
           }
-        } else {
-          // 配對失敗，翻回去
-          setCards(prev => prev.map(c => 
-            newSelected.includes(c.id) ? { ...c, isFlipped: false } : c
-          ));
-          
-          // 播放錯誤音效
-          import('../audio/sound-effects').then(({ SoundEffects }) => {
-            SoundEffects.playSound('error');
-          });
-        }
+        });
         
         setSelectedCards([]);
-      }, 1000);
+      }, 1500); // 增加延遲讓用戶看清楚卡片內容
     }
   };
 
   const startGame = () => {
+    console.log('開始記憶配對遊戲，宗教:', religion);
     setGamePhase('studying');
-    setStudyTimeLeft(10); // 10秒學習時間
+    setStudyTimeLeft(difficulty.memoryTime || 10); // 使用難度設定的記憶時間
     setScore(0);
     setAttempts(0);
     initializeGame();
