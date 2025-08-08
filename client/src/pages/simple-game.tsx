@@ -103,8 +103,17 @@ export default function SimpleGamePage() {
             
             {!gameStarted && (
               <div style={{ marginBottom: '30px' }}>
-                <p style={{ fontSize: '18px', color: '#666', marginBottom: '20px' }}>
-                  記住前三個建築的位置，然後點擊它們
+                <p style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>
+                  <strong>遊戲規則：</strong>
+                </p>
+                <p style={{ fontSize: '16px', color: '#666', marginBottom: '10px' }}>
+                  1. 點擊「開始遊戲」後，前三個建築會用黃色框標示
+                </p>
+                <p style={{ fontSize: '16px', color: '#666', marginBottom: '10px' }}>
+                  2. 您有8秒時間記住這些建築的位置
+                </p>
+                <p style={{ fontSize: '16px', color: '#666', marginBottom: '20px' }}>
+                  3. 時間到後，點擊您記住的前三個建築位置即可得分
                 </p>
               </div>
             )}
@@ -146,7 +155,7 @@ export default function SimpleGamePage() {
               {[
                 { name: '大雄寶殿', emoji: '🏛️' },
                 { name: '天王殿', emoji: '🏮' },
-                { name: '觀音殿', emoji: '🪷' },
+                { name: '觀音殿', emoji: '🏛' },
                 { name: '藏經樓', emoji: '📚' },
                 { name: '鐘樓', emoji: '🔔' },
                 { name: '鼓樓', emoji: '🥁' }
