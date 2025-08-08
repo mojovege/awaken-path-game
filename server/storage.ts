@@ -1,7 +1,10 @@
 import { type User, type InsertUser, type GameProgress, type InsertGameProgress, 
          type UserStats, type InsertUserStats, type StoryProgress, type InsertStoryProgress,
-         type ChatMessage, type InsertChatMessage, type Religion, type GameType } from "@shared/schema";
+         type ChatMessage, type InsertChatMessage, type Religion, type GameType,
+         users, gameProgress, userStats, storyProgress, chatMessages } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User management
@@ -261,4 +264,171 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+      
+    // Initialize user stats
+    await db.insert(userStats).values({
+      userId: user.id,
+      memoryProgress: 0,
+      reactionProgress: 0,
+      logicProgress: 0,
+      focusProgress: 0,
+      consecutiveDays: 0,
+      totalGamesPlayed: 0,
+      averageScore: 0,
+    });
+    
+    // Initialize story progress
+    await db.insert(storyProgress).values({
+      userId: user.id,
+      currentChapter: 1,
+      chapterProgress: 0,
+      completedChapters: [],
+      achievements: [],
+    });
+    
+    return user;
+  }
+
+  async updateUser(userId: string, updates: Partial<Pick<User, 'displayName' | 'selectedReligion'> & { age?: number }>): Promise<User> {
+    // First try to get the user
+    let user = await this.getUser(userId);
+    
+    if (!user) {
+      // If user doesn't exist, create one
+      user = await this.createUser({
+        username: userId,
+        displayName: "新用戶",
+        selectedReligion: null,
+      });
+    }
+    
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+      
+    return updatedUser;
+  }
+
+  async updateUserReligion(userId: string, religion: Religion): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ selectedReligion: religion })
+      .where(eq(users.id, userId))
+      .returning();
+      
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+    
+    return updatedUser;
+  }
+
+  async createGameProgress(progress: InsertGameProgress): Promise<GameProgress> {
+    const [gameProgressRecord] = await db
+      .insert(gameProgress)
+      .values(progress)
+      .returning();
+    
+    // Update user stats
+    const [currentStats] = await db.select().from(userStats).where(eq(userStats.userId, progress.userId));
+    if (currentStats) {
+      const totalGames = (currentStats.totalGamesPlayed || 0) + 1;
+      const currentAvg = currentStats.averageScore || 0;
+      const newScore = progress.score || 0;
+      
+      await db
+        .update(userStats)
+        .set({
+          totalGamesPlayed: totalGames,
+          averageScore: Math.round((currentAvg * (totalGames - 1) + newScore) / totalGames),
+        })
+        .where(eq(userStats.userId, progress.userId));
+    }
+    
+    return gameProgressRecord;
+  }
+
+  async getGameProgressByUser(userId: string): Promise<GameProgress[]> {
+    return await db
+      .select()
+      .from(gameProgress)
+      .where(eq(gameProgress.userId, userId))
+      .orderBy(desc(gameProgress.completedAt));
+  }
+
+  async getUserStats(userId: string): Promise<UserStats | undefined> {
+    const [stats] = await db.select().from(userStats).where(eq(userStats.userId, userId));
+    return stats || undefined;
+  }
+
+  async updateUserStats(userId: string, statsUpdate: Partial<InsertUserStats>): Promise<UserStats> {
+    const [updatedStats] = await db
+      .update(userStats)
+      .set(statsUpdate)
+      .where(eq(userStats.userId, userId))
+      .returning();
+      
+    if (!updatedStats) {
+      throw new Error("User stats not found");
+    }
+    
+    return updatedStats;
+  }
+
+  async getStoryProgress(userId: string): Promise<StoryProgress | undefined> {
+    const [progress] = await db.select().from(storyProgress).where(eq(storyProgress.userId, userId));
+    return progress || undefined;
+  }
+
+  async updateStoryProgress(userId: string, progressUpdate: Partial<InsertStoryProgress>): Promise<StoryProgress> {
+    const [updatedProgress] = await db
+      .update(storyProgress)
+      .set(progressUpdate)
+      .where(eq(storyProgress.userId, userId))
+      .returning();
+      
+    if (!updatedProgress) {
+      throw new Error("Story progress not found");
+    }
+    
+    return updatedProgress;
+  }
+
+  async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const [chatMessage] = await db
+      .insert(chatMessages)
+      .values(message)
+      .returning();
+      
+    return chatMessage;
+  }
+
+  async getChatMessages(userId: string, limit: number = 50): Promise<ChatMessage[]> {
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.userId, userId))
+      .orderBy(chatMessages.createdAt)
+      .limit(limit);
+  }
+}
+
+export const storage = new DatabaseStorage();

@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, relations } from "drizzle-orm";
 import { pgTable, text, varchar, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -107,3 +107,45 @@ export interface HealthTip {
   content: string;
   category: "nutrition" | "exercise" | "mental" | "sleep";
 }
+
+// Relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  gameProgress: many(gameProgress),
+  userStats: one(userStats, {
+    fields: [users.id],
+    references: [userStats.userId],
+  }),
+  storyProgress: one(storyProgress, {
+    fields: [users.id],
+    references: [storyProgress.userId],
+  }),
+  chatMessages: many(chatMessages),
+}));
+
+export const gameProgressRelations = relations(gameProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [gameProgress.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userStatsRelations = relations(userStats, ({ one }) => ({
+  user: one(users, {
+    fields: [userStats.userId],
+    references: [users.id],
+  }),
+}));
+
+export const storyProgressRelations = relations(storyProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [storyProgress.userId],
+    references: [users.id],
+  }),
+}));
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  user: one(users, {
+    fields: [chatMessages.userId],
+    references: [users.id],
+  }),
+}));
