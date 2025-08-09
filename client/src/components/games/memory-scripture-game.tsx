@@ -37,6 +37,7 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
   
   // 調試輸出
   console.log('經文配對遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
+  console.log('經文配對遊戲 - 難度:', difficulty, 'maxScore:', maxScore, '計算:', difficulty.elementCount + ' × 20 = ' + (difficulty.elementCount * 20));
 
   useEffect(() => {
     initializeGame();
