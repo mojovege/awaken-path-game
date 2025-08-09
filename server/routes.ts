@@ -168,6 +168,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/user/:id/progress", async (req, res) => {
+    try {
+      // Get the user first to ensure we use correct ID
+      let user = await storage.getUser(req.params.id);
+      if (!user) {
+        user = await storage.getUserByUsername(req.params.id);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const progressData = {
+        userId: user.id,
+        gameType: req.body.gameType,
+        score: req.body.score || 0,
+        level: req.body.level || 1,
+      };
+      
+      const progress = await storage.createGameProgress(progressData);
+      
+      console.log('遊戲進度已保存:', {
+        用戶: user.username,
+        遊戲類型: progressData.gameType,
+        分數: progressData.score,
+        等級: progressData.level
+      });
+      
+      res.json(progress);
+    } catch (error) {
+      console.error('保存遊戲進度時出錯:', error);
+      res.status(400).json({ message: "Failed to save game progress" });
+    }
+  });
+
   app.get("/api/user/:id/game-progress", async (req, res) => {
     try {
       const progress = await storage.getGameProgressByUser(req.params.id);

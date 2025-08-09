@@ -78,15 +78,13 @@ export function getChapterForLevel(level: number): ChapterInfo {
   return CHAPTERS.find(chapter => chapter.levels.includes(level)) || CHAPTERS[0];
 }
 
-export function calculateStarRating(score: number, timeRemaining: number, totalTime: number): number {
-  const timeRatio = timeRemaining / totalTime;
-  const timeBonus = timeRatio * 20;
-  const finalScore = score + timeBonus;
+export function calculateStarRating(score: number, maxScore: number): number {
+  const percentage = Math.min(100, (score / maxScore) * 100);
   
-  if (finalScore >= 90) return 3;
-  if (finalScore >= 80) return 2;
-  if (finalScore >= 60) return 1;
-  return 0;
+  if (percentage >= 80) return 3;  // 80%以上得3星
+  if (percentage >= 60) return 2;  // 60-79%得2星
+  if (percentage >= 40) return 1;  // 40-59%得1星
+  return 0; // 40%以下得0星
 }
 
 export function isChapterUnlocked(chapterIndex: number, totalStars: number): boolean {
