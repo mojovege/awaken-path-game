@@ -147,7 +147,9 @@ export default function MemoryScriptureGame({ religion, difficulty, onGameComple
               
               if (matchedCount === updatedCards.length) {
                 console.log('經文記憶遊戲完成!');
+                console.log('星級計算:', { score: newScore, maxScore, percentage: (newScore / maxScore) * 100 });
                 const stars = calculateStarRating(newScore, maxScore);
+                console.log('獲得星級:', stars);
                 setTimeout(() => {
                   setGamePhase('complete');
                   onGameComplete(newScore, stars);

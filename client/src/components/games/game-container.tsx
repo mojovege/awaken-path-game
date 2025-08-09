@@ -48,6 +48,14 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   }, [propReligion]);
 
   const handleGameComplete = async (score: number, stars: number) => {
+    console.log('遊戲完成回調:', { 
+      遊戲類型: gameType, 
+      等級: gameLevel, 
+      分數: score, 
+      星級: stars,
+      難度: difficulty 
+    });
+    
     setCurrentScore(score);
     setCurrentStars(stars);
     setIsComplete(true);
@@ -55,7 +63,9 @@ export default function GameContainer({ level, gameType: propGameType, religion:
     // 保存遊戲結果到服務器
     try {
       const userId = localStorage.getItem('awaken_path_user_id') || localStorage.getItem('userId') || 'demo-user-1';
-      await fetch(`/api/user/${userId}/progress`, {
+      console.log('提交遊戲進度:', { userId, level: gameLevel, gameType, score, stars });
+      
+      const response = await fetch(`/api/user/${userId}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -66,6 +76,12 @@ export default function GameContainer({ level, gameType: propGameType, religion:
           completedAt: new Date().toISOString()
         })
       });
+      
+      if (response.ok) {
+        console.log('遊戲進度提交成功');
+      } else {
+        console.error('遊戲進度提交失敗:', response.status);
+      }
     } catch (error) {
       console.error('Failed to save game progress:', error);
     }

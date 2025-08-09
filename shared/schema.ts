@@ -16,6 +16,7 @@ export const gameProgress = pgTable("game_progress", {
   userId: varchar("user_id").notNull().references(() => users.id),
   gameType: text("game_type").notNull(),
   score: integer("score").default(0),
+  stars: integer("stars").default(0),
   level: integer("level").default(1),
   completedAt: timestamp("completed_at").default(sql`now()`),
 });

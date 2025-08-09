@@ -148,13 +148,15 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
       正確選擇: correctSelections,
       錯誤選擇: incorrectSelections,
       最終分數: finalScore,
-      最高分數: maxScore
+      最高分數: maxScore,
+      百分比: (finalScore / maxScore) * 100
     });
 
     setScore(finalScore);
     setGamePhase('complete');
     
     const stars = calculateStarRating(finalScore, maxScore);
+    console.log('獲得星級:', stars);
     setTimeout(() => onGameComplete(finalScore, stars), 1500);
   };
 

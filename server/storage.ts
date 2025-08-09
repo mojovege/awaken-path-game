@@ -185,6 +185,7 @@ export class MemStorage implements IStorage {
       ...progress,
       id,
       score: progress.score || 0,
+      stars: progress.stars || 0,
       level: progress.level || 1,
       completedAt: new Date(),
     };

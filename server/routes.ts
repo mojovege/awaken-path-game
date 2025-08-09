@@ -184,6 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: user.id,
         gameType: req.body.gameType,
         score: req.body.score || 0,
+        stars: req.body.stars || 0,
         level: req.body.level || 1,
       };
       
@@ -193,6 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         用戶: user.username,
         遊戲類型: progressData.gameType,
         分數: progressData.score,
+        星級: progressData.stars,
         等級: progressData.level
       });
       
