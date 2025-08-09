@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 
 // Scripture Memory Game Component
-function ScriptureMemoryGame({ userReligion }: { userReligion: string }) {
+function ScriptureMemoryGame({ userReligion, setLocation }: { userReligion: string; setLocation: (path: string) => void }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedPairs, setSelectedPairs] = useState<number[]>([]);
   const [matchedPairs, setMatchedPairs] = useState<number[]>([]);
@@ -183,7 +183,7 @@ function ScriptureMemoryGame({ userReligion }: { userReligion: string }) {
           fontSize: '18px',
           cursor: 'pointer',
           marginRight: '15px'
-        }} onClick={() => window.location.href = '/'}>
+        }} onClick={() => setLocation('/')}>
           返回首頁
         </button>
         {!gameStarted || matchedPairs.length === cards.length ? (
@@ -218,6 +218,7 @@ function ScriptureMemoryGame({ userReligion }: { userReligion: string }) {
 
 export default function SimpleGamePage() {
   const { gameType } = useParams<{ gameType: string }>();
+  const [, setLocation] = useLocation();
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [showingCards, setShowingCards] = useState(true);
@@ -467,7 +468,7 @@ export default function SimpleGamePage() {
                 fontSize: '18px',
                 cursor: 'pointer',
                 marginRight: '15px'
-              }} onClick={() => window.location.href = '/'}>
+              }} onClick={() => setLocation('/')}>
                 返回首頁
               </button>
               {!gameStarted || gamePhase === 'complete' ? (
@@ -500,7 +501,7 @@ export default function SimpleGamePage() {
         )}
 
         {gameType === 'memory-scripture' && (
-          <ScriptureMemoryGame userReligion={userReligion} />
+          <ScriptureMemoryGame userReligion={userReligion} setLocation={setLocation} />
         )}
 
         {!gameType && (
@@ -516,7 +517,7 @@ export default function SimpleGamePage() {
               padding: '15px 30px',
               fontSize: '18px',
               cursor: 'pointer'
-            }} onClick={() => window.location.href = '/'}>
+            }} onClick={() => setLocation('/')}>
               返回首頁
             </button>
           </div>

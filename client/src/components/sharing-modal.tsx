@@ -51,7 +51,7 @@ export default function SharingModal({ userStats, userName, onClose }: SharingMo
 
   const handleSocialShare = (platform: string) => {
     const shareText = encodeURIComponent(`我在覺悟之路上持續修行 ${userStats?.consecutiveDays || 0} 天，智慧與健康同步提升！`);
-    const url = encodeURIComponent(window.location.href);
+    const url = encodeURIComponent(window.location?.href || 'https://awaken-path.app');
     
     const shareUrls: Record<string, string> = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${shareText}`,

@@ -93,8 +93,8 @@ export default function GameContainer({ level, gameType: propGameType, religion:
     setIsComplete(false);
     setCurrentScore(0);
     setCurrentStars(0);
-    // 強制重新載入首頁
-    window.location.href = '/';
+    // 使用wouter路由返回首頁
+    setLocation('/');
   };
 
   const handleNextLevel = () => {
@@ -160,7 +160,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
                 variant="ghost"
                 onClick={() => {
                   console.log('點擊主頁按鈕');
-                  window.location.href = '/';
+                  setLocation('/');
                 }}
                 className="text-warm-gray-600 hover:text-warm-brown"
               >
