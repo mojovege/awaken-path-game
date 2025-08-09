@@ -154,7 +154,7 @@ export default function GameContainer({ level, gameType: propGameType, religion:
                 className="text-warm-gray-600 hover:text-warm-brown"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
-                返回故事
+                回到宗教首頁
               </Button>
               <Button
                 variant="ghost"

@@ -142,8 +142,8 @@ export function calculateStarRating(score: number, maxScore: number): number {
   if (maxScore === 0) return 0;
   const percentage = (score / maxScore) * 100;
   console.log('計算星級評分:', { score, maxScore, percentage });
-  if (percentage >= 85) return 3;
-  if (percentage >= 60) return 2;
-  if (percentage >= 30) return 1;
-  return 0;
+  if (percentage >= 80) return 3;  // 80%以上得3星
+  if (percentage >= 60) return 2;  // 60-79%得2星
+  if (percentage >= 40) return 1;  // 40-59%得1星
+  return 0; // 40%以下得0星
 }

@@ -44,7 +44,9 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
         const elapsed = (Date.now() - gameStartTimeRef.current) / 1000;
         setCurrentTime(elapsed);
         
-        if (elapsed >= gameDuration) {
+        // 檢查是否應該結束遊戲 - 所有節拍結束後1秒才結束
+        const lastBeatTime = Math.max(...beats.map(b => b.time), 0);
+        if (elapsed >= Math.max(gameDuration, lastBeatTime + 1)) {
           completeGame();
         } else {
           animationFrame = requestAnimationFrame(updateTime);

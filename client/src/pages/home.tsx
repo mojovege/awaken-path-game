@@ -53,6 +53,14 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // 檢查URL參數，如果有select-religion=true，顯示宗教選擇
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('select-religion') === 'true') {
+      setShowReligionSelection(true);
+      setShowStoryProgress(false);
+      return;
+    }
+    
     // 只在首次載入時檢查用戶設定
     if (user === undefined) return; // 還在載入中
     

@@ -60,16 +60,15 @@ export default function Dashboard({ user, userStats, userId }: DashboardProps) {
       <div className="flex justify-between items-center">
         <Button
           onClick={() => {
-            console.log('重新選擇信仰');
-            // 清除宗教選擇後重新載入頁面
-            localStorage.removeItem('selectedReligion');
-            setLocation('/');
+            console.log('切換宗教信仰');
+            // 不清除localStorage，只是設置顯示宗教選擇
+            setLocation('/?select-religion=true');
           }}
           variant="outline"
           className="text-warm-gray-600 hover:text-gray-800 border-warm-gray-300"
-          data-testid="button-back-to-selection"
+          data-testid="button-change-religion"
         >
-          ← 重新選擇信仰
+          ← 切換宗教信仰
         </Button>
         <div className="text-right">
           <p className="text-elderly-base text-warm-gray-600">
