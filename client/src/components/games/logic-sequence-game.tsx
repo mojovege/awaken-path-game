@@ -32,6 +32,7 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
   
   // 調試輸出
   console.log('智慧序列遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
+  console.log('智慧序列遊戲 - 難度:', difficulty, 'maxScore:', maxScore, '計算:', (difficulty.chapter + 2) + ' × 25 = ' + ((difficulty.chapter + 2) * 25), '題數:', questionCount);
 
   // 根據宗教生成不同的序列模式
   const generateSequencePatterns = () => {
@@ -237,9 +238,10 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
     const correctAnswers = questions.filter(q => q.userAnswer === q.correctAnswer).length;
     console.log('智慧序列遊戲完成 - 正確答題:', correctAnswers, '總題數:', questions.length);
     console.log('智慧序列遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
+    console.log('智慧序列星級計算:', { score, maxScore, percentage: (score / maxScore) * 100 });
     
     const stars = calculateStarRating(score, maxScore);
-    console.log('智慧序列遊戲星級評分:', stars);
+    console.log('智慧序列獲得星級:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 

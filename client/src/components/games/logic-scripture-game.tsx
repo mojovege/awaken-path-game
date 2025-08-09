@@ -30,6 +30,7 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
   
   // 調試輸出
   console.log('經典排序遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
+  console.log('經典排序遊戲 - 難度:', difficulty, 'maxScore:', maxScore, '計算:', difficulty.elementCount + ' × 10 = ' + (difficulty.elementCount * 10));
 
   // 根據宗教生成不同的經典內容
   const getScriptureSequences = () => {
@@ -183,11 +184,12 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
       
       console.log('經典排序遊戲完成 - 正確項目:', correctCount, '總項目:', scriptureItems.length);
       console.log('經典排序遊戲完成 - 最終分數:', Math.floor(finalScore), '最高分數:', maxScore);
+      console.log('經典排序星級計算:', { score: Math.floor(finalScore), maxScore, percentage: (Math.floor(finalScore) / maxScore) * 100 });
     }
 
     setIsComplete(true);
     const stars = calculateStarRating(Math.floor(finalScore), maxScore);
-    console.log('經典排序遊戲星級評分:', stars);
+    console.log('經典排序獲得星級:', stars);
     setTimeout(() => onGameComplete(Math.floor(finalScore), stars), 1000);
   };
 

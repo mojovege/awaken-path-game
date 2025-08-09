@@ -32,6 +32,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
   
   // 調試輸出
   console.log('點燈遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
+  console.log('點燈遊戲 - 難度:', difficulty, 'maxScore:', maxScore, '計算:', difficulty.elementCount + ' × 15 = ' + (difficulty.elementCount * 15));
 
   useEffect(() => {
     initializeLamps();
@@ -187,6 +188,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
 
   const completeGame = () => {
     console.log('祈福點燈遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
+    console.log('點燈遊戲星級計算:', { score, maxScore, percentage: (score / maxScore) * 100 });
     setIsComplete(true);
     setWaitingForInput(false);
     
@@ -195,7 +197,7 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
     }
     
     const stars = calculateStarRating(score, maxScore);
-    console.log('點燈遊戲星級評分:', stars);
+    console.log('點燈遊戲獲得星級:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 

@@ -31,6 +31,7 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
   
   // 調試輸出
   console.log('節奏遊戲 - 宗教:', religion, '宗教資料:', religionData?.name);
+  console.log('節奏遊戲 - 難度:', difficulty, 'maxScore:', maxScore, '遊戲時長:', gameDuration + 's');
 
   // 移除這個useEffect，避免循環依賴
   // generateBeats 會在startGame中調用
@@ -218,9 +219,10 @@ export default function ReactionRhythmGame({ religion, difficulty, onGameComplet
     
     console.log('節奏遊戲完成 - 命中節拍:', hitBeats, '總節拍:', beats.length);
     console.log('節奏遊戲完成 - 最終分數:', score, '最高分數:', maxScore);
+    console.log('節奏遊戲星級計算:', { score, maxScore, percentage: (score / maxScore) * 100 });
     
     const stars = calculateStarRating(score, maxScore);
-    console.log('節奏遊戲星級評分:', stars);
+    console.log('節奏遊戲獲得星級:', stars);
     setTimeout(() => onGameComplete(score, stars), 1000);
   };
 
