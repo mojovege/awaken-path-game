@@ -138,11 +138,12 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
 
   const startUserInput = () => {
     setCurrentStep(0);
-    // 設置更合理的超時時間，每個燈給足夠時間思考
-    const timeoutDuration = Math.max(difficulty.reactionWindow * sequence.length, 10000); // 最少10秒
+    // 設置更合理的超時時間 - 給用戶足夠時間完成
+    const timeoutDuration = Math.max(difficulty.reactionWindow * sequence.length * 2, 15000); // 至少15秒，每個燈雙倍時間
+    console.log('點燈遊戲開始用戶輸入階段，超時時間:', timeoutDuration, 'ms');
     timeoutRef.current = setTimeout(() => {
-      if (!isComplete) {
-        console.log('點燈遊戲超時，強制結束');
+      if (!isComplete && waitingForInput) {
+        console.log('點燈遊戲超時，用戶未完成所有步驟');
         completeGame();
       }
     }, timeoutDuration);

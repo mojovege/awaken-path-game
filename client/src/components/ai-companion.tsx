@@ -122,14 +122,20 @@ export default function AICompanion({ userId, religion, userName }: AICompanionP
             </div>
           </div>
           <Button
-            onClick={() => setLocation("/")}
+            onClick={() => {
+              // 清除宗教選擇，返回宗教選擇頁面
+              localStorage.removeItem('selectedReligion');
+              localStorage.removeItem('awaken_path_user_id');
+              localStorage.removeItem('userId');
+              setLocation("/user-setup");
+            }}
             variant="ghost"
             size="sm"
             className="text-white hover:bg-white hover:bg-opacity-20 p-2"
-            data-testid="button-back-home"
+            data-testid="button-change-religion"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span className="ml-1 text-elderly-base">返回</span>
+            <span className="ml-1 text-elderly-base">切換宗教</span>
           </Button>
         </div>
       </div>

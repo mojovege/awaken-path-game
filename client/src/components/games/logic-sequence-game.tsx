@@ -129,6 +129,12 @@ export default function LogicSequenceGame({ religion, difficulty, onGameComplete
     
     const patterns = generateSequencePatterns();
     console.log('智慧序列可用模式:', patterns);
+    
+    if (!patterns || patterns.length === 0) {
+      console.error('無法獲取序列模式，題目生成失敗');
+      return;
+    }
+    
     const newQuestions: SequenceQuestion[] = [];
 
     for (let i = 0; i < questionCount; i++) {

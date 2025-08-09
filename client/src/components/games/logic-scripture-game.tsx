@@ -91,14 +91,25 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
 
   const initializeGame = () => {
     const sequences = getScriptureSequences();
+    if (!sequences || sequences.length === 0) {
+      console.error('經典序列為空，無法初始化遊戲');
+      return;
+    }
+    
     const selectedSequences = sequences.slice(0, difficulty.elementCount);
     
     console.log('經典排序遊戲內容生成:', {
       宗教: religion,
       難度: difficulty.chapter,
       元素數量: difficulty.elementCount,
+      可用序列總數: sequences.length,
       經典序列: selectedSequences
     });
+    
+    if (selectedSequences.length === 0) {
+      console.error('選中的經典序列為空，無法生成題目');
+      return;
+    }
     
     const items: ScriptureItem[] = selectedSequences.map((text, index) => ({
       id: index,

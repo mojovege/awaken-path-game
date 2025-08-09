@@ -122,8 +122,9 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     let correctSelections = 0;
     let incorrectSelections = 0;
     
-    // 使用實際的目標建築進行計算
-    buildings.forEach(b => {
+    // 使用最新的建築狀態進行計算
+    const currentBuildings = buildings.length > 0 ? buildings : [];
+    currentBuildings.forEach(b => {
       if (b.isSelected) {
         if (b.isTarget) {
           correctSelections++;
@@ -134,6 +135,12 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
         }
       }
     });
+    
+    // 確保有正確的計分邏輯
+    if (currentBuildings.length === 0) {
+      console.error('建築數據為空，無法計算分數');
+      finalScore = 0;
+    }
 
     finalScore = Math.max(0, finalScore); // 確保分數不為負數
     
