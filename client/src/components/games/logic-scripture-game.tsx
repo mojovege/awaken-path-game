@@ -93,6 +93,13 @@ export default function LogicScriptureGame({ religion, difficulty, onGameComplet
     const sequences = getScriptureSequences();
     const selectedSequences = sequences.slice(0, difficulty.elementCount);
     
+    console.log('經典排序遊戲內容生成:', {
+      宗教: religion,
+      難度: difficulty.chapter,
+      元素數量: difficulty.elementCount,
+      經典序列: selectedSequences
+    });
+    
     const items: ScriptureItem[] = selectedSequences.map((text, index) => ({
       id: index,
       text,

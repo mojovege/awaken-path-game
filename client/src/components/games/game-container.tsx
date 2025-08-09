@@ -88,13 +88,17 @@ export default function GameContainer({ level, gameType: propGameType, religion:
   };
 
   const handleBackToStory = () => {
-    console.log('返回主頁...');
+    console.log('返回宗教選擇頁面...');
     // 清除所有遊戲狀態
     setIsComplete(false);
     setCurrentScore(0);
     setCurrentStars(0);
-    // 使用wouter路由返回首頁
-    setLocation('/');
+    // 清除本地儲存的宗教選擇，讓用戶重新選擇
+    localStorage.removeItem('selectedReligion');
+    localStorage.removeItem('awaken_path_user_id');
+    localStorage.removeItem('userId');
+    // 返回到宗教選擇頁面
+    setLocation('/user-setup');
   };
 
   const handleNextLevel = () => {

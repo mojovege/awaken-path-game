@@ -65,6 +65,8 @@ export default function FixedRhythmGame({ religion, difficulty, onGameComplete }
   };
 
   const completeGame = () => {
+    if (isComplete) return; // 防止重複調用
+    
     setIsComplete(true);
     setGameStarted(false);
     
@@ -72,7 +74,7 @@ export default function FixedRhythmGame({ religion, difficulty, onGameComplete }
     if (beatTimerRef.current) clearInterval(beatTimerRef.current);
     
     const stars = calculateStarRating(score, maxScore);
-    console.log('節奏遊戲完成 - 分數:', score, '星級:', stars);
+    console.log('節奏遊戲完成 - 分數:', score, '最高分數:', maxScore, '星級:', stars);
     
     setTimeout(() => onGameComplete(score, stars), 1000);
   };

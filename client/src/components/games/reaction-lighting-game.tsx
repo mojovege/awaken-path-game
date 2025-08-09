@@ -138,10 +138,14 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
 
   const startUserInput = () => {
     setCurrentStep(0);
-    // 設置超時
+    // 設置更合理的超時時間，每個燈給足夠時間思考
+    const timeoutDuration = Math.max(difficulty.reactionWindow * sequence.length, 10000); // 最少10秒
     timeoutRef.current = setTimeout(() => {
-      completeGame();
-    }, difficulty.reactionWindow * sequence.length);
+      if (!isComplete) {
+        console.log('點燈遊戲超時，強制結束');
+        completeGame();
+      }
+    }, timeoutDuration);
   };
 
   const handleLampClick = async (lampId: number) => {
@@ -182,7 +186,8 @@ export default function ReactionLightingGame({ religion, difficulty, onGameCompl
         console.error('錯誤音效播放失敗:', error);
       }
       
-      setTimeout(() => completeGame(), 1000);
+      // 錯誤點擊不應該結束遊戲，讓用戶繼續嘗試
+      // setTimeout(() => completeGame(), 1000);
     }
   };
 
