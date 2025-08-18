@@ -26,7 +26,7 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
   const [showHint, setShowHint] = useState(false);
 
   const religionData = RELIGIOUS_CONTENT[religion as keyof typeof RELIGIOUS_CONTENT] || RELIGIOUS_CONTENT.buddhism;
-  const maxScore = GAME_TYPES['memory-temple'].getMaxScore(difficulty);
+  const maxScore = 60; // 固定滿分60分 (3個正確建築 × 20分)
   const gameTime = GAME_TYPES['memory-temple'].getDuration(difficulty);
   
   // 調試輸出
@@ -61,10 +61,11 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
       id: index,
       name,
       emoji: emojis[index],
-      isTarget: index < difficulty.elementCount,
+      isTarget: index < 3, // 固定前3個為目標建築
       isSelected: false
     }));
 
+    console.log('寺廟記憶遊戲建築初始化:', newBuildings.map(b => ({name: b.name, target: b.isTarget})));
     setBuildings(newBuildings);
   };
 
@@ -76,7 +77,8 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-      return shuffled.map(b => ({ ...b, isTarget: false })); // 清除目標標記
+      // 保留目標標記，僅隱藏視覺效果
+      return shuffled;
     });
     
     setGamePhase('shuffled');
@@ -102,28 +104,27 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     
     if (selectedCount >= 3) return; // 固定選擇3個
 
-    setBuildings(prev => prev.map(b => 
+    const updatedBuildings = buildings.map(b => 
       b.id === buildingId ? { ...b, isSelected: true } : b
-    ));
+    );
     
+    setBuildings(updatedBuildings);
     setSelectedCount(prev => prev + 1);
     
     // 檢查是否選擇完畢
     if (selectedCount + 1 === 3) {
-      setTimeout(() => completeGame(), 500);
+      setTimeout(() => completeGameWithBuildings(updatedBuildings), 500);
     }
   };
 
-  const completeGame = () => {
-    console.log('記憶導覽遊戲完成 - 當前建築:', buildings.map(b => ({name: b.name, target: b.isTarget, selected: b.isSelected})));
+  const completeGameWithBuildings = (currentBuildings: Building[]) => {
+    console.log('記憶導覽遊戲完成 - 當前建築:', currentBuildings.map(b => ({name: b.name, target: b.isTarget, selected: b.isSelected})));
     
     // 計算得分 - 修正邏輯，基於實際目標建築
     let finalScore = 0;
     let correctSelections = 0;
     let incorrectSelections = 0;
     
-    // 使用最新的建築狀態進行計算
-    const currentBuildings = buildings.length > 0 ? buildings : [];
     currentBuildings.forEach(b => {
       if (b.isSelected) {
         if (b.isTarget) {
@@ -135,16 +136,11 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
         }
       }
     });
-    
-    // 確保有正確的計分邏輯
-    if (currentBuildings.length === 0) {
-      console.error('建築數據為空，無法計算分數');
-      finalScore = 0;
-    }
 
     finalScore = Math.max(0, finalScore); // 確保分數不為負數
     
     console.log('記憶導覽分數計算:', {
+      建築狀態: currentBuildings.map(b => ({name: b.name, target: b.isTarget, selected: b.isSelected})),
       正確選擇: correctSelections,
       錯誤選擇: incorrectSelections,
       最終分數: finalScore,
@@ -158,6 +154,10 @@ export default function MemoryTempleGame({ religion, difficulty, onGameComplete 
     const stars = calculateStarRating(finalScore, maxScore);
     console.log('獲得星級:', stars);
     setTimeout(() => onGameComplete(finalScore, stars), 1500);
+  };
+
+  const completeGame = () => {
+    completeGameWithBuildings(buildings);
   };
 
   const getPhaseText = () => {
